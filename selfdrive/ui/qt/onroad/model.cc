@@ -1,6 +1,10 @@
 #include "selfdrive/ui/qt/onroad/model.h"
+#include "selfdrive/ui/qt/tesla_theme.h"
 #include "selfdrive/ui/qt/util.h"
 #include "system/hardware/hw.h" 
+
+#include <algorithm>
+#include <cmath>
 
 constexpr int CLIP_MARGIN = 500;
 constexpr float MIN_DRAW_DISTANCE = 10.0;
@@ -37,7 +41,6 @@ void ModelRenderer::draw(QPainter &painter, const QRect &rect_param) {
   }
 
   clip_region = surface_rect.adjusted(-CLIP_MARGIN, -CLIP_MARGIN, CLIP_MARGIN, CLIP_MARGIN);
-  experimental_mode = sm["selfdriveState"].getSelfdriveState().getExperimentalMode();
   longitudinal_control = sm["carParams"].getCarParams().getOpenpilotLongitudinalControl();
   path_offset_z = sm["liveCalibration"].getLiveCalibration().getHeight()[0];
 
@@ -49,7 +52,7 @@ void ModelRenderer::draw(QPainter &painter, const QRect &rect_param) {
 
   update_model(model, lead_one);
   drawLaneLines(painter);
-  drawPath(painter, model, surface_rect.height());
+  drawPath(painter, surface_rect.height());
 
   if (longitudinal_control && sm.alive("radarState")) {
     update_leads(radar_state, model.getPosition());
@@ -115,96 +118,44 @@ void ModelRenderer::update_model(const cereal::ModelDataV2::Reader &model, const
 void ModelRenderer::drawLaneLines(QPainter &painter) {
   // lanelines
   for (int i = 0; i < std::size(lane_line_vertices); ++i) {
-    painter.setBrush(QColor::fromRgbF(1.0, 1.0, 1.0, std::clamp<float>(lane_line_probs[i], 0.0, 0.7)));
+    QColor lane_color = tesla_theme::blue();
+    lane_color.setAlphaF(std::clamp<float>(lane_line_probs[i], 0.0f, 0.75f));
+    painter.setBrush(lane_color);
     painter.drawPolygon(lane_line_vertices[i]);
   }
 
   // road edges
   for (int i = 0; i < std::size(road_edge_vertices); ++i) {
-    painter.setBrush(QColor::fromRgbF(1.0, 0, 0, std::clamp<float>(1.0 - road_edge_stds[i], 0.0, 1.0)));
+    QColor edge_color = tesla_theme::blue_dark();
+    edge_color.setAlphaF(std::clamp<float>(1.0f - road_edge_stds[i], 0.0f, 0.85f));
+    painter.setBrush(edge_color);
     painter.drawPolygon(road_edge_vertices[i]);
   }
 }
 
-void ModelRenderer::drawPath(QPainter &painter, const cereal::ModelDataV2::Reader &model, int height) {
+void ModelRenderer::drawPath(QPainter &painter, int height) {
   QLinearGradient bg(0, height, 0, 0);
-  if (experimental_mode) {
-    // The first half of track_vertices are the points for the right side of the path
-    const auto &acceleration = model.getAcceleration().getX();
-    const int max_len = std::min<int>(track_vertices.length() / 2, acceleration.size());
-
-    for (int i = 0; i < max_len; ++i) {
-      // Some points are out of frame
-      int track_idx = max_len - i - 1;  // flip idx to start from bottom right
-      if (track_vertices[track_idx].y() < 0 || track_vertices[track_idx].y() > height) continue;
-
-      // Flip so 0 is bottom of frame
-      float lin_grad_point = (height - track_vertices[track_idx].y()) / height;
-
-      // speed up: 120, slow down: 0
-      float path_hue = fmax(fmin(60 + acceleration[i] * 35, 120), 0);
-      // FIXME: painter.drawPolygon can be slow if hue is not rounded
-      path_hue = int(path_hue * 100 + 0.5) / 100;
-
-      float saturation = fmin(fabs(acceleration[i] * 1.5), 1);
-      float lightness = util::map_val(saturation, 0.0f, 1.0f, 0.95f, 0.62f);        // lighter when grey
-      float alpha = util::map_val(lin_grad_point, 0.75f / 2.f, 0.75f, 0.4f, 0.0f);  // matches previous alpha fade
-      bg.setColorAt(lin_grad_point, QColor::fromHslF(path_hue / 360., saturation, lightness, alpha));
-
-      // Skip a point, unless next is last
-      i += (i + 2) < max_len ? 1 : 0;
-    }
-
-  } else {
-    updatePathGradient(bg);
-  }
+  updateRainbowPathGradient(bg);
 
   painter.setBrush(bg);
   painter.drawPolygon(track_vertices);
 }
 
-void ModelRenderer::updatePathGradient(QLinearGradient &bg) {
-  static const QColor throttle_colors[] = {
-      QColor::fromHslF(148. / 360., 0.94, 0.51, 0.4),
-      QColor::fromHslF(112. / 360., 1.0, 0.68, 0.35),
-      QColor::fromHslF(112. / 360., 1.0, 0.68, 0.0)};
-
-  static const QColor no_throttle_colors[] = {
-      QColor::fromHslF(148. / 360., 0.0, 0.95, 0.4),
-      QColor::fromHslF(112. / 360., 0.0, 0.95, 0.35),
-      QColor::fromHslF(112. / 360., 0.0, 0.95, 0.0),
-  };
-
-  // Transition speed; 0.1 corresponds to 0.5 seconds at UI_FREQ
-  constexpr float transition_speed = 0.1f;
-
-  // Start transition if throttle state changes
-  bool allow_throttle = (*uiState()->sm)["longitudinalPlan"].getLongitudinalPlan().getAllowThrottle() || !longitudinal_control;
-  if (allow_throttle != prev_allow_throttle) {
-    prev_allow_throttle = allow_throttle;
-    // Invert blend factor for a smooth transition when the state changes mid-animation
-    blend_factor = std::max(1.0f - blend_factor, 0.0f);
+void ModelRenderer::updateRainbowPathGradient(QLinearGradient &bg) {
+  static float hue_offset = 0.0f;
+  if (vc_speed > 0.0f) {
+    hue_offset = std::fmod(hue_offset + std::sqrt(vc_speed) / std::sqrt(145.0f / 3.6f), 360.0f);
   }
 
-  const QColor *begin_colors = allow_throttle ? no_throttle_colors : throttle_colors;
-  const QColor *end_colors = allow_throttle ? throttle_colors : no_throttle_colors;
-  if (blend_factor < 1.0f) {
-    blend_factor = std::min(blend_factor + transition_speed, 1.0f);
+  constexpr int stops = 12;
+  for (int i = 0; i <= stops; ++i) {
+    const float position = static_cast<float>(i) / stops;
+    const float hue = std::fmod((position * 360.0f) + hue_offset, 360.0f);
+    const float alpha = util::map_val(position, 0.0f, 1.0f, 0.52f, 0.08f);
+    bg.setColorAt(position, QColor::fromHslF(hue / 360.0f, 1.0f, 0.50f, alpha));
   }
 
-  // Set gradient colors by blending the start and end colors
-  bg.setColorAt(0.0f, blendColors(begin_colors[0], end_colors[0], blend_factor));
-  bg.setColorAt(0.5f, blendColors(begin_colors[1], end_colors[1], blend_factor));
-  bg.setColorAt(1.0f, blendColors(begin_colors[2], end_colors[2], blend_factor));
-}
-
-QColor ModelRenderer::blendColors(const QColor &start, const QColor &end, float t) {
-  if (t == 1.0f) return end;
-  return QColor::fromRgbF(
-      (1 - t) * start.redF() + t * end.redF(),
-      (1 - t) * start.greenF() + t * end.greenF(),
-      (1 - t) * start.blueF() + t * end.blueF(),
-      (1 - t) * start.alphaF() + t * end.alphaF());
+  bg.setSpread(QGradient::RepeatSpread);
 }
 
 void ModelRenderer::drawLead(QPainter &painter, const cereal::RadarState::LeadData::Reader &lead_data,
@@ -234,13 +185,13 @@ void ModelRenderer::drawLead(QPainter &painter, const cereal::RadarState::LeadDa
   //QPointF glow[] = {{x + (sz * 1.35) + g_xo, y + sz + g_yo}, {x, y - g_yo}, {x - (sz * 1.35) - g_xo, y + sz + g_yo}};
   float homebase_h = 12;
   QPointF glow[] = {{x + (sz * 1.35) + g_xo, y + sz + g_yo + homebase_h}, {x + (sz * 1.35) + g_xo, y + sz + g_yo}, {x, y - g_yo}, {x - (sz * 1.35) - g_xo, y + sz + g_yo}, {x - (sz * 1.35) - g_xo, y + sz + g_yo + homebase_h}, {x, y + sz + homebase_h + g_yo + 10}};
-  painter.setBrush(QColor(218, 202, 37, 210));
+  painter.setBrush(tesla_theme::blue(210));
   painter.drawPolygon(glow, std::size(glow));
 
   // chevron
   //QPointF chevron[] = {{x + (sz * 1.25), y + sz}, {x, y}, {x - (sz * 1.25), y + sz}};
   QPointF chevron[] = {{x + (sz * 1.25), y + sz + homebase_h}, {x + (sz * 1.25), y + sz}, {x, y}, {x - (sz * 1.25), y + sz}, {x - (sz * 1.25), y + sz + homebase_h}, {x, y + sz + homebase_h - 7}};
-  painter.setBrush(QColor(201, 34, 49, fillAlpha));
+  painter.setBrush(tesla_theme::blue(fillAlpha));
   painter.drawPolygon(chevron, std::size(chevron));
 
   if (num == 0){ //顯示到第 0 輛前車的距離

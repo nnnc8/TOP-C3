@@ -3,6 +3,7 @@
 #include <cmath>
 #include <QElapsedTimer>
 #include <QPainterPath>
+#include "selfdrive/ui/qt/tesla_theme.h"
 #include "selfdrive/ui/qt/util.h"
 
 constexpr int SET_SPEED_NA = 255;
@@ -18,8 +19,8 @@ HudRenderer::HudRenderer() {
   };
 
   const QStringList imagePaths = {
-    "../assets/images/tim_turn_signal_1.png",
-    "../assets/images/tim_turn_signal_2.png"
+    "../assets/tesla_theme/signals/turn_signal_1.png",
+    "../assets/tesla_theme/signals/turn_signal_2.png"
   };
   signalImgVector.reserve(2 * imagePaths.size() + 1);
   for (int i = 0; i < 2; ++i) {
@@ -27,7 +28,7 @@ HudRenderer::HudRenderer() {
       signalImgVector.push_back(QPixmap(path));
     }
   }
-  signalImgVector.push_back(QPixmap("../assets/images/tim_turn_signal_1_red.png"));
+  signalImgVector.push_back(QPixmap("../assets/tesla_theme/signals/turn_signal_blindspot.png"));
   animation_timer = new QTimer(this);
   connect(animation_timer, &QTimer::timeout, this, [this] {
     animationFrameIndex = (animationFrameIndex + 1) % totalFrames;
@@ -121,7 +122,7 @@ void HudRenderer::draw(QPainter &p, const QRect &surface_rect) {
 
   // Draw header gradient
   QLinearGradient bg(0, UI_HEADER_HEIGHT - (UI_HEADER_HEIGHT / 2.5), 0, UI_HEADER_HEIGHT);
-  bg.setColorAt(0, brakeLights ? QColor::fromRgbF(1.0, 0.48, 0.5, 0.45) : QColor::fromRgbF(0, 0, 0, 0.45));
+  bg.setColorAt(0, brakeLights ? tesla_theme::warning_red(150) : tesla_theme::blue(105));
   bg.setColorAt(1, QColor::fromRgbF(0, 0, 0, 0));
   p.fillRect(0, 0, surface_rect.width(), UI_HEADER_HEIGHT, bg);
   drawRoadName(p, surface_rect);
@@ -204,8 +205,8 @@ void HudRenderer::drawSetSpeed(QPainter &p, const QRect &surface_rect) {
   QRect set_speed_rect(QPoint(60 + (default_size.width() - set_speed_size.width()) / 2, 45), set_speed_size);
 
   // Draw set speed box
-  p.setPen(QPen(QColor(255, 255, 255, 75), 6));
-  p.setBrush(QColor(0, 0, 0, 166));
+  p.setPen(QPen(tesla_theme::panel_border(185), 6));
+  p.setBrush(tesla_theme::panel(190));
   p.drawRoundedRect(set_speed_rect, 32, 32);
 
   // Colors based on status
@@ -214,15 +215,15 @@ void HudRenderer::drawSetSpeed(QPainter &p, const QRect &surface_rect) {
   if (is_cruise_set) {
     set_speed_color = QColor(255, 255, 255);
     if (speedLimitAssistActive) {
-      set_speed_color = longOverride ? QColor(0x91, 0x9b, 0x95, 0xff) : QColor(0, 0xff, 0, 0xff);
-      max_color = longOverride ? QColor(0x91, 0x9b, 0x95, 0xff) : QColor(0x80, 0xd8, 0xa6, 0xff);
+      set_speed_color = longOverride ? QColor(0x91, 0x9b, 0x95, 0xff) : tesla_theme::blue();
+      max_color = longOverride ? QColor(0x91, 0x9b, 0x95, 0xff) : tesla_theme::blue();
     } else {
       if (status == STATUS_DISENGAGED) {
         max_color = QColor(255, 255, 255);
       } else if (status == STATUS_OVERRIDE) {
         max_color = QColor(0x91, 0x9b, 0x95, 0xff);
       } else {
-        max_color = QColor(0x80, 0xd8, 0xa6, 0xff);
+        max_color = tesla_theme::blue();
       }
     }
   }
@@ -435,7 +436,7 @@ void HudRenderer::drawRoadName(QPainter &p, const QRect &surface_rect)
   p.drawRoundedRect(road_rect, 12, 12);
 
   // Truncate long road names if they still don't fit
-  p.setPen(QColor(255, 215, 0, 255));
+  p.setPen(tesla_theme::blue());
   QString truncated = fm.elidedText(road_name, Qt::ElideRight, road_rect.width() - 20);
   p.drawText(road_rect, Qt::AlignCenter, truncated);
 }
@@ -610,8 +611,8 @@ void HudRenderer::drawUpcomingSpeedLimit(QPainter &p) {
   const int ahead_y = sign_y + sign_height + 10;
 
   QRect ahead_rect(ahead_x, ahead_y, ahead_width, ahead_height);
-  p.setPen(QPen(QColor(255, 255, 255, 100), 3));
-  p.setBrush(QColor(0, 0, 0, 180));
+  p.setPen(QPen(tesla_theme::panel_border(150), 3));
+  p.setBrush(tesla_theme::panel(185));
   p.drawRoundedRect(ahead_rect, 16, 16);
 
   // "AHEAD" label

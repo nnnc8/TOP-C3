@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "selfdrive/ui/qt/tesla_theme.h"
 #include "selfdrive/ui/qt/util.h"
 
 void drawIcon(QPainter &p, const QPoint &center, const QPixmap &img, const QBrush &bg, float opacity) {
@@ -19,7 +20,7 @@ void drawIcon(QPainter &p, const QPoint &center, const QPixmap &img, const QBrus
 ExperimentalButton::ExperimentalButton(QWidget *parent) : experimental_mode(false), engageable(false), QPushButton(parent) {
   setFixedSize(btn_size, btn_size);
 
-  engage_img = loadPixmap("../assets/images/button_home.png", {img_size, img_size});
+  engage_img = loadPixmap("../assets/tesla_theme/icons/button_home.png", {img_size, img_size});
   engage_img = engage_img.scaled(engage_img.width() * 1.4, engage_img.height() * 1.4, Qt::KeepAspectRatio);
   experimental_img = loadPixmap("../assets/icons/experimental.svg", {img_size, img_size});
   QObject::connect(this, &QPushButton::clicked, this, &ExperimentalButton::changeMode);
@@ -46,5 +47,5 @@ void ExperimentalButton::updateState(const UIState &s) {
 void ExperimentalButton::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   QPixmap img = experimental_mode ? experimental_img : engage_img;
-  drawIcon(p, QPoint(btn_size / 2, btn_size / 2), img, QColor(25, 120, 150, 0), (isDown() || !engageable) ? 0.6 : 1.0);
+  drawIcon(p, QPoint(btn_size / 2, btn_size / 2), img, tesla_theme::panel(0), (isDown() || !engageable) ? 0.6 : 1.0);
 }

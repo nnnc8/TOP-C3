@@ -22,17 +22,13 @@ private:
   void update_leads(const cereal::RadarState::Reader &radar_state, const cereal::XYZTData::Reader &line);
   void update_model(const cereal::ModelDataV2::Reader &model, const cereal::RadarState::LeadData::Reader &lead);
   void drawLaneLines(QPainter &painter);
-  void drawPath(QPainter &painter, const cereal::ModelDataV2::Reader &model, int height);
-  void updatePathGradient(QLinearGradient &bg);
-  QColor blendColors(const QColor &start, const QColor &end, float t);
+  void drawPath(QPainter &painter, int height);
+  void updateRainbowPathGradient(QLinearGradient &bg);
   void drawLead(QPainter &painter, const cereal::RadarState::LeadData::Reader &lead_data, const QPointF &vd, int num);
   void mapLineToPolygon(const cereal::XYZTData::Reader &line, float y_off, float z_off,
                         QPolygonF *pvd, int max_idx, bool allow_invert = true);
 
   bool longitudinal_control = false;
-  bool experimental_mode = false;
-  float blend_factor = 1.0f;
-  bool prev_allow_throttle = true;
   float lane_line_probs[4] = {};
   float road_edge_stds[2] = {};
   float path_offset_z = 1.22f;

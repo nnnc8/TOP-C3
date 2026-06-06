@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from pathlib import Path
 import time
 import wave
 
@@ -25,6 +26,8 @@ AMBIENT_DB = 30 # DB where MIN_VOLUME is applied
 DB_SCALE = 30 # AMBIENT_DB + DB_SCALE is where MAX_VOLUME is applied
 
 AudibleAlert = car.CarControl.HUDControl.AudibleAlert
+STOCK_SOUND_DIR = Path(BASEDIR) / "selfdrive/assets/sounds"
+TESLA_SOUND_DIR = Path(BASEDIR) / "selfdrive/assets/tesla_theme/sounds"
 
 
 sound_list: dict[int, tuple[str, int | None, float]] = {
@@ -78,7 +81,11 @@ class Soundd:
     for sound in sound_list:
       filename, play_count, volume = sound_list[sound]
 
-      with wave.open(BASEDIR + "/selfdrive/assets/sounds/" + filename, 'r') as wavefile:
+      sound_path = TESLA_SOUND_DIR / filename
+      if not sound_path.exists():
+        sound_path = STOCK_SOUND_DIR / filename
+
+      with wave.open(str(sound_path), 'r') as wavefile:
         assert wavefile.getnchannels() == 1
         assert wavefile.getsampwidth() == 2
         assert wavefile.getframerate() == SAMPLE_RATE

@@ -2,6 +2,7 @@
 
 #include <QMouseEvent>
 
+#include "selfdrive/ui/qt/tesla_theme.h"
 #include "selfdrive/ui/qt/util.h"
 
 void Sidebar::drawMetric(QPainter &p, const QPair<QString, QString> &label, QColor c, int y) {
@@ -13,7 +14,7 @@ void Sidebar::drawMetric(QPainter &p, const QPair<QString, QString> &label, QCol
   p.drawRoundedRect(QRect(rect.x() + 4, rect.y() + 4, 100, 118), 18, 18);
   p.setClipping(false);
 
-  QPen pen = QPen(QColor(0xff, 0xff, 0xff, 0x55));
+  QPen pen = QPen(tesla_theme::panel_border(135));
   pen.setWidth(2);
   p.setPen(pen);
   p.setBrush(Qt::NoBrush);
@@ -25,10 +26,10 @@ void Sidebar::drawMetric(QPainter &p, const QPair<QString, QString> &label, QCol
 }
 
 Sidebar::Sidebar(QWidget *parent) : QFrame(parent), onroad(false), flag_pressed(false), settings_pressed(false), mic_indicator_pressed(false) {
-  home_img = loadPixmap("../assets/images/button_home.png", home_btn.size());
+  home_img = loadPixmap("../assets/tesla_theme/icons/button_home.png", home_btn.size());
   home_img = home_img.scaled(home_img.width() * 1.25, home_img.height() * 1.25, Qt::KeepAspectRatio);
-  flag_img = loadPixmap("../assets/images/button_flag.png", home_btn.size());
-  settings_img = loadPixmap("../assets/images/button_settings.png", settings_btn.size(), Qt::IgnoreAspectRatio);
+  flag_img = loadPixmap("../assets/tesla_theme/icons/button_flag.png", home_btn.size());
+  settings_img = loadPixmap("../assets/tesla_theme/icons/button_settings.png", settings_btn.size(), Qt::KeepAspectRatio);
   mic_img = loadPixmap("../assets/icons/microphone.png", QSize(30, 30));
   link_img = loadPixmap("../assets/icons/link.png", QSize(60, 60));
 
@@ -127,7 +128,7 @@ void Sidebar::paintEvent(QPaintEvent *event) {
   p.setPen(Qt::NoPen);
   p.setRenderHint(QPainter::Antialiasing);
 
-  p.fillRect(rect(), QColor(57, 57, 57));
+  p.fillRect(rect(), QColor(4, 8, 18));
 
   // buttons
   p.setOpacity(settings_pressed ? 0.65 : 1.0);
@@ -148,7 +149,7 @@ void Sidebar::paintEvent(QPaintEvent *event) {
   int x = 58;
   const QColor gray(0x54, 0x54, 0x54);
   for (int i = 0; i < 5; ++i) {
-    p.setBrush(i < net_strength ? Qt::white : gray);
+    p.setBrush(i < net_strength ? tesla_theme::blue() : gray);
     p.drawEllipse(x, 196, 27, 27);
     x += 37;
   }
