@@ -29,9 +29,10 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   onroadLbl->setStyleSheet("font-size: 50px; font-weight: 400; text-align: left; padding-top: 30px; padding-bottom: 30px;");
   addItem(onroadLbl);
 
-  // current version
-  versionLbl = new LabelControl(tr("Current Version"), "");
-  addItem(versionLbl);
+  modelLbl = new LabelControl(tr("Current Model"), "");
+  addItem(modelLbl);
+
+  addItem(new DrivingModelSelectorControl(this));
 
   // dp on/off btn
   onOffBtn = new ButtonControl(tr("Onroad/Offroad Mode"), tr("Go Offroad"));
@@ -184,6 +185,8 @@ void SoftwarePanel::updateLabels() {
   fs_watch->addParam("UpdaterState");
   fs_watch->addParam("UpdateAvailable");
   fs_watch->addParam("dp_device_offroad");
+  fs_watch->addParam("DrivingModel");
+  fs_watch->addParam("DrivingModelName");
 
   if (!isVisible()) {
     return;
@@ -226,9 +229,10 @@ void SoftwarePanel::updateLabels() {
   }
   targetBranchBtn->setValue(QString::fromStdString(params.get("UpdaterTargetBranch")));
 
-  // current + new versions
-  versionLbl->setText(QString::fromStdString(params.get("UpdaterCurrentDescription")));
-  versionLbl->setDescription(QString::fromStdString(params.get("UpdaterCurrentReleaseNotes")));
+  QString model_name = QString::fromStdString(params.get("DrivingModelName"));
+  QString model_id = QString::fromStdString(params.get("DrivingModel"));
+  modelLbl->setText(model_name.isEmpty() ? tr("Stock") : model_name);
+  modelLbl->setDescription(model_id.isEmpty() ? tr("Factory driving model bundle") : tr("Installed model id: %1").arg(model_id));
 
   installBtn->setVisible(!is_onroad && params.getBool("UpdateAvailable"));
   installBtn->setValue(QString::fromStdString(params.get("UpdaterNewDescription")));

@@ -30,7 +30,7 @@ QString getVersion() {
 
 QString getBrand() {
   const bool lite = getenv("LITE");
-  return QObject::tr("T.O.P") + (lite ? QString::fromStdString(" - Lite") : QString(""));
+  return QObject::tr("JARVIS") + (lite ? QString::fromStdString(" - Lite") : QString(""));
 }
 
 QString getUserAgent() {

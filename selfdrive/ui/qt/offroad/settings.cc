@@ -91,8 +91,8 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
   // accel controller
   std::vector<QString> accel_personality_texts{tr("Sport"), tr("Normal"), tr("Eco"), tr("Stock")};
   accel_personality_setting = new ButtonParamControl("AccelPersonality", tr("Acceleration Personality"),
-                                          tr("Normal is recommended. In sport mode, TOP will provide aggressive acceleration for a dynamic driving experience. "
-                                             "In eco mode, TOP will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these "
+                                          tr("Normal is recommended. In sport mode, JARVIS will provide aggressive acceleration for a dynamic driving experience. "
+                                             "In eco mode, JARVIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these "
                                              "acceleration personality within Onroad Settings on the driving screen."),
                                           "../assets/icons/speed_limit.png",
                                           accel_personality_texts);
@@ -551,7 +551,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {tr("Software"), new SoftwarePanel(this)},
     {tr("Firehose"), new FirehosePanel(this)},
     {tr("Developer"), new DeveloperPanel(this)},
-    {tr("T.O.P"), new TimpilotPanel(this)},
+    {tr("JARVIS"), new TimpilotPanel(this)},
     {tr("OSM"), new OsmPanel(this)},
   };
 
@@ -659,10 +659,24 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
       font-size: 50px;
       margin: 0px;
       padding: 20px;
-      border-width: 0;
-      border-radius: 30px;
-      color: #dddddd;
-      background-color: #444444;
+      border: 2px solid rgba(64, 220, 255, 180);
+      border-radius: 12px;
+      color: #d7fbff;
+      background-color: rgba(5, 24, 36, 220);
+    }
+    #homeWidget {
+      background-color: #07131d;
+    }
+    AbstractControl {
+      background-color: rgba(3, 21, 32, 230);
+      border: 1px solid rgba(50, 214, 255, 130);
+      border-radius: 8px;
+    }
+    AbstractControl QPushButton {
+      color: #e7fdff;
+    }
+    AbstractControl QLabel {
+      color: #b7f5ff;
     }
   )");
 
@@ -670,7 +684,7 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
 
   toggles.append(new ParamControl("QuietDrive",
                                   tr("Quiet Drive"),
-                                  tr("TOP will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on."),
+                                  tr("JARVIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on."),
                                   "../assets/icons/mute.png",
                                   this));
 
@@ -754,7 +768,7 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
 
   toggles.append(new ParamControl("ToyotaDriveMode",
                                   tr("Enable Toyota Drive Mode Button"),
-                                  tr("TOP will link the Acceleration Personality to the car's physical drive mode selector.\nReboot Required."),
+                                  tr("JARVIS will link the Acceleration Personality to the car's physical drive mode selector.\nReboot Required."),
                                   "../assets/icons/road.png",
                                   this));
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPushButton>
+#include <QJsonArray>
 #include <QStackedWidget>
 #include <QWidget>
 #include <QStackedLayout>
@@ -19,4 +20,18 @@ private:
 signals:
   void backPress();
   void selectedCar();
+};
+
+class DrivingModelSelectorControl : public ButtonControl {
+public:
+  explicit DrivingModelSelectorControl(QWidget *parent = nullptr);
+  void showEvent(QShowEvent *event) override;
+
+private:
+  void refresh();
+  QJsonArray fetchInstallableModels(const QString &root);
+  void selectModel();
+  void installModel(const QString &root, const QString &model_id, const QString &model_name);
+
+  Params params;
 };
