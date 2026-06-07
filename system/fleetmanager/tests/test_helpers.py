@@ -191,3 +191,26 @@ def test_get_route_preview_image_uses_png_cache_and_preview_fallback(tmp_path, m
   assert preview_path.endswith(".png")
   assert calls[0][0].endswith("qcamera.ts")
   assert calls[1][0].endswith("-preview.mp4")
+
+
+def test_get_route_summaries_supports_openpilot_segment_names(tmp_path, monkeypatch):
+  route_id = "00000002--7547aa40af"
+  cache_root = tmp_path / "cache"
+  monkeypatch.setattr(fleet.Paths, "log_root", lambda: str(tmp_path))
+  monkeypatch.setattr(fleet.Paths, "download_cache_root", lambda: str(cache_root))
+
+  _write_segment(str(tmp_path), route_id, 18, cameras=["qcamera", "fcamera"])
+  _write_segment(str(tmp_path), route_id, 19, cameras=["qcamera"])
+
+  summaries = fleet.get_route_summaries()
+
+  assert len(summaries) == 1
+  summary = summaries[0]
+  assert summary["routeId"] == route_id
+  assert summary["segmentCount"] == 2
+  assert summary["durationSec"] == 120
+  assert summary["cameras"] == ["qcamera", "fcamera"]
+
+  manifest = fleet.get_route_manifest(route_id)
+  assert manifest["segments"][0]["segmentId"] == f"{route_id}--18"
+  assert manifest["segments"][1]["segmentId"] == f"{route_id}--19"

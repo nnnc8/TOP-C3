@@ -3,7 +3,6 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
-import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -22,8 +21,6 @@ CAMERA_SPECS = {
   "dcamera": {"extension": ".hevc", "label": "車內"},
 }
 CAMERA_ORDER = list(CAMERA_SPECS)
-ROUTE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2}$")
-SEGMENT_RE = re.compile(r"^(?P<route>\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2})--(?P<segment>\d+)$")
 CHUNK_SIZE = 1024 * 512
 MERGED_CAMERA = "merged"
 
@@ -70,14 +67,11 @@ def get_cache_root() -> str:
 
 
 def is_valid_route(route_id: str) -> bool:
-  return bool(ROUTE_RE.fullmatch(route_id)) and len(discover_route_segments(route_id)) > 0
+  return len(discover_route_segments(route_id)) > 0
 
 
 def is_valid_segment(segment_id: str) -> bool:
-  match = SEGMENT_RE.fullmatch(segment_id)
-  if match is None:
-    return False
-  return os.path.isdir(os.path.join(get_log_root(), segment_id))
+  return _segment_record_from_entry(segment_id) is not None
 
 
 def is_valid_camera(camera: str) -> bool:
@@ -121,7 +115,7 @@ def discover_route_segments(route_id: str | None = None) -> list[SegmentRecord]:
 
 
 def get_route_summaries(limit: int | None = None) -> list[dict[str, Any]]:
-  route_ids = sorted({segment.route_id for segment in discover_route_segments()}, reverse=True)
+  route_ids = sorted({segment.route_id for segment in discover_route_segments()}, key=_route_datetime, reverse=True)
   if limit is not None:
     route_ids = route_ids[:limit]
 
@@ -144,9 +138,6 @@ def get_route_summaries(limit: int | None = None) -> list[dict[str, Any]]:
 
 
 def get_route_manifest(route_id: str) -> dict[str, Any]:
-  if not ROUTE_RE.fullmatch(route_id):
-    raise ValueError(f"invalid route id: {route_id}")
-
   segments = discover_route_segments(route_id)
   if not segments:
     raise FileNotFoundError(route_id)
@@ -157,7 +148,7 @@ def get_route_manifest(route_id: str) -> dict[str, Any]:
     return cached
 
   cameras = [camera for camera in CAMERA_ORDER if any(camera in segment.files for segment in segments)]
-  duration_sec = (max(segment.index for segment in segments) + 1) * 60
+  duration_sec = len(segments) * 60
   events = extract_route_events([segment.qlog_path for segment in segments if segment.qlog_path])
   started_at = _route_datetime(route_id)
   ended_at = started_at + dt.timedelta(seconds=duration_sec)
@@ -170,12 +161,12 @@ def get_route_manifest(route_id: str) -> dict[str, Any]:
     "segments": [
       {
         "segmentId": segment.segment_id,
-        "index": segment.index,
-        "startSec": segment.index * 60,
+        "index": offset,
+        "startSec": offset * 60,
         "durationSec": 60,
         "cameras": segment.cameras,
       }
-      for segment in segments
+      for offset, segment in enumerate(segments)
     ],
     "cameras": cameras,
     "events": events,
@@ -448,9 +439,13 @@ def video_to_img(input_path, output_path, fps=1, duration=6):
 
 
 def _segment_record_from_entry(entry: str) -> SegmentRecord | None:
-  match = SEGMENT_RE.fullmatch(entry)
   full_path = os.path.join(get_log_root(), entry)
-  if match is None or not os.path.isdir(full_path):
+  if not os.path.isdir(full_path):
+    return None
+
+  try:
+    segment_name = segment_to_segment_name(get_log_root(), entry)
+  except AssertionError:
     return None
 
   files = {}
@@ -462,9 +457,9 @@ def _segment_record_from_entry(entry: str) -> SegmentRecord | None:
   qlog_path = _first_existing(full_path, ["qlog.zst", "qlog.bz2", "qlog"])
   rlog_path = _first_existing(full_path, ["rlog.zst", "rlog.bz2", "rlog"])
   return SegmentRecord(
-    route_id=match.group("route"),
+    route_id=segment_name.time_str,
     segment_id=entry,
-    index=int(match.group("segment")),
+    index=segment_name.segment_num,
     directory=full_path,
     files=files,
     qlog_path=qlog_path,
@@ -473,18 +468,21 @@ def _segment_record_from_entry(entry: str) -> SegmentRecord | None:
 
 
 def _route_datetime(route_id: str) -> dt.datetime:
-  return dt.datetime.strptime(route_id, "%Y-%m-%d--%H-%M-%S")
+  try:
+    return dt.datetime.strptime(route_id, "%Y-%m-%d--%H-%M-%S")
+  except ValueError:
+    segments = discover_route_segments(route_id)
+    if not segments:
+      raise
+    first_segment = min(segments, key=lambda segment: segment.index)
+    return dt.datetime.fromtimestamp(os.path.getmtime(first_segment.directory))
 
 
 def get_segment_record(segment_id: str) -> SegmentRecord:
-  if not is_valid_segment(segment_id):
+  segment = _segment_record_from_entry(segment_id)
+  if segment is None:
     raise FileNotFoundError(segment_id)
-
-  route_id = segment_id[:20]
-  for segment in discover_route_segments(route_id):
-    if segment.segment_id == segment_id:
-      return segment
-  raise FileNotFoundError(segment_id)
+  return segment
 
 
 def _count_events(events: list[dict[str, Any]]) -> dict[str, int]:
