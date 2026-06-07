@@ -631,20 +631,20 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
         <translation>&lt;b&gt;偵測到無法支援的版本&lt;/b&gt; - 目前的版本 &lt;b&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/b&gt; 此版本目前不再支援 C3. 請點選 &lt;b&gt;[裝置 &gt; 軟體]&lt;/b&gt; 安裝可支援的版本其名稱具備 &lt;b&gt;&lt;u&gt;-c3&lt;/u&gt;&lt;/b&gt; 或 &lt;b&gt;&lt;u&gt;-C3&lt;/u&gt;&lt;/b&gt; 此版本名稱適用於C3。</translation>
     </message>
     <message>
-        <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, JARVIS won&apos;t engage in %1</source>
-        <translation>請立即連上網路檢查更新；若未連網，JARVIS 將在 %1 後無法啟用。</translation>
+        <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, AEGIS won&apos;t engage in %1</source>
+        <translation>請立即連上網路檢查更新；若未連網，AEGIS 將在 %1 後無法啟用。</translation>
     </message>
     <message>
-        <source>Connect to internet to check for updates. JARVIS won&apos;t automatically start until it connects to internet to check for updates.</source>
-        <translation>請連上網路檢查更新；在完成更新檢查前，JARVIS 不會自動啟動。</translation>
+        <source>Connect to internet to check for updates. AEGIS won&apos;t automatically start until it connects to internet to check for updates.</source>
+        <translation>請連上網路檢查更新；在完成更新檢查前，AEGIS 不會自動啟動。</translation>
     </message>
     <message>
-        <source>JARVIS was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
-        <translation>JARVIS 無法識別您的車輛。您的車型可能尚未支援，或其 ECU 韌體未被辨識。請提交 Pull Request 補上正確的韌體版本；若需要協助，請加入 discord.comma.ai。</translation>
+        <source>AEGIS was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
+        <translation>AEGIS 無法識別您的車輛。您的車型可能尚未支援，或其 ECU 韌體未被辨識。請提交 Pull Request 補上正確的韌體版本；若需要協助，請加入 discord.comma.ai。</translation>
     </message>
     <message>
-        <source>JARVIS detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
-        <translation>JARVIS 偵測到裝置安裝位置發生變化。請確認裝置已完全卡入支架，且支架已牢固固定在擋風玻璃上。</translation>
+        <source>AEGIS detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
+        <translation>AEGIS 偵測到裝置安裝位置發生變化。請確認裝置已完全卡入支架，且支架已牢固固定在擋風玻璃上。</translation>
     </message>
 </context>
 <context>
@@ -1102,8 +1102,8 @@ Data</source>
         <translation>模型安裝失敗。日誌：%1</translation>
     </message>
     <message>
-        <source>JARVIS</source>
-        <translation>JARVIS</translation>
+        <source>AEGIS</source>
+        <translation>AEGIS</translation>
     </message>
 </context>
 <context>
@@ -1141,8 +1141,8 @@ Data</source>
         <translation type="vanished">離線地圖</translation>
     </message>
     <message>
-        <source>JARVIS</source>
-        <translation>JARVIS</translation>
+        <source>AEGIS</source>
+        <translation>AEGIS</translation>
     </message>
 </context>
 <context>
@@ -1678,13 +1678,13 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
         <translation type="vanished">利用地圖資料計算前方轉彎處的合適車速進行減速。</translation>
     </message>
     <message>
-        <source>JARVIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on.</source>
-        <translation>JARVIS 會顯示警示，但只播放最重要的警告聲。此功能可在車輛通電時切換。</translation>
+        <source>AEGIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on.</source>
+        <translation>AEGIS 會顯示警示，但只播放最重要的警告聲。此功能可在車輛通電時切換。</translation>
     </message>
     <message>
-        <source>JARVIS will link the Acceleration Personality to the car&apos;s physical drive mode selector.
+        <source>AEGIS will link the Acceleration Personality to the car&apos;s physical drive mode selector.
 Reboot Required.</source>
-        <translation>JARVIS 會將加速模式與車輛實體駕駛模式選擇器連動。
+        <translation>AEGIS 會將加速模式與車輛實體駕駛模式選擇器連動。
 需要重新開機。</translation>
     </message>
 </context>
@@ -1835,8 +1835,8 @@ Reboot Required.</source>
         <translation>在駕駛時錄製並儲存麥克風音訊。此音訊將會收錄在 comma connect 的行車記錄器影片中。</translation>
     </message>
     <message>
-        <source>Normal is recommended. In sport mode, JARVIS will provide aggressive acceleration for a dynamic driving experience. In eco mode, JARVIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these acceleration personality within Onroad Settings on the driving screen.</source>
-        <translation>建議使用普通模式。在運動模式下，JARVIS 會提供較積極的加速，帶來更靈敏的駕駛感；在節能模式下，JARVIS 會採用更平順、更柔和的加速。支援的車型可在行車畫面的 Onroad Settings 中切換這些加速模式。</translation>
+        <source>Normal is recommended. In sport mode, AEGIS will provide aggressive acceleration for a dynamic driving experience. In eco mode, AEGIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these acceleration personality within Onroad Settings on the driving screen.</source>
+        <translation>建議使用普通模式。在運動模式下，AEGIS 會提供較積極的加速，帶來更靈敏的駕駛感；在節能模式下，AEGIS 會採用更平順、更柔和的加速。支援的車型可在行車畫面的 Onroad Settings 中切換這些加速模式。</translation>
     </message>
 </context>
 <context>

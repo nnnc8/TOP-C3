@@ -607,20 +607,20 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, JARVIS won&apos;t engage in %1</source>
-        <translation>请立即联网检查更新；如果不联网，JARVIS 将在 %1 后无法启用。</translation>
+        <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, AEGIS won&apos;t engage in %1</source>
+        <translation>请立即联网检查更新；如果不联网，AEGIS 将在 %1 后无法启用。</translation>
     </message>
     <message>
-        <source>Connect to internet to check for updates. JARVIS won&apos;t automatically start until it connects to internet to check for updates.</source>
-        <translation>请联网检查更新；在完成更新检查前，JARVIS 不会自动启动。</translation>
+        <source>Connect to internet to check for updates. AEGIS won&apos;t automatically start until it connects to internet to check for updates.</source>
+        <translation>请联网检查更新；在完成更新检查前，AEGIS 不会自动启动。</translation>
     </message>
     <message>
-        <source>JARVIS was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
-        <translation>JARVIS 无法识别您的车辆。您的车型可能尚未支持，或其 ECU 固件未被识别。请提交 Pull Request 补充正确的固件版本；如需帮助，请加入 discord.comma.ai。</translation>
+        <source>AEGIS was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
+        <translation>AEGIS 无法识别您的车辆。您的车型可能尚未支持，或其 ECU 固件未被识别。请提交 Pull Request 补充正确的固件版本；如需帮助，请加入 discord.comma.ai。</translation>
     </message>
     <message>
-        <source>JARVIS detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
-        <translation>JARVIS 检测到设备安装位置发生变化。请确认设备已完全卡入支架，且支架已牢固固定在挡风玻璃上。</translation>
+        <source>AEGIS detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
+        <translation>AEGIS 检测到设备安装位置发生变化。请确认设备已完全卡入支架，且支架已牢固固定在挡风玻璃上。</translation>
     </message>
 </context>
 <context>
@@ -913,8 +913,8 @@ Data</source>
         <translation>模型安装失败。日志：%1</translation>
     </message>
     <message>
-        <source>JARVIS</source>
-        <translation>JARVIS</translation>
+        <source>AEGIS</source>
+        <translation>AEGIS</translation>
     </message>
 </context>
 <context>
@@ -948,7 +948,7 @@ Data</source>
         <translation>Firehose</translation>
     </message>
     <message>
-        <source>JARVIS</source>
+        <source>AEGIS</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1379,13 +1379,13 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>JARVIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on.</source>
-        <translation>JARVIS 会显示警报，但只播放最重要的警告音。此功能可在车辆通电时切换。</translation>
+        <source>AEGIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on.</source>
+        <translation>AEGIS 会显示警报，但只播放最重要的警告音。此功能可在车辆通电时切换。</translation>
     </message>
     <message>
-        <source>JARVIS will link the Acceleration Personality to the car&apos;s physical drive mode selector.
+        <source>AEGIS will link the Acceleration Personality to the car&apos;s physical drive mode selector.
 Reboot Required.</source>
-        <translation>JARVIS 会将加速模式与车辆实体驾驶模式选择器联动。
+        <translation>AEGIS 会将加速模式与车辆实体驾驶模式选择器联动。
 需要重新启动。</translation>
     </message>
 </context>
@@ -1532,8 +1532,8 @@ Reboot Required.</source>
         <translation>在驾驶时录制并存储麦克风音频。该音频将会包含在 comma connect 的行车记录仪视频中。</translation>
     </message>
     <message>
-        <source>Normal is recommended. In sport mode, JARVIS will provide aggressive acceleration for a dynamic driving experience. In eco mode, JARVIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these acceleration personality within Onroad Settings on the driving screen.</source>
-        <translation>推荐使用普通模式。在运动模式下，JARVIS 会提供更积极的加速，带来更灵敏的驾驶感；在节能模式下，JARVIS 会采用更平顺、更柔和的加速。支持的车型可在驾驶画面的 Onroad Settings 中切换这些加速模式。</translation>
+        <source>Normal is recommended. In sport mode, AEGIS will provide aggressive acceleration for a dynamic driving experience. In eco mode, AEGIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these acceleration personality within Onroad Settings on the driving screen.</source>
+        <translation>推荐使用普通模式。在运动模式下，AEGIS 会提供更积极的加速，带来更灵敏的驾驶感；在节能模式下，AEGIS 会采用更平顺、更柔和的加速。支持的车型可在驾驶画面的 Onroad Settings 中切换这些加速模式。</translation>
     </message>
 </context>
 <context>

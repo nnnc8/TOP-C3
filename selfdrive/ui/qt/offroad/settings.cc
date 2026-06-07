@@ -91,8 +91,8 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
   // accel controller
   std::vector<QString> accel_personality_texts{tr("Sport"), tr("Normal"), tr("Eco"), tr("Stock")};
   accel_personality_setting = new ButtonParamControl("AccelPersonality", tr("Acceleration Personality"),
-                                          tr("Normal is recommended. In sport mode, JARVIS will provide aggressive acceleration for a dynamic driving experience. "
-                                             "In eco mode, JARVIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these "
+                                          tr("Normal is recommended. In sport mode, AEGIS will provide aggressive acceleration for a dynamic driving experience. "
+                                             "In eco mode, AEGIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these "
                                              "acceleration personality within Onroad Settings on the driving screen."),
                                           "../assets/icons/speed_limit.png",
                                           accel_personality_texts);
@@ -551,7 +551,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {tr("Software"), new SoftwarePanel(this)},
     {tr("Firehose"), new FirehosePanel(this)},
     {tr("Developer"), new DeveloperPanel(this)},
-    {tr("JARVIS"), new TimpilotPanel(this)},
+    {tr("AEGIS"), new TimpilotPanel(this)},
     {tr("OSM"), new OsmPanel(this)},
   };
 
@@ -684,7 +684,7 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
 
   toggles.append(new ParamControl("QuietDrive",
                                   tr("Quiet Drive"),
-                                  tr("JARVIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on."),
+                                  tr("AEGIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on."),
                                   "../assets/icons/mute.png",
                                   this));
 
@@ -768,7 +768,7 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
 
   toggles.append(new ParamControl("ToyotaDriveMode",
                                   tr("Enable Toyota Drive Mode Button"),
-                                  tr("JARVIS will link the Acceleration Personality to the car's physical drive mode selector.\nReboot Required."),
+                                  tr("AEGIS will link the Acceleration Personality to the car's physical drive mode selector.\nReboot Required."),
                                   "../assets/icons/road.png",
                                   this));
 

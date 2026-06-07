@@ -467,7 +467,7 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   },
 
   EventName.startup: {
-    ET.PERMANENT: StartupAlert("JARVIS 已啟動"),
+    ET.PERMANENT: StartupAlert("AEGIS 已啟動"),
   },
 
   EventName.startupMaster: {
