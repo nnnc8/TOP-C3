@@ -1,13 +1,70 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Home
-{% endblock %}
+{% block title %}首頁{% endblock %}
 
 {% block main %}
-    <br>
-    <h1>Fleet Manager</h1>
-    <br><a href='/footage'>View Dashcam Footage</a><br>
-    <br><a href='/error_logs'>Access Error Logs</a><br>
-    <br><a href='/about'>About Fleet Manager</a><br>
+  <section class="hero-panel">
+    <div>
+      <p class="eyebrow">以監看為核心的本機檢視</p>
+      <h1>像看車機監看牆一樣回看路線。</h1>
+      <p class="lede">快速打開正確路線、保持所有鏡頭同步，直接在手機上下載片段或整段影片。</p>
+      <div class="button-row">
+        <a class="primary-button" href="/footage">打開路線庫</a>
+        <a class="ghost-button" href="/about">這版做了什麼</a>
+      </div>
+    </div>
+    <div class="feature-stack">
+      <article class="info-card">
+        <span class="metric-label">監看優先</span>
+        <strong>多鏡頭同步播放</strong>
+        <p>直式維持 2x2 監看牆，橫式會放大選取鏡頭，其餘鏡頭仍保持同步。</p>
+      </article>
+      <article class="info-card">
+        <span class="metric-label">更快找到影片</span>
+        <strong>路線卡片與事件標記</strong>
+        <p>先找到正確路線再開始拖時間軸，也能直接匯出單段、整條路線或四鏡頭合成影片。</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="page-section">
+    {% set event_labels = {"hard_brake": "重煞車", "stop": "停車", "start": "起步", "manual_steer": "人工轉向"} %}
+    <div class="section-row">
+      <div>
+        <p class="eyebrow">最近路線</p>
+        <h2>從最近的行程快速接續</h2>
+      </div>
+      <a class="ghost-button" href="/footage">查看全部路線</a>
+    </div>
+    <div class="route-grid">
+      {% for route in recent_routes %}
+        <a class="route-card" href="/footage/{{ route.routeId }}">
+          <div class="route-media">
+            <img src="{{ route.previewUrl }}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true; this.parentElement.classList.add('is-fallback')">
+            <div class="route-media-fallback">
+              <span class="route-media-chip">{{ route.startedAt[11:16] }} → {{ route.endedAt[11:16] }}</span>
+              <strong>{{ route.cameras | length }} 鏡頭畫面</strong>
+            </div>
+          </div>
+          <div class="route-card-body">
+            <div class="route-card-header">
+              <strong>{{ route.routeId }}</strong>
+              <span>{{ route.segmentCount }} 段</span>
+            </div>
+            <p>{{ (route.durationSec // 60) | int }}分 {{ "%02d"|format(route.durationSec % 60) }}秒 · {{ route.cameras | length }} 鏡頭</p>
+            <div class="badge-row">
+              {% for event_type, count in route.eventCounts.items() if count %}
+                <span class="event-badge">{{ event_labels.get(event_type, event_type) }} · {{ count }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </a>
+      {% else %}
+        <article class="empty-state">
+          <strong>目前還沒有任何路線。</strong>
+          <p>請讓手機和 comma 連到同一個網路，開車產生影片後再重新整理這頁。</p>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
 {% endblock %}

@@ -1,28 +1,33 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Dashcam Routes
-{% endblock %}
+{% block title %}路線庫{% endblock %}
 
 {% block main %}
-    <br>
-    <h1>Dashcam Routes</h1>
-    <br>
-    <div class="row">
-        {% for row, gif in zipped %}
-        <div class="col-xs-6 col-sm-4 col-md-3">
-            <div class="card mb-4 shadow-sm" style="background-color: #212529; color: white;">
-                <img src="/previewgif/{{ gif }}" class="card-img-top" alt="GIF">
-                <div class="card-body">
-                    <p class="card-text">{{ row }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <a href="/footage/{{ row }}" class="btn btn-sm btn-outline-secondary">View Footage</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+  <section class="page-section is-library-page">
+    <div class="section-row">
+      <div>
+        <p class="eyebrow">路線庫</p>
+        <h1>直接看路線，不用翻檔案。</h1>
+        <p class="lede">依日期分組，手機上快速掃過，一下就能打開你要看的那條路線。</p>
+      </div>
     </div>
+    <div class="library-shell" data-route-library>
+      <div class="toolbar">
+        <label class="search-box">
+          <span>搜尋路線</span>
+          <input type="search" placeholder="用日期或路線時間篩選" data-route-search>
+        </label>
+      </div>
+      <div class="library-groups" data-route-groups>
+        <article class="empty-state">
+          <strong>正在載入路線...</strong>
+          <p>這台裝置正在整理本機路線資料。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script type="module" src="{{ url_for('static', filename='library.js') }}"></script>
 {% endblock %}

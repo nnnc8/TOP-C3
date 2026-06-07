@@ -1,16 +1,11 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Error Log
-{% endblock %}
+{% block title %}錯誤日誌{% endblock %}
 
 {% block main %}
-    <br>
-    <h1>Error Log of<br>{{ file_name }}</h1>
-    <br>
-{% endblock %}
-
-{% block unformated %}
-    <pre style="font-size: x-small; margin: 20px;">{{ file_content }}</pre>
-    <br><br>
+  <section class="page-section prose-panel">
+    <p class="eyebrow">錯誤日誌</p>
+    <h1>{{ file_name }}</h1>
+    <pre class="log-panel">{{ file_content }}</pre>
+  </section>
 {% endblock %}

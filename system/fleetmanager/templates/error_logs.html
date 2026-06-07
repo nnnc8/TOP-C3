@@ -1,14 +1,26 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Error Logs
-{% endblock %}
+{% block title %}錯誤日誌{% endblock %}
 
 {% block main %}
-    <br>
-    <h1>Error Logs</h1>
-    <br>
-    {% for row in rows %}
-        <a href="/error_logs/{{ row }}">{{ row }}</a><br>
-    {% endfor %}
+  <section class="page-section">
+    <div class="section-row">
+      <div>
+        <p class="eyebrow">診斷資訊</p>
+        <h1>錯誤日誌</h1>
+      </div>
+    </div>
+    <div class="route-grid">
+      {% for row in rows %}
+        <a class="route-card compact-card" href="/error_logs/{{ row }}">
+          <div class="route-card-body">
+            <div class="route-card-header">
+              <strong>{{ row }}</strong>
+              <span>查看日誌</span>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
 {% endblock %}

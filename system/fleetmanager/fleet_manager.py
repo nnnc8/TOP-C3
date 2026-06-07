@@ -1,100 +1,181 @@
 #!/usr/bin/env python3
-# otisserv - Copyright (c) 2019-, Rick Lan, dragonpilot community, and a number of other of contributors.
-# Fleet Manager - [actuallylemoncurd](https://github.com/actuallylemoncurd), [AlexandreSato](https://github.com/alexandreSato), [ntegan1](https://github.com/ntegan1), [royjr](https://github.com/royjr), and [sunnyhaibin] (https://github.com/sunnypilot)
-# Almost everything else - ChatGPT
-# dirty PR pusher - mike8643
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
+from html import escape
 import secrets
-from flask import Flask, render_template, Response, request, send_from_directory
-from openpilot.common.realtime import set_core_affinity
-import openpilot.system.fleetmanager.helpers as fleet
-from openpilot.system.hardware.hw import Paths
-from openpilot.common.swaglog import cloudlog
 import traceback
+
+from flask import Flask, Response, jsonify, render_template, request, send_file, stream_with_context
+
+from openpilot.common.realtime import set_core_affinity
+from openpilot.common.swaglog import cloudlog
+from openpilot.system.fleetmanager import helpers as fleet
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def home_page():
-  return render_template("index.html")
+  recent_routes = fleet.get_route_summaries(limit=4)
+  return render_template("index.html", recent_routes=recent_routes)
+
 
 @app.errorhandler(500)
 def internal_error(exception):
-  print('500 error caught')
+  _ = exception
   tberror = traceback.format_exc()
-  return render_template("error.html", error=tberror)
-
-@app.route("/footage/full/<cameratype>/<route>")
-def full(cameratype, route):
-  chunk_size = 1024 * 512  # 5KiB
-  file_name = cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
-  vidlist = "|".join(Paths.log_root() + "/" + segment + "/" + file_name for segment in fleet.segments_in_route(route))
-
-  def generate_buffered_stream():
-    with fleet.ffmpeg_mp4_concat_wrap_process_builder(vidlist, cameratype, chunk_size) as process:
-      for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
-        yield bytes(chunk)
-  return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
+  if request.path.startswith("/api/"):
+    return jsonify({"error": tberror}), 500
+  return render_template("error.html", error=tberror), 500
 
 
-@app.route("/footage/<cameratype>/<segment>")
-def fcamera(cameratype, segment):
-  if not fleet.is_valid_segment(segment):
-    return render_template("error.html", error="invalid segment")
-  file_name = Paths.log_root() + "/" + segment + "/" + cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
-  return Response(fleet.ffmpeg_mp4_wrap_process_builder(file_name).stdout.read(), status=200, mimetype='video/mp4')
+@app.route("/api/routes")
+def api_routes():
+  return jsonify({"routes": fleet.get_route_summaries()})
 
 
-@app.route("/footage/<route>")
-def route(route):
-  if len(route) != 20:
-    return render_template("error.html", error="route not found")
-
-  if str(request.query_string) == "b''":
-    query_segment = "0"
-    query_type = "qcamera"
-  else:
-    query_segment = (str(request.query_string).split(","))[0][2:]
-    query_type = (str(request.query_string).split(","))[1][:-1]
-
-  links = ""
-  segments = ""
-  for segment in fleet.segments_in_route(route):
-    links += "<a href='"+route+"?"+segment.split("--")[2]+","+query_type+"'>"+segment+"</a><br>"
-    segments += "'"+segment+"',"
-  return render_template("route.html", route=route, query_type=query_type, links=links, segments=segments, query_segment=query_segment)
+@app.route("/api/routes/<route_id>")
+def api_route(route_id):
+  try:
+    manifest = fleet.get_route_manifest(route_id)
+  except ValueError:
+    return _api_error("invalid route", 404)
+  except FileNotFoundError:
+    return _api_error("route not found", 404)
+  return jsonify(manifest)
 
 
-@app.route("/footage/")
+@app.route("/api/routes/<route_id>/preview")
+def api_route_preview(route_id):
+  if not fleet.is_valid_route(route_id):
+    return _api_error("route not found", 404)
+  try:
+    preview_path = fleet.get_route_preview_image(route_id)
+  except ValueError:
+    return _api_error("route not found", 404)
+  except FileNotFoundError:
+    return _preview_placeholder_response(route_id)
+  mimetype = "image/png" if preview_path.endswith(".png") else "image/jpeg"
+  return send_file(preview_path, mimetype=mimetype)
+
+
+@app.route("/api/segments/<segment_id>/stream/<camera>")
+def api_segment_stream(segment_id, camera):
+  quality = request.args.get("quality", "preview")
+  download = request.args.get("download", "").lower() in {"1", "true", "yes"}
+  return _segment_stream_response(segment_id, camera, quality, download)
+
+
+@app.route("/api/segments/<segment_id>/download/<target>")
+def api_segment_download(segment_id, target):
+  if target == fleet.MERGED_CAMERA:
+    if not fleet.is_valid_segment(segment_id):
+      return _api_error("segment not found", 404)
+    try:
+      composite_path = fleet.get_segment_composite_path(segment_id)
+    except FileNotFoundError:
+      return _api_error("segment not found", 404)
+    except RuntimeError as exc:
+      return _api_error(str(exc), 500)
+    return send_file(
+      composite_path,
+      mimetype="video/mp4",
+      as_attachment=True,
+      download_name=fleet.get_segment_download_name(segment_id, target),
+    )
+
+  return _segment_stream_response(segment_id, target, "full", True)
+
+
+def _segment_stream_response(segment_id, camera, quality, download):
+
+  if not fleet.is_valid_camera(camera):
+    return _api_error("invalid camera", 404)
+  if quality not in {"preview", "full"}:
+    return _api_error("invalid quality", 400)
+  if not fleet.is_valid_segment(segment_id):
+    return _api_error("segment not found", 404)
+
+  try:
+    if quality == "preview":
+      preview_path = fleet.get_preview_stream_path(segment_id, camera)
+      return send_file(
+        preview_path,
+        mimetype="video/mp4",
+        as_attachment=download,
+        download_name=fleet.get_segment_download_name(segment_id, camera),
+      )
+
+    process = fleet.build_segment_stream_process(segment_id, camera)
+  except FileNotFoundError:
+    return _api_error("camera stream not found", 404)
+  except RuntimeError as exc:
+    return _api_error(str(exc), 500)
+
+  headers = {}
+  if download:
+    headers["Content-Disposition"] = f'attachment; filename="{fleet.get_segment_download_name(segment_id, camera)}"'
+  return Response(stream_with_context(fleet.iter_process_output(process)), mimetype="video/mp4", headers=headers)
+
+
+@app.route("/api/routes/<route_id>/download/<camera>")
+def api_route_download(route_id, camera):
+  if camera == fleet.MERGED_CAMERA:
+    if not fleet.is_valid_route(route_id):
+      return _api_error("route not found", 404)
+    try:
+      composite_path = fleet.get_route_composite_path(route_id)
+    except FileNotFoundError:
+      return _api_error("route not found", 404)
+    except RuntimeError as exc:
+      return _api_error(str(exc), 500)
+    return send_file(
+      composite_path,
+      mimetype="video/mp4",
+      as_attachment=True,
+      download_name=fleet.get_route_download_name(route_id, camera),
+    )
+
+  if not fleet.is_valid_camera(camera):
+    return _api_error("invalid camera", 404)
+  if not fleet.is_valid_route(route_id):
+    return _api_error("route not found", 404)
+
+  start_sec, end_sec, error = _clip_args()
+  if error is not None:
+    return _api_error(error, 400)
+
+  try:
+    process = fleet.build_route_download_process(route_id, camera, start_sec=start_sec, end_sec=end_sec)
+  except FileNotFoundError:
+    return _api_error("camera stream not found", 404)
+
+  headers = {
+    "Content-Disposition": f'attachment; filename="{fleet.get_route_download_name(route_id, camera, start_sec, end_sec)}"',
+  }
+  return Response(stream_with_context(fleet.iter_process_output(process)), mimetype="video/mp4", headers=headers)
+
+
 @app.route("/footage")
+@app.route("/footage/")
 def footage():
-  route_paths = fleet.all_routes()
-  gifs = []
-  for route_path in route_paths:
-    input_path = Paths.log_root() + route_path + "--0/qcamera.ts"
-    output_path = Paths.log_root() + route_path + "--0/preview.gif"
-    fleet.video_to_img(input_path, output_path)
-    gif_path = route_path + "--0/preview.gif"
-    gifs.append(gif_path)
-  zipped = zip(route_paths, gifs, strict=True)
-  return render_template("footage.html", zipped=zipped)
+  return render_template("footage.html")
+
+
+@app.route("/footage/<route_id>")
+def route(route_id):
+  if not fleet.is_valid_route(route_id):
+    return render_template("error.html", error="找不到這條路線"), 404
+  return render_template("route.html", route_id=route_id)
+
+
+@app.route("/footage/full/<camera>/<route_id>")
+def full(camera, route_id):
+  return api_route_download(route_id, camera)
+
+
+@app.route("/footage/<camera>/<segment_id>")
+def segment_stream(camera, segment_id):
+  return _segment_stream_response(segment_id, camera, "full", False)
+
 
 @app.route("/about")
 def about():
@@ -105,20 +186,78 @@ def about():
 def error_logs():
   rows = fleet.list_file(fleet.ERROR_LOGS_PATH)
   if not rows:
-    return render_template("error.html", error="no error logs found at:<br><br>" + fleet.ERROR_LOGS_PATH)
+    return render_template("error.html", error="找不到錯誤日誌：<br><br>" + fleet.ERROR_LOGS_PATH), 404
   return render_template("error_logs.html", rows=rows)
 
 
 @app.route("/error_logs/<file_name>")
 def open_error_log(file_name):
-  f = open(fleet.ERROR_LOGS_PATH + file_name)
-  error = f.read()
+  try:
+    with open(fleet.ERROR_LOGS_PATH + file_name, "r", encoding="utf-8", errors="ignore") as handle:
+      error = handle.read()
+  except OSError:
+    return render_template("error.html", error="找不到這份錯誤日誌"), 404
   return render_template("error_log.html", file_name=file_name, file_content=error)
 
-@app.route("/previewgif/<path:file_path>", methods=['GET'])
+
+@app.route("/previewgif/<path:file_path>", methods=["GET"])
 def find_previewgif(file_path):
-  directory = "/data/media/0/realdata/"
-  return send_from_directory(directory, file_path, as_attachment=True)
+  route_id = file_path.split("--0/")[0]
+  if not fleet.is_valid_route(route_id):
+    return render_template("error.html", error="找不到這條路線"), 404
+  try:
+    preview_path = fleet.get_route_preview_image(route_id)
+  except FileNotFoundError:
+    return _preview_placeholder_response(route_id)
+  mimetype = "image/png" if preview_path.endswith(".png") else "image/jpeg"
+  return send_file(preview_path, mimetype=mimetype)
+
+
+def _clip_args():
+  start_raw = request.args.get("startSec")
+  end_raw = request.args.get("endSec")
+  if start_raw is None and end_raw is None:
+    return None, None, None
+  if start_raw is None or end_raw is None:
+    return None, None, "both startSec and endSec are required"
+
+  try:
+    start_sec = float(start_raw)
+    end_sec = float(end_raw)
+  except ValueError:
+    return None, None, "invalid clip range"
+  if start_sec < 0 or end_sec <= start_sec:
+    return None, None, "invalid clip range"
+  return start_sec, end_sec, None
+
+
+def _api_error(message, status):
+  return jsonify({"error": message}), status
+
+
+def _preview_placeholder_response(route_id):
+  safe_route_id = escape(route_id)
+  svg = f"""
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#20242b"/>
+        <stop offset="55%" stop-color="#111317"/>
+        <stop offset="100%" stop-color="#08090b"/>
+      </linearGradient>
+    </defs>
+    <rect width="1280" height="720" rx="42" fill="url(#bg)"/>
+    <rect x="36" y="36" width="124" height="58" rx="29" fill="rgba(0,0,0,0.38)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="62" y="74" fill="#d9dde3" font-size="24" font-family="Avenir Next, Helvetica Neue, sans-serif">預覽圖</text>
+    <text x="64" y="566" fill="#f3f4f6" font-size="72" font-weight="700" font-family="Avenir Next, Helvetica Neue, sans-serif">四鏡頭路線檢視</text>
+    <text x="64" y="620" fill="#a0a7b2" font-size="28" font-family="Avenir Next, Helvetica Neue, sans-serif">這條路線目前沒有可用的封面預覽，點進去仍可直接播放與下載。</text>
+    <text x="64" y="664" fill="#cbd1d9" font-size="24" font-family="Avenir Next, Helvetica Neue, sans-serif">{safe_route_id}</text>
+    <line x1="320" y1="120" x2="320" y2="420" stroke="rgba(255,255,255,0.08)"/>
+    <line x1="960" y1="120" x2="960" y2="420" stroke="rgba(255,255,255,0.08)"/>
+    <line x1="36" y1="420" x2="1244" y2="420" stroke="rgba(255,255,255,0.08)"/>
+  </svg>
+  """.strip()
+  return Response(svg, mimetype="image/svg+xml")
 
 
 def main():
@@ -130,5 +269,5 @@ def main():
   app.run(host="0.0.0.0", port=8082)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
   main()

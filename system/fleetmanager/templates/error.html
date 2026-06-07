@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Error
-{% endblock %}
+{% block title %}錯誤{% endblock %}
 
 {% block main %}
-    <br> Oops
-    <br><br><br><br>
-    {{ error | safe }}
+  <section class="page-section prose-panel">
+    <p class="eyebrow">錯誤</p>
+    <h1>這個請求無法完成。</h1>
+    <pre class="log-panel">{{ error | safe }}</pre>
+  </section>
 {% endblock %}

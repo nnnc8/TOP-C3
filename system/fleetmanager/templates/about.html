@@ -1,18 +1,17 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    About
-{% endblock %}
+{% block title %}關於{% endblock %}
 
 {% block main %}
-    <br>
-    <h1>About</h1>
-    <br>
-    <footer class="small text-center text-muted" style="word-wrap: break-word;">
-        Special thanks to:<br><br>
-        ntegan1<br>
-        royjr<br>
-        AlexandreSato<br>
-        actuallylemoncurd
-    </footer>
+  <section class="page-section prose-panel">
+    <p class="eyebrow">關於</p>
+    <h1>這個檢視器為什麼存在</h1>
+    <p>原本的本機 fleet manager 比較像檔案列表；這一版把流程改成路線回看：找到、監看、跳轉、下載。</p>
+    <ul class="plain-list">
+      <li>針對手機使用情境調整的多鏡頭同步播放。</li>
+      <li>裝置上有 qlog 時會顯示事件標記。</li>
+      <li>不用離開檢視頁就能下載單段、整條路線或合成影片。</li>
+    </ul>
+    <p class="muted-copy">原始 fleet manager 致謝：ntegan1、royjr、AlexandreSato、actuallylemoncurd 與社群貢獻者。</p>
+  </section>
 {% endblock %}
