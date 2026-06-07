@@ -8,8 +8,6 @@ from cereal import car
 from openpilot.common.params import Params
 from openpilot.system.hardware import PC, TICI
 from openpilot.system.manager.process import PythonProcess, NativeProcess, DaemonProcess
-from openpilot.system.hardware.hw import Paths
-from openpilot.top.mapd.mapd_manager import MAPD_PATH
 
 WEBCAM = os.getenv("USE_WEBCAM") is not None
 
@@ -138,9 +136,6 @@ def flask_simple_check(started: bool, params: Params, CP: car.CarParams) -> bool
 def kaitaistruct_check(started: bool, params: Params, CP: car.CarParams) -> bool:
   return importlib.util.find_spec("kaitaistruct") is not None
 
-def mapd_ready(started: bool, params: Params, CP: car.CarParams) -> bool:
-  return bool(os.path.exists(Paths.mapd_root()))
-
 def or_(*fns):
   return lambda *args: operator.or_(*(fn(*args) for fn in fns))
 
@@ -197,8 +192,6 @@ procs = [
 
   # TOP
   NativeProcess("fleetmanager", "system/fleetmanager", ["./fleet_manager.py"], flask_ready_offroad_only),
-  NativeProcess("mapd", Paths.mapd_root(), ["bash", "-c", f"{MAPD_PATH} > /dev/null 2>&1"], mapd_ready),
-  PythonProcess("mapd_manager", "top.mapd.mapd_manager", always_run),
   NativeProcess("locationd_llk", "top/selfdrive/locationd", ["./locationd"], only_onroad),
 
   # debug procs

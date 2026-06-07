@@ -64,30 +64,6 @@ void HudRenderer::updateState(const UIState &s) {
   const auto &car_state = sm["carState"].getCarState();
   const auto &drivermonitor_state = sm["driverMonitoringState"].getDriverMonitoringState();
   const auto lp_top = sm["longitudinalPlanTOP"].getLongitudinalPlanTOP();
-  const auto lmd = sm["liveMapDataTOP"].getLiveMapDataTOP();
-
-  float speedConv = is_metric ? MS_TO_KPH : MS_TO_MPH;
-  speedLimit = lp_top.getSpeedLimit().getResolver().getSpeedLimit() * speedConv;
-  speedLimitLast = lp_top.getSpeedLimit().getResolver().getSpeedLimitLast() * speedConv;
-  speedLimitOffset = lp_top.getSpeedLimit().getResolver().getSpeedLimitOffset() * speedConv;
-  speedLimitValid = lp_top.getSpeedLimit().getResolver().getSpeedLimitValid();
-  speedLimitLastValid = lp_top.getSpeedLimit().getResolver().getSpeedLimitLastValid();
-  speedLimitFinalLast = lp_top.getSpeedLimit().getResolver().getSpeedLimitFinalLast() * speedConv;
-  speedLimitSource = lp_top.getSpeedLimit().getResolver().getSource();
-  speedLimitMode = static_cast<SpeedLimitMode>(s.scene.speed_limit_mode);
-  speedLimitAssistState = lp_top.getSpeedLimit().getAssist().getState();
-  speedLimitAssistActive = lp_top.getSpeedLimit().getAssist().getActive();
-  if (sm.updated("liveMapDataTOP")) {
-    speedLimitAheadValid = lmd.getSpeedLimitAheadValid();
-    speedLimitAhead = lmd.getSpeedLimitAhead() * speedConv;
-    speedLimitAheadDistance = lmd.getSpeedLimitAheadDistance();
-    if (speedLimitAheadDistance < speedLimitAheadDistancePrev && speedLimitAheadValidFrame < SPEED_LIMIT_AHEAD_VALID_FRAME_THRESHOLD) {
-      speedLimitAheadValidFrame++;
-    } else if (speedLimitAheadDistance > speedLimitAheadDistancePrev && speedLimitAheadValidFrame > 0) {
-      speedLimitAheadValidFrame--;
-    }
-  }
-  speedLimitAheadDistancePrev = speedLimitAheadDistance;
 
   // Handle older routes where vCruiseCluster is not set
   set_speed = car_state.getVCruiseCluster() == 0.0 ? controls_state.getVCruiseDEPRECATED() : car_state.getVCruiseCluster();
@@ -98,8 +74,11 @@ void HudRenderer::updateState(const UIState &s) {
   longOverride = car_control.getCruiseControl().getOverride();
   smartCruiseControlVisionEnabled = lp_top.getSmartCruiseControl().getVision().getEnabled();
   smartCruiseControlVisionActive = lp_top.getSmartCruiseControl().getVision().getActive();
-  smartCruiseControlMapEnabled = lp_top.getSmartCruiseControl().getMap().getEnabled();
-  smartCruiseControlMapActive = lp_top.getSmartCruiseControl().getMap().getActive();
+  smartCruiseControlMapEnabled = false;
+  smartCruiseControlMapActive = false;
+  speedLimitMode = SpeedLimitMode::OFF;
+  speedLimitAssistActive = false;
+  road_name.clear();
 
   if (is_cruise_set && !is_metric) {
     set_speed *= KM_TO_MILE;
@@ -109,12 +88,6 @@ void HudRenderer::updateState(const UIState &s) {
   v_ego_cluster_seen = v_ego_cluster_seen || car_state.getVEgoCluster() != 0.0;
   float v_ego = v_ego_cluster_seen ? car_state.getVEgoCluster() : car_state.getVEgo();
   speed = std::max<float>(0.0f, v_ego * (is_metric ? MS_TO_KPH : MS_TO_MPH));
-
-  if (sm.alive("liveMapDataTOP") && sm.rcv_frame("liveMapDataTOP") > 0)
-  {
-    const auto live_map_data = sm["liveMapDataTOP"].getLiveMapDataTOP();
-    road_name = QString::fromStdString(live_map_data.getRoadName());
-  }
 }
 
 void HudRenderer::draw(QPainter &p, const QRect &surface_rect) {
@@ -125,7 +98,6 @@ void HudRenderer::draw(QPainter &p, const QRect &surface_rect) {
   bg.setColorAt(0, brakeLights ? tesla_theme::warning_red(150) : tesla_theme::blue(105));
   bg.setColorAt(1, QColor::fromRgbF(0, 0, 0, 0));
   p.fillRect(0, 0, surface_rect.width(), UI_HEADER_HEIGHT, bg);
-  drawRoadName(p, surface_rect);
 
   if (is_cruise_available) {
     drawSetSpeed(p, surface_rect);
@@ -133,13 +105,8 @@ void HudRenderer::draw(QPainter &p, const QRect &surface_rect) {
     // Smart Cruise Control
     int x_offset = -260;
     int y1_offset = -70;
-    int y2_offset = -150;
-
-    int y_scc_v = 0, y_scc_m = 0;
-    const int orders[2] = {y1_offset, y2_offset};
-    int i = 0;
-    // SCC-V takes first order
-    if (smartCruiseControlVisionEnabled) y_scc_v = orders[i++];
+    int y_scc_v = 0;
+    if (smartCruiseControlVisionEnabled) y_scc_v = y1_offset;
     if (smartCruiseControlMapEnabled) y_scc_m = orders[i++];
 
     // Smart Cruise Control - Vision
@@ -148,42 +115,6 @@ void HudRenderer::draw(QPainter &p, const QRect &surface_rect) {
       drawSmartCruiseControlOnroadIcon(p, surface_rect, x_offset, y_scc_v, "V-TSC");
     }
     smartCruiseControlVisionFrame = smartCruiseControlVisionActive ? (smartCruiseControlVisionFrame + 1) : 0;
-
-    // Smart Cruise Control - Map
-    bool scc_map_active_pulse = pulseElement(smartCruiseControlMapFrame);
-    if ((smartCruiseControlMapEnabled && !smartCruiseControlMapActive) || (smartCruiseControlMapActive && scc_map_active_pulse)) {
-      drawSmartCruiseControlOnroadIcon(p, surface_rect, x_offset, y_scc_m, "M-TSC");
-    }
-    smartCruiseControlMapFrame = smartCruiseControlMapActive ? (smartCruiseControlMapFrame + 1) : 0;
-
-    // Speed Limit
-    bool showSpeedLimit;
-    bool speed_limit_assist_pre_active_pulse = pulseElement(speedLimitAssistFrame);
-
-    // Position speed limit sign next to set speed box
-    const int sign_width = is_metric ? 200 : 172;
-    const int sign_x = is_metric ? 280 : 272;
-    const int sign_y = 45;
-    const int sign_height = 204;
-    QRect sign_rect(sign_x, sign_y, sign_width, sign_height);
-
-    if (speedLimitAssistState == cereal::LongitudinalPlanTOP::SpeedLimit::AssistState::PRE_ACTIVE) {
-      speedLimitAssistFrame++;
-      showSpeedLimit = speed_limit_assist_pre_active_pulse;
-      drawSpeedLimitPreActiveArrow(p, sign_rect);
-    } else {
-      speedLimitAssistFrame = 0;
-      showSpeedLimit = speedLimitMode != SpeedLimitMode::OFF;
-    }
-
-    if (showSpeedLimit) {
-      drawSpeedLimitSigns(p, sign_rect);
-
-      // do not show during SLA's preActive state
-      if (speedLimitAssistState != cereal::LongitudinalPlanTOP::SpeedLimit::AssistState::PRE_ACTIVE) {
-        drawUpcomingSpeedLimit(p);
-      }
-    }
   }
   drawCurrentSpeed(p, surface_rect);
 

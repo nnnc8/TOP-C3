@@ -16,7 +16,6 @@
 #include "selfdrive/ui/qt/offroad/developer_panel.h"
 #include "selfdrive/ui/qt/offroad/firehose.h"
 #include "selfdrive/ui/qt/offroad/timpilot.h"
-#include "selfdrive/ui/qt/offroad/osm_panel.h"
 
 TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
   // param, title, desc, icon, restart needed
@@ -552,7 +551,6 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {tr("Firehose"), new FirehosePanel(this)},
     {tr("Developer"), new DeveloperPanel(this)},
     {tr("AEGIS"), new TimpilotPanel(this)},
-    {tr("OSM"), new OsmPanel(this)},
   };
 
   nav_btns = new QButtonGroup(this);
