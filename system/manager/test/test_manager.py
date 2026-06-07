@@ -38,6 +38,15 @@ class TestManager:
     # TODO: ensure there are blacklisted procs until we have a dedicated test
     assert len(BLACKLIST_PROCS), "No blacklisted procs to test not_run"
 
+  def test_fleetmanager_runs_offroad_only(self, monkeypatch):
+    fleetmanager = managed_processes["fleetmanager"]
+    monkeypatch.setattr("openpilot.system.manager.process_config.check_packages_and_install", lambda: True)
+    params = Params()
+    CP = car.CarParams.new_message()
+
+    assert fleetmanager.should_run(False, params, CP)
+    assert not fleetmanager.should_run(True, params, CP)
+
   def test_set_params_with_default_value(self):
     params = Params()
     params.clear_all()

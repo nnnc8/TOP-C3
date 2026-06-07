@@ -118,16 +118,16 @@ void ModelRenderer::update_model(const cereal::ModelDataV2::Reader &model, const
 void ModelRenderer::drawLaneLines(QPainter &painter) {
   // lanelines
   for (int i = 0; i < std::size(lane_line_vertices); ++i) {
-    QColor lane_color = tesla_theme::blue();
-    lane_color.setAlphaF(std::clamp<float>(lane_line_probs[i], 0.0f, 0.75f));
+    QColor lane_color(80, 255, 180);
+    lane_color.setAlphaF(std::clamp<float>(lane_line_probs[i], 0.0f, 0.82f));
     painter.setBrush(lane_color);
     painter.drawPolygon(lane_line_vertices[i]);
   }
 
   // road edges
   for (int i = 0; i < std::size(road_edge_vertices); ++i) {
-    QColor edge_color = tesla_theme::blue_dark();
-    edge_color.setAlphaF(std::clamp<float>(1.0f - road_edge_stds[i], 0.0f, 0.85f));
+    QColor edge_color(255, 190, 90);
+    edge_color.setAlphaF(std::clamp<float>(1.0f - road_edge_stds[i], 0.0f, 0.62f));
     painter.setBrush(edge_color);
     painter.drawPolygon(road_edge_vertices[i]);
   }

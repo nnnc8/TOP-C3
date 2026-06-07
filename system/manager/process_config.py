@@ -129,6 +129,9 @@ def reset_install_status(params: Params) -> None:
 def flask_ready_and_second_boot(started: bool, params: Params, CP: car.CarParams) -> bool:
   return check_packages_and_install()
 
+def flask_ready_offroad_only(started: bool, params: Params, CP: car.CarParams) -> bool:
+  return (not started) and check_packages_and_install()
+
 def flask_simple_check(started: bool, params: Params, CP: car.CarParams) -> bool:
   return importlib.util.find_spec("flask") is not None
 
@@ -193,7 +196,7 @@ procs = [
   PythonProcess("feedbackd", "selfdrive.ui.feedback.feedbackd", only_onroad, enabled=not os.getenv("LITE")),
 
   # TOP
-  NativeProcess("fleetmanager", "system/fleetmanager", ["./fleet_manager.py"], flask_ready_and_second_boot),
+  NativeProcess("fleetmanager", "system/fleetmanager", ["./fleet_manager.py"], flask_ready_offroad_only),
   NativeProcess("mapd", Paths.mapd_root(), ["bash", "-c", f"{MAPD_PATH} > /dev/null 2>&1"], mapd_ready),
   PythonProcess("mapd_manager", "top.mapd.mapd_manager", always_run),
   NativeProcess("locationd_llk", "top/selfdrive/locationd", ["./locationd"], only_onroad),
