@@ -145,11 +145,11 @@
     </message>
     <message>
         <source>WARNING: openpilot longitudinal control is in alpha for this car and will disable Automatic Emergency Braking (AEB).</source>
-        <translation>警告：此車輛的 openpilot 縱向控制功能目前處於 Alpha 版本，使用此功能將會停用自動緊急煞車（AEB）功能。</translation>
+        <translation type="vanished">警告：此車輛的 openpilot 縱向控制功能目前處於 Alpha 版本，使用此功能將會停用自動緊急煞車（AEB）功能。</translation>
     </message>
     <message>
         <source>On this car, openpilot defaults to the car&apos;s built-in ACC instead of openpilot&apos;s longitudinal control. Enable this to switch to openpilot longitudinal control. Enabling Experimental mode is recommended when enabling openpilot longitudinal control alpha.</source>
-        <translation>在這輛車上，openpilot 預設使用車輛內建的主動巡航控制（ACC），而非 openpilot 的縱向控制。啟用此項功能可切換至 openpilot 的縱向控制。當啟用 openpilot 縱向控制 Alpha 版本時，建議同時啟用實驗性模式（Experimental mode）。</translation>
+        <translation type="vanished">在這輛車上，openpilot 預設使用車輛內建的主動巡航控制（ACC），而非 openpilot 的縱向控制。啟用此項功能可切換至 openpilot 的縱向控制。當啟用 openpilot 縱向控制 Alpha 版本時，建議同時啟用實驗性模式（Experimental mode）。</translation>
     </message>
     <message>
         <source>Enable ADB</source>
@@ -158,6 +158,10 @@
     <message>
         <source>ADB (Android Debug Bridge) allows connecting to your device over USB or over the network. See https://docs.comma.ai/how-to/connect-to-comma for more info.</source>
         <translation>ADB（Android 調試橋接）允許通過 USB 或網絡連接到您的設備。更多信息請參見 [https://docs.comma.ai/how-to/connect-to-comma](https://docs.comma.ai/how-to/connect-to-comma)。</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;WARNING: openpilot longitudinal control is in alpha for this car and will disable Automatic Emergency Braking (AEB).&lt;/b&gt;&lt;br&gt;&lt;br&gt;On this car, openpilot defaults to the car&apos;s built-in ACC instead of openpilot&apos;s longitudinal control. Enable this to switch to openpilot longitudinal control. Enabling Experimental mode is recommended when enabling openpilot longitudinal control alpha.</source>
+        <translation>&lt;b&gt;警告：此車輛的 openpilot 縱向控制仍屬 Alpha 測試，啟用後將停用自動緊急煞車（AEB）。&lt;/b&gt;&lt;br&gt;&lt;br&gt;在這輛車上，openpilot 預設使用車輛內建 ACC，而非 openpilot 的縱向控制。啟用此選項可切換為 openpilot 縱向控制；啟用 Alpha 縱向控制時，建議同時開啟實驗模式。</translation>
     </message>
 </context>
 <context>
@@ -382,6 +386,10 @@ Steering lag calibration is complete.</source>
         <source>Disengage to Flash Panda</source>
         <translation>解除控制狀態以刷新 Panda</translation>
     </message>
+    <message>
+        <source>QR-Code</source>
+        <translation>QR 碼</translation>
+    </message>
 </context>
 <context>
     <name>DriverViewWindow</name>
@@ -592,35 +600,51 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
     </message>
     <message>
         <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, TOP won&apos;t engage in %1</source>
-        <translation>請立即連接網路檢查更新。如果不連接網路，TOP 將在 %1 後便無法使用</translation>
+        <translation type="vanished">請立即連接網路檢查更新。如果不連接網路，TOP 將在 %1 後便無法使用</translation>
     </message>
     <message>
         <source>Connect to internet to check for updates. TOP won&apos;t automatically start until it connects to internet to check for updates.</source>
-        <translation>請連接至網際網路以檢查更新。在連接至網際網路並完成更新檢查之前，TOP 將不會自動啟動。</translation>
+        <translation type="vanished">請連接至網際網路以檢查更新。在連接至網際網路並完成更新檢查之前，TOP 將不會自動啟動。</translation>
     </message>
     <message>
         <source>NVMe drive not mounted.</source>
-        <translation type="unfinished"></translation>
+        <translation>NVMe 磁碟未掛載。</translation>
     </message>
     <message>
         <source>TOP was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
-        <translation>TOP 無法識別您的車輛。您的車輛可能未被支援，或是其電控單元 (ECU) 未被識別。請提交一個 Pull Request 為您的車輛添加正確的韌體版本。需要幫助嗎？請加入 discord.comma.ai 。</translation>
+        <translation type="vanished">TOP 無法識別您的車輛。您的車輛可能未被支援，或是其電控單元 (ECU) 未被識別。請提交一個 Pull Request 為您的車輛添加正確的韌體版本。需要幫助嗎？請加入 discord.comma.ai 。</translation>
     </message>
     <message>
         <source>TOP detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
-        <translation>TOP 偵測到裝置的安裝位置發生變化。請確保裝置完全安裝在支架上，並確保支架牢固地固定在擋風玻璃上。</translation>
+        <translation type="vanished">TOP 偵測到裝置的安裝位置發生變化。請確保裝置完全安裝在支架上，並確保支架牢固地固定在擋風玻璃上。</translation>
     </message>
     <message>
         <source>OpenStreetMap database is out of date. New maps must be downloaded if you wish to continue using OpenStreetMap data for Enhanced Speed Control and road name display.
 
 %1</source>
-        <translation>OpenStreetMap 資料庫版本過舊。若要繼續使用 OpenStreetMap 資料提供進階速限控制與道路名稱顯示功能，請下載最新的地圖資料。
+        <translation type="vanished">OpenStreetMap 資料庫版本過舊。若要繼續使用 OpenStreetMap 資料提供進階速限控制與道路名稱顯示功能，請下載最新的地圖資料。
 
 %1</translation>
     </message>
     <message>
         <source>&lt;b&gt;Unsupported branch detected&lt;/b&gt; - The current version of &lt;b&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/b&gt; branch is no longer supported on the comma three. Please go to &lt;b&gt;[Device &gt; Software]&lt;/b&gt; and install a supported branch with &lt;b&gt;&lt;u&gt;-c3&lt;/u&gt;&lt;/b&gt; or &lt;b&gt;&lt;u&gt;-C3&lt;/u&gt;&lt;/b&gt; in the branch name for the comma three.</source>
         <translation>&lt;b&gt;偵測到無法支援的版本&lt;/b&gt; - 目前的版本 &lt;b&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/b&gt; 此版本目前不再支援 C3. 請點選 &lt;b&gt;[裝置 &gt; 軟體]&lt;/b&gt; 安裝可支援的版本其名稱具備 &lt;b&gt;&lt;u&gt;-c3&lt;/u&gt;&lt;/b&gt; 或 &lt;b&gt;&lt;u&gt;-C3&lt;/u&gt;&lt;/b&gt; 此版本名稱適用於C3。</translation>
+    </message>
+    <message>
+        <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, JARVIS won&apos;t engage in %1</source>
+        <translation>請立即連上網路檢查更新；若未連網，JARVIS 將在 %1 後無法啟用。</translation>
+    </message>
+    <message>
+        <source>Connect to internet to check for updates. JARVIS won&apos;t automatically start until it connects to internet to check for updates.</source>
+        <translation>請連上網路檢查更新；在完成更新檢查前，JARVIS 不會自動啟動。</translation>
+    </message>
+    <message>
+        <source>JARVIS was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
+        <translation>JARVIS 無法識別您的車輛。您的車型可能尚未支援，或其 ECU 韌體未被辨識。請提交 Pull Request 補上正確的韌體版本；若需要協助，請加入 discord.comma.ai。</translation>
+    </message>
+    <message>
+        <source>JARVIS detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
+        <translation>JARVIS 偵測到裝置安裝位置發生變化。請確認裝置已完全卡入支架，且支架已牢固固定在擋風玻璃上。</translation>
     </message>
 </context>
 <context>
@@ -662,178 +686,189 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
     </message>
 </context>
 <context>
+    <name>OptionControl</name>
+    <message>
+        <source>-</source>
+        <translation>-</translation>
+    </message>
+    <message>
+        <source>+</source>
+        <translation>+</translation>
+    </message>
+</context>
+<context>
     <name>OsmPanel</name>
     <message>
         <source>Mapd Version</source>
-        <translation>Mapd 版本</translation>
+        <translation type="vanished">Mapd 版本</translation>
     </message>
     <message>
         <source>Offline Maps ETA</source>
-        <translation>離線地圖預計下載時間</translation>
+        <translation type="vanished">離線地圖預計下載時間</translation>
     </message>
     <message>
         <source>Time Elapsed</source>
-        <translation>時間經過</translation>
+        <translation type="vanished">時間經過</translation>
     </message>
     <message>
         <source>Downloaded Maps</source>
-        <translation>下載地圖</translation>
+        <translation type="vanished">下載地圖</translation>
     </message>
     <message>
         <source>DELETE</source>
-        <translation>刪除</translation>
+        <translation type="vanished">刪除</translation>
     </message>
     <message>
         <source>This will delete ALL downloaded maps
 
 Are you sure you want to delete all the maps?</source>
-        <translation>這將刪除所有地圖檔
+        <translation type="vanished">這將刪除所有地圖檔
 
 確認您將刪除所有地圖檔？</translation>
     </message>
     <message>
         <source>Yes, delete all the maps.</source>
-        <translation>確認，刪除所有地圖檔。</translation>
+        <translation type="vanished">確認，刪除所有地圖檔。</translation>
     </message>
     <message>
         <source>Database Update</source>
-        <translation>資料庫更新</translation>
+        <translation type="vanished">資料庫更新</translation>
     </message>
     <message>
         <source>CHECK</source>
-        <translation>檢查</translation>
+        <translation type="vanished">檢查</translation>
     </message>
     <message>
         <source>Country</source>
-        <translation>國家</translation>
+        <translation type="vanished">國家</translation>
     </message>
     <message>
         <source>SELECT</source>
-        <translation>選取</translation>
+        <translation type="vanished">選取</translation>
     </message>
     <message>
         <source>Fetching Country list...</source>
-        <translation>國家清單載入中...</translation>
+        <translation type="vanished">國家清單載入中...</translation>
     </message>
     <message>
         <source>State</source>
-        <translation>州/省份</translation>
+        <translation type="vanished">州/省份</translation>
     </message>
     <message>
         <source>Fetching State list...</source>
-        <translation>州/省份清單載入中...</translation>
+        <translation type="vanished">州/省份清單載入中...</translation>
     </message>
     <message>
         <source>All</source>
-        <translation>全部</translation>
+        <translation type="vanished">全部</translation>
     </message>
     <message>
         <source>REFRESH</source>
-        <translation>刷新</translation>
+        <translation type="vanished">刷新</translation>
     </message>
     <message>
         <source>UPDATE</source>
-        <translation>更新</translation>
+        <translation type="vanished">更新</translation>
     </message>
     <message>
         <source>Download starting...</source>
-        <translation>正在下載中...</translation>
+        <translation type="vanished">正在下載中...</translation>
     </message>
     <message>
         <source>Error: Invalid download. Retry.</source>
-        <translation>錯誤：下載失敗，請重試。</translation>
+        <translation type="vanished">錯誤：下載失敗，請重試。</translation>
     </message>
     <message>
         <source>Download complete!</source>
-        <translation>下載完成！</translation>
+        <translation type="vanished">下載完成！</translation>
     </message>
     <message>
         <source>
 
 Warning: You are on a metered connection!</source>
-        <translation>
+        <translation type="vanished">
 
 警告：您正在使用按量計費網路！</translation>
     </message>
     <message>
         <source>This will start the download process and it might take a while to complete.</source>
-        <translation>下載程序即將開始，請耐心等候完成。</translation>
+        <translation type="vanished">下載程序即將開始，請耐心等候完成。</translation>
     </message>
     <message>
         <source>Continue on Metered</source>
-        <translation>繼續使用按量計費網路</translation>
+        <translation type="vanished">繼續使用按量計費網路</translation>
     </message>
     <message>
         <source>Start Download</source>
-        <translation>開始下載</translation>
+        <translation type="vanished">開始下載</translation>
     </message>
     <message>
         <source>m </source>
-        <translation>分</translation>
+        <translation type="vanished">分</translation>
     </message>
     <message>
         <source>s</source>
-        <translation>秒</translation>
+        <translation type="vanished">秒</translation>
     </message>
     <message>
         <source>Calculating...</source>
-        <translation>正在計算...</translation>
+        <translation type="vanished">正在計算...</translation>
     </message>
     <message>
         <source>Downloaded</source>
-        <translation>已下載</translation>
+        <translation type="vanished">已下載</translation>
     </message>
     <message>
         <source>Calculating ETA...</source>
-        <translation>正在計算預計完成時間...</translation>
+        <translation type="vanished">正在計算預計完成時間...</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation>準備完成</translation>
+        <translation type="vanished">準備完成</translation>
     </message>
     <message>
         <source>Time remaining: </source>
-        <translation>剩餘時間： </translation>
+        <translation type="vanished">剩餘時間： </translation>
     </message>
     <message>
         <source>Speed Limit</source>
-        <translation>速限控制</translation>
+        <translation type="vanished">速限控制</translation>
     </message>
     <message>
         <source>CONFIGURE</source>
-        <translation>設置</translation>
+        <translation type="vanished">設置</translation>
     </message>
     <message>
         <source>Configure speed limit settings including source policy, mode, and offset options.</source>
-        <translation>設定速限相關選項，包括來源政策、運作模式和偏移值。</translation>
+        <translation type="vanished">設定速限相關選項，包括來源政策、運作模式和偏移值。</translation>
     </message>
     <message>
         <source>Search Country</source>
-        <translation>搜尋國家</translation>
+        <translation type="vanished">搜尋國家</translation>
     </message>
     <message>
         <source>Enter search keywords, or leave blank to list all countries.</source>
-        <translation>請輸入搜尋關鍵字，或保持空白即可顯示所有國家列表。</translation>
+        <translation type="vanished">請輸入搜尋關鍵字，或保持空白即可顯示所有國家列表。</translation>
     </message>
     <message>
         <source>Select Country</source>
-        <translation>選擇國家</translation>
+        <translation type="vanished">選擇國家</translation>
     </message>
     <message>
         <source>Search State</source>
-        <translation>搜尋州/省</translation>
+        <translation type="vanished">搜尋州/省</translation>
     </message>
     <message>
         <source>Enter search keywords, or leave blank to list all states.</source>
-        <translation>請輸入搜尋關鍵字，或保持空白即可顯示所有州/省列表。</translation>
+        <translation type="vanished">請輸入搜尋關鍵字，或保持空白即可顯示所有州/省列表。</translation>
     </message>
     <message>
         <source>Select State</source>
-        <translation>選擇州/省</translation>
+        <translation type="vanished">選擇州/省</translation>
     </message>
     <message>
         <source>No results found for keywords: %1</source>
-        <translation>沒有符合的搜尋結果： %1</translation>
+        <translation type="vanished">沒有符合的搜尋結果： %1</translation>
     </message>
 </context>
 <context>
@@ -914,10 +949,6 @@ Warning: You are on a metered connection!</source>
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <source>T.O.P</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message numerus="yes">
         <source>%n minute(s) ago</source>
         <translation>
@@ -998,6 +1029,82 @@ Data</source>
         <source>Assist</source>
         <translation>輔助</translation>
     </message>
+    <message>
+        <source>Camera Offset</source>
+        <translation>鏡頭偏移</translation>
+    </message>
+    <message>
+        <source>Adjust lane centering bias if the car consistently rides one side of the lane. Default is 0. Each step changes the internal offset by 0.00001. Small changes are recommended.</source>
+        <translation>若車輛長期偏向車道某一側，可用此項調整車道置中偏移。預設值為 0，每一格會調整內部偏移量 0.00001，建議小幅微調。</translation>
+    </message>
+    <message>
+        <source>-</source>
+        <translation>-</translation>
+    </message>
+    <message>
+        <source>+</source>
+        <translation>+</translation>
+    </message>
+    <message>
+        <source>Driving Model</source>
+        <translation>駕駛模型</translation>
+    </message>
+    <message>
+        <source>SELECT</source>
+        <translation>選取</translation>
+    </message>
+    <message>
+        <source>Download, verify, compile, and install a signed driving model bundle from openpilot-models. Install only while offroad.</source>
+        <translation>從 openpilot-models 下載、驗證、編譯並安裝已簽章的駕駛模型套件。請僅在離線狀態下安裝。</translation>
+    </message>
+    <message>
+        <source>Stock</source>
+        <translation>預設</translation>
+    </message>
+    <message>
+        <source>Disengage to install a driving model.</source>
+        <translation>請先解除接管，再安裝駕駛模型。</translation>
+    </message>
+    <message>
+        <source>Unable to load model list: %1</source>
+        <translation>無法載入模型清單：%1</translation>
+    </message>
+    <message>
+        <source>No installable driving models found.</source>
+        <translation>找不到可安裝的駕駛模型。</translation>
+    </message>
+    <message>
+        <source>Select Driving Model</source>
+        <translation>選擇駕駛模型</translation>
+    </message>
+    <message>
+        <source>Install %1? openpilot will restart after installation.</source>
+        <translation>要安裝 %1 嗎？安裝完成後 openpilot 會重新啟動。</translation>
+    </message>
+    <message>
+        <source>Install</source>
+        <translation>安裝</translation>
+    </message>
+    <message>
+        <source>Installing...</source>
+        <translation>安裝中...</translation>
+    </message>
+    <message>
+        <source>Installed %1. Log: %2</source>
+        <translation>已安裝 %1。日誌：%2</translation>
+    </message>
+    <message>
+        <source>Failed</source>
+        <translation>失敗</translation>
+    </message>
+    <message>
+        <source>Model installation failed. Log: %1</source>
+        <translation>模型安裝失敗。日誌：%1</translation>
+    </message>
+    <message>
+        <source>JARVIS</source>
+        <translation>JARVIS</translation>
+    </message>
 </context>
 <context>
     <name>SettingsWindow</name>
@@ -1030,12 +1137,12 @@ Data</source>
         <translation>Firehose</translation>
     </message>
     <message>
-        <source>T.O.P</source>
-        <translation type="unfinished"></translation>
+        <source>OSM</source>
+        <translation type="vanished">離線地圖</translation>
     </message>
     <message>
-        <source>OSM</source>
-        <translation>離線地圖</translation>
+        <source>JARVIS</source>
+        <translation>JARVIS</translation>
     </message>
 </context>
 <context>
@@ -1124,7 +1231,7 @@ Data</source>
     </message>
     <message>
         <source>Current Version</source>
-        <translation>當前版本</translation>
+        <translation type="vanished">當前版本</translation>
     </message>
     <message>
         <source>Download</source>
@@ -1140,15 +1247,15 @@ Data</source>
     </message>
     <message>
         <source>Target Branch</source>
-        <translation>目標分支</translation>
+        <translation type="vanished">目標分支</translation>
     </message>
     <message>
         <source>SELECT</source>
-        <translation>選取</translation>
+        <translation type="vanished">選取</translation>
     </message>
     <message>
         <source>Select a branch</source>
-        <translation>選取一個分支</translation>
+        <translation type="vanished">選取一個分支</translation>
     </message>
     <message>
         <source>UNINSTALL</source>
@@ -1218,83 +1325,103 @@ Data</source>
         <source>Go Onroad</source>
         <translation>連線模式</translation>
     </message>
+    <message>
+        <source>Current Model</source>
+        <translation>目前模型</translation>
+    </message>
+    <message>
+        <source>View the error log for debugging purposes when openpilot crashes.</source>
+        <translation>當 openpilot 當機時，可查看錯誤日誌以供除錯。</translation>
+    </message>
+    <message>
+        <source>Stock</source>
+        <translation>預設</translation>
+    </message>
+    <message>
+        <source>Factory driving model bundle</source>
+        <translation>原廠駕駛模型套件</translation>
+    </message>
+    <message>
+        <source>Installed model id: %1</source>
+        <translation>已安裝模型 ID：%1</translation>
+    </message>
 </context>
 <context>
     <name>SpeedLimitPolicy</name>
     <message>
         <source>Back</source>
-        <translation>回上頁</translation>
+        <translation type="vanished">回上頁</translation>
     </message>
     <message>
         <source>Speed Limit Source</source>
-        <translation>速限來源</translation>
+        <translation type="vanished">速限來源</translation>
     </message>
     <message>
         <source>⦿ Car Only: Use Speed Limit data only from Car</source>
-        <translation>⦿ 僅用車資：僅使用來自車輛的速限資料</translation>
+        <translation type="vanished">⦿ 僅用車資：僅使用來自車輛的速限資料</translation>
     </message>
     <message>
         <source>⦿ Map Only: Use Speed Limit data only from OpenStreetMaps</source>
-        <translation>⦿ 僅用圖資：僅使用來自地圖的速限資料</translation>
+        <translation type="vanished">⦿ 僅用圖資：僅使用來自地圖的速限資料</translation>
     </message>
     <message>
         <source>⦿ Car First: Use Speed Limit data from Car if available, else use from OpenStreetMaps</source>
-        <translation>⦿ 車資優先：優先使用車輛速限資料，若無則使用 OpenStreetMaps 資料</translation>
+        <translation type="vanished">⦿ 車資優先：優先使用車輛速限資料，若無則使用 OpenStreetMaps 資料</translation>
     </message>
     <message>
         <source>⦿ Map First: Use Speed Limit data from OpenStreetMaps if available, else use from Car</source>
-        <translation>⦿ 圖資優先：優先使用 OpenStreetMaps 速限資料，若無則使用車輛資料</translation>
+        <translation type="vanished">⦿ 圖資優先：優先使用 OpenStreetMaps 速限資料，若無則使用車輛資料</translation>
     </message>
     <message>
         <source>⦿ Combined: Use combined Speed Limit data from Car &amp; OpenStreetMaps</source>
-        <translation>⦿ 合併資料：使用結合車輛與 OpenStreetMaps 的速限資料</translation>
+        <translation type="vanished">⦿ 合併資料：使用結合車輛與 OpenStreetMaps 的速限資料</translation>
     </message>
 </context>
 <context>
     <name>SpeedLimitSettings</name>
     <message>
         <source>Back</source>
-        <translation>回上頁</translation>
+        <translation type="vanished">回上頁</translation>
     </message>
     <message>
         <source>Speed Limit Mode</source>
-        <translation>速限模式</translation>
+        <translation type="vanished">速限模式</translation>
     </message>
     <message>
         <source>Customize Source</source>
-        <translation>自訂限制</translation>
+        <translation type="vanished">自訂限制</translation>
     </message>
     <message>
         <source>Speed Limit Offset</source>
-        <translation>速限容許值</translation>
+        <translation type="vanished">速限容許值</translation>
     </message>
     <message>
         <source>⦿ None: No Offset</source>
-        <translation>⦿ 無調整：不增加速限容許範圍</translation>
+        <translation type="vanished">⦿ 無調整：不增加速限容許範圍</translation>
     </message>
     <message>
         <source>⦿ Fixed: Adds a fixed offset [Speed Limit + Offset]</source>
-        <translation>⦿ 固定值：增加固定的容許值 [速限 + 容許值]</translation>
+        <translation type="vanished">⦿ 固定值：增加固定的容許值 [速限 + 容許值]</translation>
     </message>
     <message>
         <source>⦿ Percent: Adds a percent offset [Speed Limit + (Offset % Speed Limit)]</source>
-        <translation>⦿ 百分比：增加固定的百分比為容許值 [速限 + (速限 * %)</translation>
+        <translation type="vanished">⦿ 百分比：增加固定的百分比為容許值 [速限 + (速限 * %)</translation>
     </message>
     <message>
         <source>⦿ Off: Disables the Speed Limit functions.</source>
-        <translation>⦿ 關閉：關閉速限功能。</translation>
+        <translation type="vanished">⦿ 關閉：關閉速限功能。</translation>
     </message>
     <message>
         <source>⦿ Information: Displays the current road&apos;s speed limit.</source>
-        <translation>⦿ 資訊：顯示目前的道路速限。</translation>
+        <translation type="vanished">⦿ 資訊：顯示目前的道路速限。</translation>
     </message>
     <message>
         <source>⦿ Warning: Provides a warning when exceeding the current road&apos;s speed limit.</source>
-        <translation>⦿ 提示：當超速時發出警告提示。</translation>
+        <translation type="vanished">⦿ 提示：當超速時發出警告提示。</translation>
     </message>
     <message>
         <source>⦿ Assist: Adjusts the vehicle&apos;s cruise speed based on the current road&apos;s speed limit when operating the +/- buttons.</source>
-        <translation>⦿ 輔助：按下 +/- 按鈕時，根據當前道路速限調整巡航車速。</translation>
+        <translation type="vanished">⦿ 輔助：按下 +/- 按鈕時，根據當前道路速限調整巡航車速。</translation>
     </message>
 </context>
 <context>
@@ -1378,7 +1505,7 @@ Data</source>
     </message>
     <message>
         <source>TOP will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on.</source>
-        <translation>Openpilot 將只會針對最重要的警示發出警告聲音。可以在汽車啟動時切換此功能。</translation>
+        <translation type="vanished">Openpilot 將只會針對最重要的警示發出警告聲音。可以在汽車啟動時切換此功能。</translation>
     </message>
     <message>
         <source>Driving Screen Off</source>
@@ -1422,11 +1549,11 @@ Data</source>
     </message>
     <message>
         <source>TSS-P Longitudinal Tuning</source>
-        <translation>TSS-P 縱向控制調校</translation>
+        <translation type="vanished">TSS-P 縱向控制調校</translation>
     </message>
     <message>
         <source>Using the longitudinal tuning can improve the smoothness on Toyota TSS-P models when equipped with SDSU for longitudinal control.</source>
-        <translation>使用此縱向調校可以提高配備 SDSU 進行縱向控制的 Toyota TSS-P 車型平順感。</translation>
+        <translation type="vanished">使用此縱向調校可以提高配備 SDSU 進行縱向控制的 Toyota TSS-P 車型平順感。</translation>
     </message>
     <message>
         <source>Dynamic Distance Adjustment</source>
@@ -1484,11 +1611,11 @@ Speed limit: Normal mode: above 20mph, Enabled Lateral Controls Always On: above
     </message>
     <message>
         <source>Fix Toyota BSM Signal</source>
-        <translation>修正Toyota盲點偵測訊號</translation>
+        <translation type="vanished">修正Toyota盲點偵測訊號</translation>
     </message>
     <message>
         <source>Enhance BSM function for some Toyota vehicles that openpilot currently does not support.</source>
-        <translation>修正部分Toyota車款的盲點偵測訊號以開啟openpilot支援。</translation>
+        <translation type="vanished">修正部分Toyota車款的盲點偵測訊號以開啟openpilot支援。</translation>
     </message>
     <message>
         <source>ACC +/-: Long Press Reverse</source>
@@ -1521,7 +1648,7 @@ Internet access from mobile phone (tethering) is required.</source>
     <message>
         <source>TOP will link the Acceleration Personality to the car&apos;s physical drive mode selector.
 Reboot Required.</source>
-        <translation>TOP 將會連結個性化加速模式與Toyota駕駛模式按鍵，開啟後可透過實體按鍵選擇個性化加速模式。
+        <translation type="vanished">TOP 將會連結個性化加速模式與Toyota駕駛模式按鍵，開啟後可透過實體按鍵選擇個性化加速模式。
 需要重啟後生效。</translation>
     </message>
     <message>
@@ -1544,11 +1671,21 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
     </message>
     <message>
         <source>Map Based Turn Control</source>
-        <translation>圖資彎道減速</translation>
+        <translation type="vanished">圖資彎道減速</translation>
     </message>
     <message>
         <source>Use map data to estimate the appropriate speed to drive through turns ahead.</source>
-        <translation>利用地圖資料計算前方轉彎處的合適車速進行減速。</translation>
+        <translation type="vanished">利用地圖資料計算前方轉彎處的合適車速進行減速。</translation>
+    </message>
+    <message>
+        <source>JARVIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on.</source>
+        <translation>JARVIS 會顯示警示，但只播放最重要的警告聲。此功能可在車輛通電時切換。</translation>
+    </message>
+    <message>
+        <source>JARVIS will link the Acceleration Personality to the car&apos;s physical drive mode selector.
+Reboot Required.</source>
+        <translation>JARVIS 會將加速模式與車輛實體駕駛模式選擇器連動。
+需要重新開機。</translation>
     </message>
 </context>
 <context>
@@ -1659,7 +1796,7 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
     </message>
     <message>
         <source>Sport</source>
-        <translation type="unfinished"></translation>
+        <translation>運動</translation>
     </message>
     <message>
         <source>Normal</source>
@@ -1667,7 +1804,7 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
     </message>
     <message>
         <source>Eco</source>
-        <translation type="unfinished"></translation>
+        <translation>節能</translation>
     </message>
     <message>
         <source>Stock</source>
@@ -1679,7 +1816,7 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
     </message>
     <message>
         <source>Normal is recommended. In sport mode, TOP will provide aggressive acceleration for a dynamic driving experience. In eco mode, TOP will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these acceleration personality within Onroad Settings on the driving screen.</source>
-        <translation>普通模式是建議的選擇。Sport模式，TOP將會採用較積極的油門加速，提供動力較充足的跟車節奏。Eco模式，TOP將會採用較為平順的油門加速，以提供舒適的乘坐感。</translation>
+        <translation type="vanished">普通模式是建議的選擇。Sport模式，TOP將會採用較積極的油門加速，提供動力較充足的跟車節奏。Eco模式，TOP將會採用較為平順的油門加速，以提供舒適的乘坐感。</translation>
     </message>
     <message>
         <source>Use the openpilot system for adaptive cruise control and lane keep driver assistance. Your attention is required at all times to use this feature.</source>
@@ -1696,6 +1833,10 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
     <message>
         <source>Record and store microphone audio while driving. The audio will be included in the dashcam video in comma connect.</source>
         <translation>在駕駛時錄製並儲存麥克風音訊。此音訊將會收錄在 comma connect 的行車記錄器影片中。</translation>
+    </message>
+    <message>
+        <source>Normal is recommended. In sport mode, JARVIS will provide aggressive acceleration for a dynamic driving experience. In eco mode, JARVIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these acceleration personality within Onroad Settings on the driving screen.</source>
+        <translation>建議使用普通模式。在運動模式下，JARVIS 會提供較積極的加速，帶來更靈敏的駕駛感；在節能模式下，JARVIS 會採用更平順、更柔和的加速。支援的車型可在行車畫面的 Onroad Settings 中切換這些加速模式。</translation>
     </message>
 </context>
 <context>
