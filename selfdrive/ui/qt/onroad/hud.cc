@@ -107,8 +107,6 @@ void HudRenderer::draw(QPainter &p, const QRect &surface_rect) {
     int y1_offset = -70;
     int y_scc_v = 0;
     if (smartCruiseControlVisionEnabled) y_scc_v = y1_offset;
-    if (smartCruiseControlMapEnabled) y_scc_m = orders[i++];
-
     // Smart Cruise Control - Vision
     bool scc_vision_active_pulse = pulseElement(smartCruiseControlVisionFrame);
     if ((smartCruiseControlVisionEnabled && !smartCruiseControlVisionActive) || (smartCruiseControlVisionActive && scc_vision_active_pulse)) {
