@@ -6,6 +6,7 @@ import base64
 import hashlib
 import json
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -21,13 +22,13 @@ from Crypto.Signature import eddsa
 
 
 SELECTOR_VERSION = 4
-MANIFEST_URL = "https://raw.githubusercontent.com/nnnc8/openpilot-models/main/models.json"
+MANIFEST_URL = "https://raw.githubusercontent.com/happymaj11r/openpilot-models/main/models.json"
 TRUSTED_PUBLIC_KEYS = {
   "key_2025_01": """-----BEGIN PUBLIC KEY-----
 MCowBQYDK2VwAyEAyFPR4om9LyYvQjzRzSiyyso9wc2bP1egmg/PjKa79fg=
 -----END PUBLIC KEY-----""",
 }
-MODEL_NAMES = ("driving_vision", "driving_on_policy", "driving_off_policy")
+MODEL_NAMES = ("driving_vision", "driving_policy")
 MODEL_ARTIFACT_SUFFIXES = (".onnx", "_metadata.pkl", "_tinygrad.pkl")
 MIN_MODEL_BYTES = 1024 * 1024
 
@@ -89,20 +90,13 @@ def model_file_plan(model: dict) -> list[ModelFilePlan]:
   files = model.get("files", {})
   if "driving_vision.onnx" not in files:
     raise ValueError("missing driving_vision.onnx")
-  if "driving_off_policy.onnx" not in files:
-    raise ValueError("missing driving_off_policy.onnx")
-
-  if "driving_on_policy.onnx" in files:
-    policy_remote_name = "driving_on_policy.onnx"
-  elif "driving_policy.onnx" in files:
-    policy_remote_name = "driving_policy.onnx"
-  else:
-    raise ValueError("missing driving_on_policy.onnx or driving_policy.onnx")
+  policy_remote_name = "driving_policy.onnx" if "driving_policy.onnx" in files else "driving_on_policy.onnx" if "driving_on_policy.onnx" in files else None
+  if policy_remote_name is None:
+    raise ValueError("missing driving_policy.onnx or driving_on_policy.onnx")
 
   plan_names = [
     ("driving_vision.onnx", "driving_vision.onnx"),
-    (policy_remote_name, "driving_on_policy.onnx"),
-    ("driving_off_policy.onnx", "driving_off_policy.onnx"),
+    (policy_remote_name, "driving_policy.onnx"),
   ]
   plan: list[ModelFilePlan] = []
   for remote_name, install_name in plan_names:
@@ -243,16 +237,46 @@ def copy_staged_onnx(staging_dir: Path, models_dir: Path) -> None:
     shutil.copy2(staging_dir / f"{model_name}.onnx", models_dir / f"{model_name}.onnx")
 
 
-def rebuild_artifacts(repo_root: Path, models_dir: Path, python_bin: str) -> None:
+def compile_env(repo_root: Path) -> dict[str, str]:
   env = dict(os.environ)
-  env["PYTHON_BIN"] = python_bin
-  proc = subprocess.run([
-    str(repo_root / "tools/rebuild_driving_model_artifacts.sh"),
-    str(models_dir),
-  ], cwd=repo_root, text=True, capture_output=True, env=env)
-  if proc.returncode != 0:
-    output = proc.stderr.strip() or proc.stdout.strip()
-    raise RuntimeError(output or "model artifact rebuild failed")
+  env["PYTHONPATH"] = f"{repo_root / 'tinygrad_repo'}" + (f":{env['PYTHONPATH']}" if env.get("PYTHONPATH") else "")
+
+  system = platform.system()
+  machine = platform.machine().lower()
+  if system == "Darwin":
+    env.update({
+      "DEV": "CPU",
+      "IMAGE": "0",
+      "HOME": env.get("HOME", str(repo_root)),
+    })
+  elif machine in ("aarch64", "arm64"):
+    env["DEV"] = "QCOM"
+  else:
+    env.update({
+      "DEV": "CPU",
+      "CPU_LLVM": "1",
+      "IMAGE": "0",
+    })
+  return env
+
+
+def rebuild_artifacts(repo_root: Path, models_dir: Path, python_bin: str) -> None:
+  env = compile_env(repo_root)
+  compile_script = repo_root / "tinygrad_repo/examples/openpilot/compile3.py"
+  metadata_script = repo_root / "selfdrive/modeld/get_model_metadata.py"
+
+  if not compile_script.is_file():
+    raise RuntimeError(f"missing tinygrad compiler: {compile_script}")
+  if not metadata_script.is_file():
+    raise RuntimeError(f"missing metadata tool: {metadata_script}")
+
+  for model_name in MODEL_NAMES:
+    model_path = models_dir / f"{model_name}.onnx"
+    if not model_path.is_file():
+      raise RuntimeError(f"missing model file: {model_path}")
+
+    run_checked([python_bin, str(metadata_script), str(model_path)], repo_root)
+    run_checked([python_bin, str(compile_script), str(model_path), str(models_dir / f"{model_name}_tinygrad.pkl")], repo_root)
 
 
 def set_current_model_param(model_id: str, model_name: str) -> None:
@@ -355,7 +379,7 @@ def cmd_install(args: argparse.Namespace) -> int:
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
-  parser = argparse.ArgumentParser(description="List and install signed driving model bundles for dev-c3.")
+  parser = argparse.ArgumentParser(description="List and install signed driving model pairs for TOP01013-C3.")
   parser.add_argument("--manifest", default=MANIFEST_URL, help="models.json URL or local path")
   parser.add_argument("--selector-version", type=int, default=SELECTOR_VERSION)
   subparsers = parser.add_subparsers(dest="command", required=True)

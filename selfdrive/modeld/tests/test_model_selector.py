@@ -36,7 +36,7 @@ def model(model_id: str, files: dict[str, dict], minimum_selector_version: int =
     "base_url": f"https://example.test/models/{model_id}",
     "files": files,
     "minimum_selector_version": minimum_selector_version,
-    "added_at": "2026-05-23",
+    "added_at": "2026-06-08",
   }
 
 
@@ -48,11 +48,10 @@ class TestModelSelector(unittest.TestCase):
   def test_verify_manifest_signature_accepts_valid_manifest(self):
     manifest, public_key = signed_manifest({
       "version": 1,
-      "updated_at": "2026-05-23T05:47:30+09:00",
-      "models": [model("OPv12", {
+      "updated_at": "2026-06-08T00:00:00Z",
+      "models": [model("OPv7", {
         "driving_vision.onnx": file_spec(),
-        "driving_on_policy.onnx": file_spec(),
-        "driving_off_policy.onnx": file_spec(),
+        "driving_policy.onnx": file_spec(),
       })],
     })
 
@@ -61,11 +60,10 @@ class TestModelSelector(unittest.TestCase):
   def test_verify_manifest_signature_rejects_tampering(self):
     manifest, public_key = signed_manifest({
       "version": 1,
-      "updated_at": "2026-05-23T05:47:30+09:00",
-      "models": [model("OPv12", {
+      "updated_at": "2026-06-08T00:00:00Z",
+      "models": [model("OPv7", {
         "driving_vision.onnx": file_spec(),
-        "driving_on_policy.onnx": file_spec(),
-        "driving_off_policy.onnx": file_spec(),
+        "driving_policy.onnx": file_spec(),
       })],
     })
     manifest["models"][0]["name"] = "tampered"
@@ -77,107 +75,98 @@ class TestModelSelector(unittest.TestCase):
     manifest = {
       "version": 1,
       "models": [
-        model("deepv6", {
+        model("opv7", {
+          "driving_vision.onnx": file_spec(),
+          "driving_policy.onnx": file_spec(),
+        }),
+        model("policy-alias", {
           "driving_vision.onnx": file_spec(),
           "driving_on_policy.onnx": file_spec(),
-          "driving_off_policy.onnx": file_spec(),
-        }, minimum_selector_version=SELECTOR_VERSION),
-        model("off-policy-alias", {
+        }),
+        model("missing-policy", {
           "driving_vision.onnx": file_spec(),
-          "driving_policy.onnx": file_spec(),
-          "driving_off_policy.onnx": file_spec(),
-        }, minimum_selector_version=2),
-        model("two-file-legacy", {
-          "driving_vision.onnx": file_spec(),
-          "driving_policy.onnx": file_spec(),
-        }, minimum_selector_version=1),
+        }),
         model("future", {
           "driving_vision.onnx": file_spec(),
-          "driving_on_policy.onnx": file_spec(),
-          "driving_off_policy.onnx": file_spec(),
+          "driving_policy.onnx": file_spec(),
         }, minimum_selector_version=SELECTOR_VERSION + 1),
       ],
     }
 
     installable_ids = [entry["id"] for entry in list_installable_models(manifest)]
 
-    self.assertEqual(installable_ids, ["deepv6", "off-policy-alias"])
+    self.assertEqual(installable_ids, ["opv7", "policy-alias"])
 
-  def test_model_file_plan_maps_driving_policy_alias_to_on_policy_artifact(self):
-    plan = model_file_plan(model("off-policy-alias", {
+  def test_model_file_plan_maps_on_policy_alias_to_driving_policy_artifact(self):
+    plan = model_file_plan(model("policy-alias", {
       "driving_vision.onnx": file_spec(),
-      "driving_policy.onnx": file_spec(),
-      "driving_off_policy.onnx": file_spec(),
-    }, minimum_selector_version=2))
+      "driving_on_policy.onnx": file_spec(),
+    }))
 
     self.assertEqual([item.install_name for item in plan], [
       "driving_vision.onnx",
-      "driving_on_policy.onnx",
-      "driving_off_policy.onnx",
+      "driving_policy.onnx",
     ])
     self.assertEqual([item.remote_name for item in plan], [
       "driving_vision.onnx",
-      "driving_policy.onnx",
-      "driving_off_policy.onnx",
+      "driving_on_policy.onnx",
     ])
 
-  def test_install_model_backs_up_and_replaces_bundle_files(self):
-    manifest = {"models": [model("deepv6", {
+  def test_install_model_backs_up_and_replaces_model_pair(self):
+    manifest = {"models": [model("opv7", {
       "driving_vision.onnx": file_spec(),
-      "driving_on_policy.onnx": file_spec(),
-      "driving_off_policy.onnx": file_spec(),
+      "driving_policy.onnx": file_spec(),
     })]}
 
     def stage_files(_model, staging_dir: Path):
-      for name in ("driving_vision.onnx", "driving_on_policy.onnx", "driving_off_policy.onnx"):
+      for name in ("driving_vision.onnx", "driving_policy.onnx"):
         (staging_dir / name).write_bytes(f"new {name}".encode())
 
     with tempfile.TemporaryDirectory() as temp_dir:
       root = Path(temp_dir)
       models_dir = root / "models"
       models_dir.mkdir()
-      for name in ("driving_vision.onnx", "driving_on_policy.onnx", "driving_off_policy.onnx"):
+      for name in ("driving_vision.onnx", "driving_policy.onnx"):
         (models_dir / name).write_bytes(f"old {name}".encode())
 
       with patch("openpilot.tools.model_selector.load_manifest", return_value=manifest), \
            patch("openpilot.tools.model_selector.verify_manifest_signature"), \
            patch("openpilot.tools.model_selector.stage_model_files", side_effect=stage_files), \
-           patch("openpilot.tools.model_selector.inspect_staged_bundle", return_value="deepv6-like"), \
+           patch("openpilot.tools.model_selector.inspect_staged_bundle", return_value="top01013-two-onnx"), \
            patch("openpilot.tools.model_selector.set_current_model_param") as set_param:
-        result = install_model("deepv6", repo_root=root, models_dir=models_dir, python_bin="python3", skip_rebuild=True)
+        result = install_model("opv7", repo_root=root, models_dir=models_dir, python_bin="python3", skip_rebuild=True)
 
-      self.assertEqual(result.layout, "deepv6-like")
+      self.assertEqual(result.layout, "top01013-two-onnx")
       self.assertTrue(result.backup_dir.is_dir())
       self.assertEqual((models_dir / "driving_vision.onnx").read_bytes(), b"new driving_vision.onnx")
       self.assertEqual((result.backup_dir / "driving_vision.onnx").read_bytes(), b"old driving_vision.onnx")
-      set_param.assert_called_once_with("deepv6", "deepv6")
+      set_param.assert_called_once_with("opv7", "opv7")
 
   def test_install_model_restores_backup_when_rebuild_fails(self):
-    manifest = {"models": [model("deepv6", {
+    manifest = {"models": [model("opv7", {
       "driving_vision.onnx": file_spec(),
-      "driving_on_policy.onnx": file_spec(),
-      "driving_off_policy.onnx": file_spec(),
+      "driving_policy.onnx": file_spec(),
     })]}
 
     def stage_files(_model, staging_dir: Path):
-      for name in ("driving_vision.onnx", "driving_on_policy.onnx", "driving_off_policy.onnx"):
+      for name in ("driving_vision.onnx", "driving_policy.onnx"):
         (staging_dir / name).write_bytes(f"new {name}".encode())
 
     with tempfile.TemporaryDirectory() as temp_dir:
       root = Path(temp_dir)
       models_dir = root / "models"
       models_dir.mkdir()
-      for name in ("driving_vision.onnx", "driving_on_policy.onnx", "driving_off_policy.onnx"):
+      for name in ("driving_vision.onnx", "driving_policy.onnx"):
         (models_dir / name).write_bytes(f"old {name}".encode())
 
       with patch("openpilot.tools.model_selector.load_manifest", return_value=manifest), \
            patch("openpilot.tools.model_selector.verify_manifest_signature"), \
            patch("openpilot.tools.model_selector.stage_model_files", side_effect=stage_files), \
-           patch("openpilot.tools.model_selector.inspect_staged_bundle", return_value="deepv6-like"), \
+           patch("openpilot.tools.model_selector.inspect_staged_bundle", return_value="top01013-two-onnx"), \
            patch("openpilot.tools.model_selector.rebuild_artifacts", side_effect=[RuntimeError("compile failed"), None]), \
            patch("openpilot.tools.model_selector.set_current_model_param"):
         with self.assertRaises(RuntimeError):
-          install_model("deepv6", repo_root=root, models_dir=models_dir, python_bin="python3")
+          install_model("opv7", repo_root=root, models_dir=models_dir, python_bin="python3")
 
       self.assertEqual((models_dir / "driving_vision.onnx").read_bytes(), b"old driving_vision.onnx")
 
