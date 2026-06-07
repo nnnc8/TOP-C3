@@ -21,6 +21,7 @@ MAX_VOLUME = 1.0
 MIN_VOLUME = 0.1
 SELFDRIVE_STATE_TIMEOUT = 5 # 5 seconds
 FILTER_DT = 1. / (micd.SAMPLE_RATE / micd.FFT_SAMPLES)
+BRAKEHOLD_VOLUME_BOOST = 1.8
 
 AMBIENT_DB = 30 # DB where MIN_VOLUME is applied
 DB_SCALE = 30 # AMBIENT_DB + DB_SCALE is where MAX_VOLUME is applied
@@ -43,7 +44,7 @@ sound_list: dict[int, tuple[str, int | None, float]] = {
   AudibleAlert.warningSoft: ("warning_soft.wav", None, MAX_VOLUME),
   AudibleAlert.warningImmediate: ("warning_immediate.wav", None, MAX_VOLUME),
 
-  AudibleAlert.engageBrakehold: ("engage_brakehold.wav", 1, MAX_VOLUME),
+  AudibleAlert.engageBrakehold: ("engage_brakehold.wav", 1, BRAKEHOLD_VOLUME_BOOST),
 }
 
 def check_selfdrive_timeout_alert(sm):
@@ -114,6 +115,8 @@ class Soundd:
 
       if self.quiet_drive and self.current_alert in [AudibleAlert.engage, AudibleAlert.disengage]:
         self.current_volume = 0
+      gain = sound_list[self.current_alert][2]
+      return np.clip(ret * self.current_volume * gain, -1.0, 1.0)
     return ret * self.current_volume
 
   def callback(self, data_out: np.ndarray, frames: int, time, status) -> None:
