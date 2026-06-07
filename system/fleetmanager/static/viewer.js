@@ -9,10 +9,12 @@ if (viewerRoot) {
     currentSegmentIndex: 0,
     currentTime: 0,
     isPlaying: false,
+    mobileMode: false,
+    syncLoopId: null,
   };
   const refs = {};
 
-  window.addEventListener("resize", updateLayoutMode);
+  window.addEventListener("resize", handleViewportChange);
   void loadManifest();
 
   async function loadManifest() {
@@ -29,8 +31,8 @@ if (viewerRoot) {
 
     state.manifest = await response.json();
     state.focusedCamera = pickFocusedCamera(state.manifest.cameras);
-    renderViewer();
     updateLayoutMode();
+    renderViewer();
     loadSegment(0, 0, false);
     startSyncLoop();
   }
@@ -42,7 +44,7 @@ if (viewerRoot) {
           <div>
             <div class="viewer-kicker">目前選取鏡頭使用高畫質</div>
             <strong>${state.manifest.routeId}</strong>
-            <div class="player-meta">${formatDuration(state.manifest.durationSec)} · ${state.manifest.cameras.length} 鏡頭 · 全鏡頭保持同步</div>
+            <div class="player-meta">${formatDuration(state.manifest.durationSec)} · ${state.manifest.cameras.length} 鏡頭 · ${state.mobileMode ? "手機版使用單鏡頭輕量播放" : "全鏡頭保持同步"}</div>
           </div>
           <div class="player-actions">
             <button class="player-button is-primary" type="button" data-play-toggle>播放</button>
@@ -50,6 +52,7 @@ if (viewerRoot) {
             <button class="player-button" type="button" data-jump="10">+10秒</button>
           </div>
         </div>
+        ${state.mobileMode ? '<div class="camera-switch-row" data-camera-switches></div>' : ''}
         <div class="viewer-grid" data-camera-grid></div>
         <div class="event-lane">
           <div class="badge-row" data-event-chips></div>
@@ -91,6 +94,7 @@ if (viewerRoot) {
     refs.downloadTargets = viewerRoot.querySelector("[data-download-targets]");
     refs.minuteDownload = viewerRoot.querySelector("[data-minute-download]");
     refs.fullDownload = viewerRoot.querySelector("[data-full-download]");
+    refs.cameraSwitches = viewerRoot.querySelector("[data-camera-switches]");
 
     refs.playToggle.addEventListener("click", togglePlayback);
     viewerRoot.querySelectorAll("[data-jump]").forEach((button) => {
@@ -106,6 +110,15 @@ if (viewerRoot) {
 
   function renderTiles() {
     const segment = state.manifest.segments[state.currentSegmentIndex];
+    if (!segment.cameras.includes(state.focusedCamera)) {
+      state.focusedCamera = pickFocusedCamera(segment.cameras);
+    }
+
+    if (state.mobileMode) {
+      renderMobileViewer(segment);
+      return;
+    }
+
     refs.grid.innerHTML = state.manifest.cameras.map((camera) => {
       const available = segment.cameras.includes(camera);
       const quality = camera === state.focusedCamera ? "focus" : "sync";
@@ -121,7 +134,7 @@ if (viewerRoot) {
             <span class="quality-tag">${available ? qualityLabel(quality) : "離線"}</span>
           </div>
           ${available
-            ? `<video data-camera-video="${camera}" muted playsinline preload="metadata"></video>`
+            ? `<video data-camera-video="${camera}" muted playsinline webkit-playsinline preload="metadata"></video>`
             : `<div class="camera-empty">這一段沒有這個鏡頭</div>`}
         </article>
       `;
@@ -142,12 +155,67 @@ if (viewerRoot) {
       if (!video) {
         return;
       }
-      video.addEventListener("ended", () => {
-        if (camera === state.focusedCamera) {
-          advanceSegment();
-        }
-      });
+      bindVideoLifecycle(camera, video);
       refs.videoMap.set(camera, video);
+    });
+  }
+
+  function renderMobileViewer(segment) {
+    refs.grid.innerHTML = `
+      <article class="camera-tile is-focused is-mobile-player" data-camera-tile data-camera="${state.focusedCamera}">
+        <div class="camera-meta">
+          <span class="camera-tag">${cameraLabel(state.focusedCamera)}</span>
+          <span class="quality-tag">${segment.cameras.includes(state.focusedCamera) ? "主畫面" : "離線"}</span>
+        </div>
+        ${segment.cameras.includes(state.focusedCamera)
+          ? `<video data-camera-video="${state.focusedCamera}" muted playsinline webkit-playsinline preload="metadata" controls disablepictureinpicture controlslist="nodownload noremoteplayback"></video>`
+          : `<div class="camera-empty">這一段沒有這個鏡頭</div>`}
+      </article>
+    `;
+
+    refs.videoMap = new Map();
+    const video = refs.grid.querySelector("video");
+    if (video) {
+      bindVideoLifecycle(state.focusedCamera, video);
+      refs.videoMap.set(state.focusedCamera, video);
+    }
+
+    if (!refs.cameraSwitches) {
+      return;
+    }
+
+    refs.cameraSwitches.innerHTML = state.manifest.cameras.map((camera) => {
+      const active = camera === state.focusedCamera;
+      const available = segment.cameras.includes(camera);
+      return `
+        <button
+          class="camera-switch ${active ? "is-active" : ""}"
+          type="button"
+          data-camera-switch="${camera}"
+          ${available ? "" : "disabled"}>
+          ${cameraLabel(camera)}
+        </button>
+      `;
+    }).join("");
+
+    refs.cameraSwitches.querySelectorAll("[data-camera-switch]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.dataset.cameraSwitch === state.focusedCamera) {
+          return;
+        }
+        const offset = getCurrentSegmentOffset();
+        const wasPlaying = state.isPlaying;
+        state.focusedCamera = button.dataset.cameraSwitch;
+        loadSegment(state.currentSegmentIndex, offset, wasPlaying);
+      });
+    });
+  }
+
+  function bindVideoLifecycle(camera, video) {
+    video.addEventListener("ended", () => {
+      if (camera === state.focusedCamera) {
+        advanceSegment();
+      }
     });
   }
 
@@ -205,7 +273,24 @@ if (viewerRoot) {
   }
 
   function updateLayoutMode() {
+    state.mobileMode = isMobileViewport();
     viewerRoot.dataset.layout = window.matchMedia("(orientation: landscape)").matches ? "landscape" : "portrait";
+    viewerRoot.dataset.viewport = state.mobileMode ? "mobile" : "desktop";
+  }
+
+  function handleViewportChange() {
+    const previousMobileMode = state.mobileMode;
+    updateLayoutMode();
+    if (!state.manifest || previousMobileMode === state.mobileMode) {
+      return;
+    }
+    const offset = state.currentTime - state.manifest.segments[state.currentSegmentIndex].startSec;
+    renderViewer();
+    loadSegment(state.currentSegmentIndex, Math.max(0, offset), state.isPlaying);
+  }
+
+  function isMobileViewport() {
+    return window.matchMedia("(max-width: 900px)").matches;
   }
 
   function pickFocusedCamera(cameras) {
@@ -231,9 +316,10 @@ if (viewerRoot) {
       if (!video) {
         continue;
       }
-      const quality = camera === state.focusedCamera ? "full" : "preview";
+      const quality = state.mobileMode ? "preview" : (camera === state.focusedCamera ? "full" : "preview");
       video.src = `/api/segments/${segment.segmentId}/stream/${camera}?quality=${quality}`;
       video.currentTime = 0;
+      video.muted = true;
       video.addEventListener("loadedmetadata", () => {
         video.currentTime = offset;
         if (autoplay) {
@@ -264,7 +350,10 @@ if (viewerRoot) {
   }
 
   function startSyncLoop() {
-    window.setInterval(() => {
+    if (state.syncLoopId !== null) {
+      window.clearInterval(state.syncLoopId);
+    }
+    state.syncLoopId = window.setInterval(() => {
       if (!refs.videoMap) {
         return;
       }

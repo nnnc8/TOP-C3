@@ -496,6 +496,44 @@ input {
   flex-wrap: wrap;
 }
 
+.camera-switch-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.camera-switch-row::-webkit-scrollbar {
+  display: none;
+}
+
+.camera-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted-strong);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+}
+
+.camera-switch.is-active {
+  border-color: rgba(232, 33, 39, 0.5);
+  background: rgba(232, 33, 39, 0.14);
+  color: var(--text);
+}
+
+.camera-switch:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .download-target {
   display: inline-flex;
   align-items: center;
@@ -613,6 +651,56 @@ input {
 .viewer-shell[data-layout="landscape"] .camera-tile:not(.is-focused) {
   grid-column: 2;
   min-height: 176px;
+}
+
+.viewer-shell[data-viewport="mobile"] .viewer-panel {
+  gap: 16px;
+}
+
+.viewer-shell[data-viewport="mobile"] .viewer-grid {
+  grid-template-columns: 1fr;
+}
+
+.viewer-shell[data-viewport="mobile"] .camera-tile {
+  min-height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+.viewer-shell[data-viewport="mobile"] .camera-tile video,
+.viewer-shell[data-viewport="mobile"] .camera-empty {
+  min-height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+.viewer-shell[data-viewport="mobile"] .player-actions {
+  width: 100%;
+  justify-content: stretch;
+}
+
+.viewer-shell[data-viewport="mobile"] .player-button {
+  flex: 1 1 calc(33.33% - 8px);
+  min-width: 0;
+  padding: 0 12px;
+}
+
+.viewer-shell[data-viewport="mobile"] .download-targets {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.viewer-shell[data-viewport="mobile"] .download-targets::-webkit-scrollbar {
+  display: none;
+}
+
+.viewer-shell[data-viewport="mobile"] .download-row {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.viewer-shell[data-viewport="mobile"] .download-link {
+  width: 100%;
 }
 
 .timeline-block,
@@ -751,6 +839,8 @@ input {
 
 @media (max-width: 860px) {
   .site-header {
+    position: static;
+    top: auto;
     align-items: flex-start;
     flex-direction: column;
   }
@@ -794,6 +884,10 @@ input {
 
   .viewer-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .viewer-shell[data-viewport="mobile"] .viewer-grid {
+    grid-template-columns: 1fr;
   }
 
   .camera-tile,
