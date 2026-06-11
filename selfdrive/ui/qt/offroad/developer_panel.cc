@@ -4,21 +4,22 @@
 
 DeveloperPanel::DeveloperPanel(SettingsWindow *parent) : ListWidget(parent) {
   adbToggle = new ParamControl("AdbEnabled", tr("Enable ADB"),
-            tr("ADB (Android Debug Bridge) allows connecting to your device over USB or over the network. See https://docs.comma.ai/how-to/connect-to-comma for more info."), "");
+            tr("ADB (Android Debug Bridge) allows connecting to your device over USB or over the network. See https://docs.comma.ai/how-to/connect-to-comma for more info."),
+            "../assets/icons/aegis_adb.svg");
   addItem(adbToggle);
 
   // SSH keys
   addItem(new SshToggle());
   addItem(new SshControl());
 
-  joystickToggle = new ParamControl("JoystickDebugMode", tr("Joystick Debug Mode"), "", "");
+  joystickToggle = new ParamControl("JoystickDebugMode", tr("Joystick Debug Mode"), "", "../assets/icons/aegis_joystick.svg");
   QObject::connect(joystickToggle, &ParamControl::toggleFlipped, [=](bool state) {
     params.putBool("LongitudinalManeuverMode", false);
     longManeuverToggle->refresh();
   });
   addItem(joystickToggle);
 
-  longManeuverToggle = new ParamControl("LongitudinalManeuverMode", tr("Longitudinal Maneuver Mode"), "", "");
+  longManeuverToggle = new ParamControl("LongitudinalManeuverMode", tr("Longitudinal Maneuver Mode"), "", "../assets/icons/aegis_maneuver.svg");
   QObject::connect(longManeuverToggle, &ParamControl::toggleFlipped, [=](bool state) {
     params.putBool("JoystickDebugMode", false);
     joystickToggle->refresh();
@@ -32,7 +33,7 @@ DeveloperPanel::DeveloperPanel(SettingsWindow *parent) : ListWidget(parent) {
       .arg(tr("WARNING: openpilot longitudinal control is in alpha for this car and will disable Automatic Emergency Braking (AEB)."))
       .arg(tr("On this car, openpilot defaults to the car's built-in ACC instead of openpilot's longitudinal control. "
               "Enable this to switch to openpilot longitudinal control. Enabling Experimental mode is recommended when enabling openpilot longitudinal control alpha.")),
-    ""
+    "../assets/icons/aegis_alpha_long.svg"
   );
   experimentalLongitudinalToggle->setConfirmation(true, false);
   QObject::connect(experimentalLongitudinalToggle, &ParamControl::toggleFlipped, [=]() {

@@ -102,7 +102,12 @@ class LabelControl : public AbstractControl {
   Q_OBJECT
 
 public:
-  LabelControl(const QString &title, const QString &text = "", const QString &desc = "", QWidget *parent = nullptr) : AbstractControl(title, desc, "", parent) {
+  LabelControl(const QString &title, const QString &text = "", const QString &desc = "", QWidget *parent = nullptr) :
+    LabelControl(title, text, desc, "", parent) {
+  }
+
+  LabelControl(const QString &title, const QString &text, const QString &desc, const QString &icon, QWidget *parent) :
+    AbstractControl(title, desc, icon, parent) {
     label.setText(text);
     label.setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     hlayout->addWidget(&label);
@@ -119,6 +124,7 @@ class ButtonControl : public AbstractControl {
 
 public:
   ButtonControl(const QString &title, const QString &text, const QString &desc = "", QWidget *parent = nullptr);
+  ButtonControl(const QString &title, const QString &text, const QString &desc, const QString &icon, QWidget *parent);
   inline void setText(const QString &text) { btn.setText(text); }
   inline QString text() const { return btn.text(); }
 
@@ -208,25 +214,25 @@ public:
                      const std::vector<QString> &button_texts, const int minimum_button_width = 225) : AbstractControl(title, desc, icon) {
     const QString style = R"(
       QPushButton {
-        border-radius: 50px;
-        font-size: 40px;
+        border-radius: 12px;
+        font-size: 36px;
         font-weight: 500;
-        height:100px;
+        height: 92px;
         padding: 0 25 0 25;
-        color: #E4E4E4;
-        background-color: #393939;
+        color: #F4F4F4;
+        background-color: #2B2D31;
       }
       QPushButton:pressed {
-        background-color: #4a4a4a;
+        background-color: #3A3D43;
       }
       QPushButton:checked:enabled {
-        background-color: #33Ab4C;
+        background-color: #E82127;
       }
       QPushButton:checked:disabled {
-        background-color: #9933Ab4C;
+        background-color: #66E82127;
       }
       QPushButton:disabled {
-        color: #33E4E4E4;
+        color: #55F4F4F4;
       }
     )";
 
@@ -341,18 +347,18 @@ public:
 
     setStyleSheet(R"(
       QPushButton {
-        font-size: 50px;
+        font-size: 46px;
         margin: 10px;
         padding: 15px 30px;
         border-width: 0;
-        border-radius: 30px;
-        color: #dddddd;
-        background-color: #393939;
+        border-radius: 12px;
+        color: #F4F4F4;
+        background-color: #2B2D31;
         text-align: left;
         min-height: 120px;
       }
       QPushButton:pressed {
-        background-color: #4a4a4a;
+        background-color: #3A3D43;
       }
     )");
   }
@@ -373,14 +379,14 @@ public:
     minus_btn->setFixedSize(60, 60);
     minus_btn->setStyleSheet(R"(
       QPushButton {
-        border-radius: 30px;
+        border-radius: 12px;
         font-size: 30px;
         font-weight: bold;
-        background-color: #393939;
-        color: #E4E4E4;
+        background-color: #2B2D31;
+        color: #F4F4F4;
       }
       QPushButton:pressed {
-        background-color: #4a4a4a;
+        background-color: #3A3D43;
       }
     )");
 
@@ -391,7 +397,7 @@ public:
     value_label = new QLabel();
     value_label->setAlignment(Qt::AlignCenter);
     value_label->setMinimumWidth(150);
-    value_label->setStyleSheet("font-size: 40px; color: #E4E4E4;");
+    value_label->setStyleSheet("font-size: 36px; color: #F4F4F4;");
 
     controls_layout->addWidget(minus_btn);
     controls_layout->addWidget(value_label);
@@ -461,16 +467,16 @@ public:
     setObjectName("back_btn");
     setStyleSheet(R"(
       QPushButton {
-        font-size: 50px;
+        font-size: 46px;
         margin: 0px;
         padding: 15px;
         border-width: 0;
-        border-radius: 30px;
-        color: #dddddd;
-        background-color: #393939;
+        border-radius: 12px;
+        color: #F4F4F4;
+        background-color: #2B2D31;
       }
       QPushButton:pressed {
-        background-color: #4a4a4a;
+        background-color: #3A3D43;
       }
     )");
     setFixedSize(400, 100);

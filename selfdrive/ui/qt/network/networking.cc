@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <QHBoxLayout>
+#include <QIcon>
 #include <QScrollBar>
 #include <QStyle>
 
@@ -28,6 +29,8 @@ Networking::Networking(QWidget* parent, bool show_advanced) : QFrame(parent) {
   if (show_advanced) {
     QPushButton* advancedSettings = new QPushButton(tr("Advanced"));
     advancedSettings->setObjectName("advanced_btn");
+    advancedSettings->setIcon(QIcon("../assets/icons/aegis_network_advanced.svg"));
+    advancedSettings->setIconSize(QSize(46, 46));
     advancedSettings->setStyleSheet("margin-right: 30px;");
     advancedSettings->setFixedSize(400, 100);
     connect(advancedSettings, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(an); });
@@ -57,16 +60,16 @@ Networking::Networking(QWidget* parent, bool show_advanced) : QFrame(parent) {
 
   setStyleSheet(R"(
     #wifiWidget > QPushButton, #back_btn, #advanced_btn {
-      font-size: 50px;
+      font-size: 44px;
       margin: 0px;
       padding: 15px;
       border-width: 0;
-      border-radius: 30px;
-      color: #dddddd;
-      background-color: #393939;
+      border-radius: 12px;
+      color: #F4F4F4;
+      background-color: #2B2D31;
     }
     #back_btn:pressed, #advanced_btn:pressed {
-      background-color:  #4a4a4a;
+      background-color: #3A3D43;
     }
   )");
   main_layout->setCurrentWidget(wifiScreen);
@@ -125,18 +128,20 @@ AdvancedNetworking::AdvancedNetworking(QWidget* parent, WifiManager* wifi): QWid
   // Back button
   QPushButton* back = new QPushButton(tr("Back"));
   back->setObjectName("back_btn");
+  back->setIcon(QIcon("../assets/icons/aegis_back.svg"));
+  back->setIconSize(QSize(46, 46));
   back->setFixedSize(400, 100);
   connect(back, &QPushButton::clicked, [=]() { emit backPress(); });
   main_layout->addWidget(back, 0, Qt::AlignLeft);
 
   ListWidget *list = new ListWidget(this);
   // Enable tethering layout
-  tetheringToggle = new ToggleControl(tr("Enable Tethering"), "", "", wifi->isTetheringEnabled());
+  tetheringToggle = new ToggleControl(tr("Enable Tethering"), "", "../assets/icons/aegis_tethering.svg", wifi->isTetheringEnabled(), this);
   list->addItem(tetheringToggle);
   QObject::connect(tetheringToggle, &ToggleControl::toggleFlipped, this, &AdvancedNetworking::toggleTethering);
 
   // Change tethering password
-  ButtonControl *editPasswordButton = new ButtonControl(tr("Tethering Password"), tr("EDIT"));
+  ButtonControl *editPasswordButton = new ButtonControl(tr("Tethering Password"), tr("EDIT"), "", "../assets/icons/aegis_tether_password.svg", this);
   connect(editPasswordButton, &ButtonControl::clicked, [=]() {
     QString pass = InputDialog::getText(tr("Enter new tethering password"), this, "", true, 8, wifi->getTetheringPassword());
     if (!pass.isEmpty()) {
@@ -146,12 +151,12 @@ AdvancedNetworking::AdvancedNetworking(QWidget* parent, WifiManager* wifi): QWid
   list->addItem(editPasswordButton);
 
   // IP address
-  ipLabel = new LabelControl(tr("IP Address"), wifi->ipv4_address);
+  ipLabel = new LabelControl(tr("IP Address"), wifi->ipv4_address, "", "../assets/icons/aegis_ip.svg", this);
   list->addItem(ipLabel);
 
   // Roaming toggle
   const bool roamingEnabled = params.getBool("GsmRoaming");
-  roamingToggle = new ToggleControl(tr("Enable Roaming"), "", "", roamingEnabled);
+  roamingToggle = new ToggleControl(tr("Enable Roaming"), "", "../assets/icons/aegis_roaming.svg", roamingEnabled, this);
   QObject::connect(roamingToggle, &ToggleControl::toggleFlipped, [=](bool state) {
     params.putBool("GsmRoaming", state);
     wifi->updateGsmSettings(state, QString::fromStdString(params.get("GsmApn")), params.getBool("GsmMetered"));
@@ -159,7 +164,7 @@ AdvancedNetworking::AdvancedNetworking(QWidget* parent, WifiManager* wifi): QWid
   list->addItem(roamingToggle);
 
   // APN settings
-  editApnButton = new ButtonControl(tr("APN Setting"), tr("EDIT"));
+  editApnButton = new ButtonControl(tr("APN Setting"), tr("EDIT"), "", "../assets/icons/aegis_apn.svg", this);
   connect(editApnButton, &ButtonControl::clicked, [=]() {
     const QString cur_apn = QString::fromStdString(params.get("GsmApn"));
     QString apn = InputDialog::getText(tr("Enter APN"), this, tr("leave blank for automatic configuration"), false, -1, cur_apn).trimmed();
@@ -175,7 +180,8 @@ AdvancedNetworking::AdvancedNetworking(QWidget* parent, WifiManager* wifi): QWid
 
   // Cellular metered toggle (prime lite or none)
   const bool metered = params.getBool("GsmMetered");
-  cellularMeteredToggle = new ToggleControl(tr("Cellular Metered"), tr("Prevent large data uploads when on a metered cellular connection"), "", metered);
+  cellularMeteredToggle = new ToggleControl(tr("Cellular Metered"), tr("Prevent large data uploads when on a metered cellular connection"),
+                                            "../assets/icons/aegis_cell_meter.svg", metered, this);
   QObject::connect(cellularMeteredToggle, &SshToggle::toggleFlipped, [=](bool state) {
     params.putBool("GsmMetered", state);
     wifi->updateGsmSettings(params.getBool("GsmRoaming"), QString::fromStdString(params.get("GsmApn")), state);
@@ -184,7 +190,8 @@ AdvancedNetworking::AdvancedNetworking(QWidget* parent, WifiManager* wifi): QWid
 
   // Wi-Fi metered toggle
   std::vector<QString> metered_button_texts{tr("default"), tr("metered"), tr("unmetered")};
-  wifiMeteredToggle = new MultiButtonControl(tr("Wi-Fi Network Metered"), tr("Prevent large data uploads when on a metered Wi-Fi connection"), "", metered_button_texts);
+  wifiMeteredToggle = new MultiButtonControl(tr("Wi-Fi Network Metered"), tr("Prevent large data uploads when on a metered Wi-Fi connection"),
+                                             "../assets/icons/aegis_wifi_meter.svg", metered_button_texts);
   QObject::connect(wifiMeteredToggle, &MultiButtonControl::buttonClicked, [=](int id) {
     wifiMeteredToggle->setEnabled(false);
     MeteredType metered = MeteredType::UNKNOWN;
@@ -205,7 +212,7 @@ AdvancedNetworking::AdvancedNetworking(QWidget* parent, WifiManager* wifi): QWid
   list->addItem(wifiMeteredToggle);
 
   // Hidden Network
-  hiddenNetworkButton = new ButtonControl(tr("Hidden Network"), tr("CONNECT"));
+  hiddenNetworkButton = new ButtonControl(tr("Hidden Network"), tr("CONNECT"), "", "../assets/icons/aegis_hidden_wifi.svg", this);
   connect(hiddenNetworkButton, &ButtonControl::clicked, [=]() {
     QString ssid = InputDialog::getText(tr("Enter SSID"), this, "", false, 1);
     if (!ssid.isEmpty()) {
@@ -278,7 +285,7 @@ WifiUI::WifiUI(QWidget *parent, WifiManager* wifi) : QWidget(parent), wifi(wifi)
   circled_slash = QPixmap(ASSET_PATH + "icons/circled_slash.svg").scaledToWidth(ICON_WIDTH, Qt::SmoothTransformation);
 
   scanningLabel = new QLabel(tr("Scanning for networks..."));
-  scanningLabel->setStyleSheet("font-size: 65px;");
+  scanningLabel->setStyleSheet("font-size: 52px; color: #AEB4BA;");
   main_layout->addWidget(scanningLabel, 0, Qt::AlignCenter);
 
   wifi_list_widget = new ListWidget(this);
@@ -294,9 +301,9 @@ WifiUI::WifiUI(QWidget *parent, WifiManager* wifi) : QWidget(parent), wifi(wifi)
     #forgetBtn {
       font-size: 32px;
       font-weight: 600;
-      color: #292929;
-      background-color: #BDBDBD;
-      border-width: 1px solid #828282;
+      color: #F4F4F4;
+      background-color: #2B2D31;
+      border-width: 1px solid #3A3D43;
       border-radius: 5px;
       padding: 40px;
       padding-bottom: 16px;

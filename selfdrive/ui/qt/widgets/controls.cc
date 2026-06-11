@@ -24,7 +24,7 @@ AbstractControl::AbstractControl(const QString &title, const QString &desc, cons
   // title
   title_label = new QPushButton(title);
   title_label->setFixedHeight(120);
-  title_label->setStyleSheet("font-size: 50px; font-weight: 400; text-align: left; border: none;");
+  title_label->setStyleSheet("font-size: 46px; font-weight: 500; text-align: left; border: none; color: #F4F4F4;");
   hlayout->addWidget(title_label, 1);
 
   // value next to control button
@@ -38,7 +38,7 @@ AbstractControl::AbstractControl(const QString &title, const QString &desc, cons
   // description
   description = new QLabel(desc);
   description->setContentsMargins(40, 20, 40, 20);
-  description->setStyleSheet("font-size: 40px; color: grey");
+  description->setStyleSheet("font-size: 34px; color: #9BA1A8");
   description->setWordWrap(true);
   description->setVisible(false);
   main_layout->addWidget(description);
@@ -64,25 +64,29 @@ void AbstractControl::hideEvent(QHideEvent *e) {
 
 // controls
 
-ButtonControl::ButtonControl(const QString &title, const QString &text, const QString &desc, QWidget *parent) : AbstractControl(title, desc, "", parent) {
+ButtonControl::ButtonControl(const QString &title, const QString &text, const QString &desc, QWidget *parent) :
+  ButtonControl(title, text, desc, "", parent) {
+}
+
+ButtonControl::ButtonControl(const QString &title, const QString &text, const QString &desc, const QString &icon, QWidget *parent) : AbstractControl(title, desc, icon, parent) {
   btn.setText(text);
   btn.setStyleSheet(R"(
     QPushButton {
       padding: 0;
-      border-radius: 50px;
-      font-size: 35px;
+      border-radius: 12px;
+      font-size: 34px;
       font-weight: 500;
-      color: #E4E4E4;
-      background-color: #393939;
+      color: #F4F4F4;
+      background-color: #2B2D31;
     }
     QPushButton:pressed {
-      background-color: #4a4a4a;
+      background-color: #3A3D43;
     }
     QPushButton:disabled {
-      color: #33E4E4E4;
+      color: #55F4F4F4;
     }
   )");
-  btn.setFixedSize(250, 100);
+  btn.setFixedSize(240, 92);
   QObject::connect(&btn, &QPushButton::clicked, this, &ButtonControl::clicked);
   hlayout->addWidget(&btn);
 }
