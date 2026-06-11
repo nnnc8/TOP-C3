@@ -116,7 +116,18 @@ def discover_route_segments(route_id: str | None = None) -> list[SegmentRecord]:
 
 def get_route_summaries(limit: int | None = None) -> list[dict[str, Any]]:
   segments_by_route: dict[str, list[SegmentRecord]] = {}
-  for segment in discover_route_segments():
+  entries = listdir_by_creation(get_log_root())
+  route_filter = _recent_route_ids_from_entries(entries, limit)
+
+  for entry in entries:
+    if route_filter is not None:
+      route_id = _segment_route_id_from_entry(entry)
+      if route_id is None or route_id not in route_filter:
+        continue
+
+    segment = _segment_record_from_entry(entry)
+    if segment is None:
+      continue
     segments_by_route.setdefault(segment.route_id, []).append(segment)
 
   route_ids = sorted(
@@ -474,6 +485,42 @@ def _segment_record_from_entry(entry: str) -> SegmentRecord | None:
     qlog_path=qlog_path,
     rlog_path=rlog_path,
   )
+
+
+def _segment_route_id_from_entry(entry: str) -> str | None:
+  try:
+    return segment_to_segment_name(get_log_root(), entry).time_str
+  except AssertionError:
+    return None
+
+
+def _recent_route_ids_from_entries(entries: list[str], limit: int | None) -> set[str] | None:
+  if limit is None:
+    return None
+  if limit <= 0:
+    return set()
+
+  route_times: dict[str, float] = {}
+  for entry in entries:
+    route_id = _segment_route_id_from_entry(entry)
+    if route_id is None:
+      continue
+    route_times[route_id] = max(route_times.get(route_id, 0), _route_sort_time(route_id, entry))
+
+  return {
+    route_id
+    for route_id, _ in sorted(route_times.items(), key=lambda item: item[1], reverse=True)[:limit]
+  }
+
+
+def _route_sort_time(route_id: str, entry: str) -> float:
+  try:
+    return dt.datetime.strptime(route_id, "%Y-%m-%d--%H-%M-%S").timestamp()
+  except ValueError:
+    try:
+      return os.path.getmtime(os.path.join(get_log_root(), entry))
+    except OSError:
+      return 0.0
 
 
 def _route_datetime(route_id: str) -> dt.datetime:

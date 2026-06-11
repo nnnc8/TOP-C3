@@ -115,6 +115,37 @@ def test_get_route_summaries_does_not_scan_qlogs(tmp_path, monkeypatch):
   }
 
 
+def test_get_route_summaries_limit_skips_old_route_materialization(tmp_path, monkeypatch):
+  cache_root = tmp_path / "cache"
+  monkeypatch.setattr(fleet.Paths, "log_root", lambda: str(tmp_path))
+  monkeypatch.setattr(fleet.Paths, "download_cache_root", lambda: str(cache_root))
+
+  route_ids = [
+    "2026-06-07--10-00-00",
+    "2026-06-07--11-00-00",
+    "2026-06-07--12-00-00",
+    "2026-06-07--13-00-00",
+  ]
+  for route_id in route_ids:
+    _write_segment(str(tmp_path), route_id, 0, cameras=["qcamera"])
+    _write_segment(str(tmp_path), route_id, 1, cameras=["qcamera"])
+
+  real_segment_record_from_entry = fleet._segment_record_from_entry
+  materialized_entries = []
+
+  def tracked_segment_record_from_entry(entry):
+    materialized_entries.append(entry)
+    return real_segment_record_from_entry(entry)
+
+  monkeypatch.setattr(fleet, "_segment_record_from_entry", tracked_segment_record_from_entry)
+
+  summaries = fleet.get_route_summaries(limit=2)
+
+  assert [summary["routeId"] for summary in summaries] == route_ids[-1:-3:-1]
+  assert all(entry.startswith(tuple(route_ids[-2:])) for entry in materialized_entries)
+  assert not any(entry.startswith(tuple(route_ids[:2])) for entry in materialized_entries)
+
+
 def test_extract_route_events_detects_thresholds_and_transitions(tmp_path, monkeypatch):
   route_id = "2026-06-07--15-00-00"
   cache_root = tmp_path / "cache"
