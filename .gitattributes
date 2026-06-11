@@ -3,6 +3,7 @@
 *.onnx filter=lfs diff=lfs merge=lfs -text
 selfdrive/car/tests/test_models_segs.txt filter=lfs diff=lfs merge=lfs -text
 selfdrive/assets/fonts/*.ttf filter=lfs diff=lfs merge=lfs -text
+selfdrive/assets/fonts/Cubic_11.ttf -filter -diff -merge -text
 selfdrive/assets/training/*.png filter=lfs diff=lfs merge=lfs -text
 system/hardware/tici/updater filter=lfs diff=lfs merge=lfs -text
 third_party/**/*.a filter=lfs diff=lfs merge=lfs -text
