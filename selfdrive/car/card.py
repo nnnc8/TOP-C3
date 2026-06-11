@@ -18,6 +18,7 @@ from opendbc.car.fw_versions import ObdCallback
 from opendbc.car.car_helpers import get_car, interfaces
 from opendbc.car.interfaces import CarInterfaceBase, RadarInterfaceBase
 from opendbc.safety import ALTERNATIVE_EXPERIENCE
+from opendbc.car.toyota.values import RADAR_ACC_CAR, TSS2_CAR, ToyotaFlags
 from openpilot.selfdrive.pandad import can_capnp_to_list, can_list_to_can_capnp
 from openpilot.selfdrive.car.cruise import VCruiseHelper
 from openpilot.selfdrive.car.car_specific import MockCarState
@@ -115,6 +116,9 @@ class Car:
       if self.params.get_bool("ReverseAccChange"):
         top_params |= structs.TopFlags.ToyotaReverseAccChange
 
+      if self.params.get_bool("AleSato_AutomaticBrakeHold"):
+        top_params |= structs.TopFlags.ToyotaAutoBrakeHold
+
       if self.params.get_bool("ExperimentalMode"):
         top_params |= structs.TopFlags.ToyotaExperimentalMode
 
@@ -135,6 +139,15 @@ class Car:
 
     if top_params & structs.TopFlags.LateralALKA:
       self.CP.alternativeExperience |= ALTERNATIVE_EXPERIENCE.ALKA
+
+    auto_brakehold = (
+      self.params.get_bool("AleSato_AutomaticBrakeHold") and
+      self.CP.carFingerprint in (TSS2_CAR - RADAR_ACC_CAR) and
+      not (self.CP.flags & ToyotaFlags.SECOC.value) and
+      (self.CP.flags & ToyotaFlags.HYBRID.value)
+    )
+    if auto_brakehold:
+      self.CP.alternativeExperience |= ALTERNATIVE_EXPERIENCE.ALLOW_AEB
 
     openpilot_enabled_toggle = self.params.get_bool("OpenpilotEnabledToggle")
     controller_available = self.CI.CC is not None and openpilot_enabled_toggle and not self.CP.dashcamOnly
