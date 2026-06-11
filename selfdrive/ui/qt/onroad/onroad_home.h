@@ -1,7 +1,10 @@
 #pragma once
 
 #include <QColor>
+#include <QLabel>
 
+#include "common/aegis_achievements.h"
+#include "common/params.h"
 #include "selfdrive/ui/qt/onroad/alerts.h"
 #include "selfdrive/ui/qt/onroad/annotated_camera.h"
 
@@ -20,10 +23,26 @@ public:
 private:
   void paintEvent(QPaintEvent *event);
   void mousePressEvent(QMouseEvent* e) override;
+  void updateAchievements(const UIState &s);
+  void saveAchievements(bool force = false);
+  bool achievementToastsEnabled();
+  void showAchievementToast(const QString &text, double now_millis);
+
   OnroadAlerts *alerts;
   AnnotatedCameraWidget *nvg;
+  QWidget *achievement_toast_container;
+  QLabel *achievement_toast_text;
   QColor bg = bg_colors[STATUS_DISENGAGED];
   QHBoxLayout* split;
+  Params achievement_params;
+  AegisAchievementState achievement_state;
+  bool achievements_loaded = false;
+  bool achievement_dirty = false;
+  bool toast_shown_this_trip = false;
+  double last_achievement_update_millis = 0.0;
+  double last_achievement_save_millis = 0.0;
+  double achievement_toast_until_millis = 0.0;
+  QString pending_achievement_toast;
 
   void updateDpIndicatorSideState(bool blinker_state, bool bsm_state, bool &show, bool &show_prev, int &count, QColor &color);
   void updateDpIndicatorStates(const UIState &s);
