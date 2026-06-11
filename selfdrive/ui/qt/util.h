@@ -33,7 +33,7 @@ QColor interpColor(float xv, std::vector<float> xp, std::vector<QColor> fp);
 bool hasLongitudinalControl(const cereal::CarParams::Reader &car_params);
 
 struct InterFont : public QFont {
-  InterFont(int pixel_size, QFont::Weight weight = QFont::Normal) : QFont("Inter") {
+  InterFont(int pixel_size, QFont::Weight weight = QFont::Normal) : QFont("Cubic 11") {
     setPixelSize(pixel_size);
     setWeight(weight);
   }

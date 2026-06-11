@@ -1,9 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-  <g fill="none" stroke="#F4F4F4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-<path d="M40 14v48"/>
-    <path d="M25 62h30"/>
-    <path d="M30 32c5-6 15-6 20 0"/>
-    <path d="M22 23c10-12 26-12 36 0"/>
-    <circle cx="40" cy="43" r="5"/>
-  </g>
+<svg
+  data-source="Tabler Icons"
+  xmlns="http://www.w3.org/2000/svg"
+  width="80"
+  height="80"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#F4F4F4"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M6 18l0 -3" />
+  <path d="M10 18l0 -6" />
+  <path d="M14 18l0 -9" />
+  <path d="M18 18l0 -12" />
 </svg>

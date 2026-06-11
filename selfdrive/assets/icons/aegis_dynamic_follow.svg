@@ -1,12 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-  <g fill="none" stroke="#F4F4F4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-<path d="M14 48h20"/>
-    <path d="M46 48h20"/>
-    <path d="M17 48l4-10h10l4 10"/>
-    <path d="M49 48l4-10h10l4 10"/>
-    <circle cx="24" cy="54" r="4"/>
-    <circle cx="56" cy="54" r="4"/>
-    <path d="M32 25h16"/>
-    <path d="M42 19l6 6-6 6"/>
-  </g>
+<svg
+  data-source="Tabler Icons"
+  xmlns="http://www.w3.org/2000/svg"
+  width="80"
+  height="80"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#F4F4F4"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+  <path d="M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+  <path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" />
 </svg>

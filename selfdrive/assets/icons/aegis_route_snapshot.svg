@@ -1,8 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-  <g fill="none" stroke="#F4F4F4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-<path d="M18 57c15-25 28 1 44-25"/>
-    <circle cx="18" cy="57" r="5"/>
-    <circle cx="62" cy="32" r="5"/>
-    <path d="M24 18l12 6 14-6 12 6v38l-12-6-14 6-12-6z"/>
-  </g>
+<svg
+  data-source="Tabler Icons"
+  xmlns="http://www.w3.org/2000/svg"
+  width="80"
+  height="80"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#F4F4F4"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13" />
+  <path d="M9 12v.01" />
+  <path d="M6 13v.01" />
+  <path d="M17 15l-4 -4" />
+  <path d="M13 15l4 -4" />
 </svg>

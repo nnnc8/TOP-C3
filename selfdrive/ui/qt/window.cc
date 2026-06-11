@@ -1,10 +1,28 @@
 #include "selfdrive/ui/qt/window.h"
 
+#include <QApplication>
+#include <QFont>
 #include <QFontDatabase>
 
 #include "system/hardware/hw.h"
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
+  // load fonts before constructing child widgets so both stylesheets and painted text can use them
+  QFontDatabase::addApplicationFont("../assets/fonts/Cubic_11.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Regular.otf");
+  QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Medium.otf");
+  QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Bold.otf");
+  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Black.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Bold.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/Inter-ExtraBold.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/Inter-ExtraLight.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Medium.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Regular.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/Inter-SemiBold.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Thin.ttf");
+  QFontDatabase::addApplicationFont("../assets/fonts/JetBrainsMono-Medium.ttf");
+  QApplication::setFont(QFont("Cubic 11"));
+
   main_layout = new QStackedLayout(this);
   main_layout->setMargin(0);
 
@@ -44,24 +62,10 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     }
   });
 
-  // load fonts
-  QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Regular.otf");
-  QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Medium.otf");
-  QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Bold.otf");
-  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Black.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Bold.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/Inter-ExtraBold.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/Inter-ExtraLight.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Medium.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Regular.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/Inter-SemiBold.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/Inter-Thin.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/JetBrainsMono-Medium.ttf");
-
   // no outline to prevent the focus rectangle
   setStyleSheet(R"(
     * {
-      font-family: Inter;
+      font-family: "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
       outline: none;
     }
   )");

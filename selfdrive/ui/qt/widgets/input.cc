@@ -17,7 +17,7 @@ DialogBase::DialogBase(QWidget *parent) : QDialog(parent) {
     * {
       outline: none;
       color: white;
-      font-family: Inter;
+      font-family: "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
     }
     DialogBase {
       background-color: black;

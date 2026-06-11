@@ -79,20 +79,17 @@ OnroadWindow::OnroadWindow(QWidget *parent) : QWidget(parent) {
   achievement_layout->addWidget(achievement_toast_detail);
   achievement_toast_card->setStyleSheet(R"(
     QFrame {
-      background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                        stop:0 rgba(15, 28, 39, 235),
-                                        stop:0.58 rgba(18, 54, 55, 235),
-                                        stop:1 rgba(57, 39, 80, 235));
-      border: 2px solid rgba(111, 255, 233, 210);
-      border-radius: 18px;
+      background-color: rgba(21, 23, 28, 238);
+      border: 2px solid #E82127;
+      border-radius: 12px;
     }
     QLabel {
       background-color: transparent;
       border: none;
     }
   )");
-  achievement_toast_title->setStyleSheet("font-size: 30px; font-weight: 850; color: #6FFFE9; background-color: transparent; border: none;");
-  achievement_toast_detail->setStyleSheet("font-size: 42px; font-weight: 750; color: #FFFFFF; background-color: transparent; border: none;");
+  achievement_toast_title->setStyleSheet("font-size: 30px; font-weight: 700; color: #E82127; background-color: transparent; border: none;");
+  achievement_toast_detail->setStyleSheet("font-size: 42px; font-weight: 700; color: #FFFFFF; background-color: transparent; border: none;");
   achievement_toast_card->hide();
   toast_layout->addWidget(achievement_toast_card, 0, Qt::AlignTop | Qt::AlignHCenter);
   toast_layout->addStretch(1);
