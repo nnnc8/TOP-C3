@@ -1468,8 +1468,8 @@ Reboot Required.</source>
         <translation>最大化您的訓練數據上傳，以改善 openpilot 的駕駛模型。</translation>
     </message>
     <message>
-        <source>&lt;span style=&apos;font-family: &quot;Noto Color Emoji&quot;;&apos;&gt;🔥&lt;/span&gt; Firehose Mode &lt;span style=&apos;font-family: Noto Color Emoji;&apos;&gt;🔥&lt;/span&gt;</source>
-        <translation>&lt;span style=&apos;font-family: &quot;Noto Color Emoji&quot;;&apos;&gt;🔥&lt;/span&gt; Firehose 模式 &lt;span style=&apos;font-family: Noto Color Emoji;&apos;&gt;🔥&lt;/span&gt;</translation>
+        <source>Firehose Mode</source>
+        <translation>Firehose 模式</translation>
     </message>
 </context>
 <context>

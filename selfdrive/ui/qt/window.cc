@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   QFontDatabase::addApplicationFont("../assets/fonts/Inter-Regular.ttf");
   QFontDatabase::addApplicationFont("../assets/fonts/Inter-SemiBold.ttf");
   QFontDatabase::addApplicationFont("../assets/fonts/Inter-Thin.ttf");
-  QFontDatabase::addApplicationFont("../assets/fonts/JetBrainsMono-Medium.ttf");
   QApplication::setFont(QFont(ui_font_family));
 
   main_layout = new QStackedLayout(this);

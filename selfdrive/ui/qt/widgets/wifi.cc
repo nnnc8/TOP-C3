@@ -11,7 +11,7 @@ WiFiPromptWidget::WiFiPromptWidget(QWidget *parent) : QFrame(parent) {
   main_layout->setContentsMargins(56, 40, 56, 40);
   main_layout->setSpacing(42);  
   
-  QLabel *title = new QLabel(tr("<span style='font-family: \"Noto Color Emoji\";'>🔥</span> Firehose Mode <span style='font-family: Noto Color Emoji;'>🔥</span>"));
+  QLabel *title = new QLabel(tr("Firehose Mode"));
   title->setStyleSheet("font-size: 64px; font-weight: 500;");
   main_layout->addWidget(title);
 

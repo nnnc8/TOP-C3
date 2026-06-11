@@ -7,6 +7,7 @@
 #include <QStyle>
 
 #include "selfdrive/ui/ui.h"
+#include "selfdrive/ui/qt/util.h"
 
 ExperimentalModeButton::ExperimentalModeButton(QWidget *parent) : QPushButton(parent) {
   chill_pixmap = QPixmap("../assets/icons/couch.svg").scaledToWidth(img_width, Qt::SmoothTransformation);
@@ -28,7 +29,7 @@ ExperimentalModeButton::ExperimentalModeButton(QWidget *parent) : QPushButton(pa
 
   setLayout(main_layout);
 
-  setStyleSheet(R"(
+  setStyleSheet(QString(R"(
     QPushButton {
       border: none;
     }
@@ -37,10 +38,10 @@ ExperimentalModeButton::ExperimentalModeButton(QWidget *parent) : QPushButton(pa
       font-size: 45px;
       font-weight: 300;
       text-align: left;
-      font-family: JetBrainsMono;
+      font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
       color: #000000;
     }
-  )");
+  )").arg(uiFontFamily()));
 }
 
 void ExperimentalModeButton::paintEvent(QPaintEvent *event) {

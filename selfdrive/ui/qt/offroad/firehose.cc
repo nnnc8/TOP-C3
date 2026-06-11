@@ -1,6 +1,7 @@
 #include "selfdrive/ui/qt/offroad/firehose.h"
 #include "selfdrive/ui/ui.h"
 #include "selfdrive/ui/qt/offroad/settings.h"
+#include "selfdrive/ui/qt/util.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -21,7 +22,7 @@ FirehosePanel::FirehosePanel(SettingsWindow *parent) : QWidget((QWidget*)parent)
 
   // header
   QLabel *title = new QLabel(tr("Firehose Mode"));
-  title->setStyleSheet("font-size: 100px; font-weight: 500; font-family: 'Noto Color Emoji';");
+  title->setStyleSheet(QString("font-size: 100px; font-weight: 500; font-family: \"%1\", \"Cubic 11\", \"[Cubic 11]\", Inter, \"Noto Sans CJK TC\";").arg(uiFontFamily()));
   layout->addWidget(title, 0, Qt::AlignCenter);
 
   // Create a container for the content
