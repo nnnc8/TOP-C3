@@ -66,7 +66,7 @@ lenv["RPATH"] += [lenv.Literal(f'\\$$ORIGIN/{acados_rel_path}')]
 lenv.Clean(generated_files, Dir(gen))
 generated_long = lenv.Command(generated_files,
                               source_list,
-                              f"cd {Dir('.').abspath} && python3 long_mpc.py")
+                              f"cd \"{Dir('.').abspath}\" && python3 long_mpc.py")
 lenv.Depends(generated_long, [msgq_python, common_python, pandad_python])
 
 lenv["CFLAGS"].append("-DACADOS_WITH_QPOASES")
@@ -93,10 +93,10 @@ lenv2["RPATH"] += [lenv2.Literal('\\$$ORIGIN')]
 lenv2.Command(libacados_ocp_solver_c,
   [acados_ocp_solver_pyx, acados_ocp_solver_common, libacados_ocp_solver_pxd],
   f'cython' + \
-  f' -o {libacados_ocp_solver_c.get_labspath()}' + \
-  f' -I {libacados_ocp_solver_pxd.get_dir().get_labspath()}' + \
-  f' -I {acados_ocp_solver_common.get_dir().get_labspath()}' + \
-  f' {acados_ocp_solver_pyx.get_labspath()}')
+  f' -o "{libacados_ocp_solver_c.get_labspath()}"' + \
+  f' -I "{libacados_ocp_solver_pxd.get_dir().get_labspath()}"' + \
+  f' -I "{acados_ocp_solver_common.get_dir().get_labspath()}"' + \
+  f' "{acados_ocp_solver_pyx.get_labspath()}"')
 lib_cython = lenv2.Program(f'{gen}/acados_ocp_solver_pyx.so', [libacados_ocp_solver_c], LIBS=['acados_ocp_solver_long'])
 lenv2.Depends(lib_cython, lib_solver)
 lenv2.Depends(libacados_ocp_solver_c, np_version)

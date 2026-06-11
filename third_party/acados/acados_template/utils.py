@@ -30,6 +30,7 @@
 #
 
 import os, sys, json
+import shlex
 import urllib.request
 import shutil
 import numpy as np
@@ -228,7 +229,7 @@ def render_template(in_file, out_file, output_dir, json_path, template_glob=None
     tera_path = get_tera()
 
     # call tera as system cmd
-    os_cmd = f"{tera_path} '{template_glob}' '{in_file}' '{json_path}' '{out_file}'"
+    os_cmd = f"{shlex.quote(tera_path)} {shlex.quote(template_glob)} {shlex.quote(in_file)} {shlex.quote(json_path)} {shlex.quote(out_file)}"
     # Windows cmd.exe can not cope with '...', so use "..." instead:
     if os.name == 'nt':
         os_cmd = os_cmd.replace('\'', '\"')
