@@ -770,18 +770,6 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
                                   "../assets/icons/road.png",
                                   this));
 
-  toggles.append(new ParamControl("toyotaautolock",
-                                  tr("Enable Door Auto Lock"),
-                                  tr("Enabled this to lock doors when drive above 25 km/h. Only work on some Toyota vehicles."),
-                                  "../assets/icons/road.png",
-                                  this));
-
-  toggles.append(new ParamControl("toyotaautounlock",
-                                  tr("Enable Door Auto Unlock"),
-                                  tr("Enabled this to unlock doors when shift to gear P. Only work on some Toyota vehicles."),
-                                  "../assets/icons/road.png",
-                                  this));
-
   toggles.append(new ParamControl("AleSato_AutomaticBrakeHold",
                                   tr("Automatic Brake Hold"),
                                   tr("Activates the car's brakes after 1 seconds stopped. (Only support on Toyota TSS2 Hybrid vehicles)"),
