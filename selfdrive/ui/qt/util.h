@@ -21,6 +21,7 @@ QMap<QString, QString> getSupportedLanguages();
 void setQtSurfaceFormat();
 void sigTermHandler(int s);
 QString timeAgo(const QDateTime &date);
+QString uiFontFamily();
 void swagLogMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 void initApp(int argc, char *argv[], bool disable_hidpi = true);
 QWidget* topWidget(QWidget* widget);
@@ -33,7 +34,7 @@ QColor interpColor(float xv, std::vector<float> xp, std::vector<QColor> fp);
 bool hasLongitudinalControl(const cereal::CarParams::Reader &car_params);
 
 struct InterFont : public QFont {
-  InterFont(int pixel_size, QFont::Weight weight = QFont::Normal) : QFont("Cubic 11") {
+  InterFont(int pixel_size, QFont::Weight weight = QFont::Normal) : QFont(uiFontFamily()) {
     setPixelSize(pixel_size);
     setWeight(weight);
   }

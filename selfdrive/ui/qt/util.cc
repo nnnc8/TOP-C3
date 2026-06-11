@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QFontDatabase>
 #include <QHash>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -84,6 +85,16 @@ QString timeAgo(const QDateTime &date) {
   }
 
   return s;
+}
+
+QString uiFontFamily() {
+  static QString family;
+  if (family.isEmpty()) {
+    const int font_id = QFontDatabase::addApplicationFont("../assets/fonts/Cubic_11.ttf");
+    const QStringList families = QFontDatabase::applicationFontFamilies(font_id);
+    family = families.empty() ? QStringLiteral("Cubic 11") : families.first();
+  }
+  return family;
 }
 
 void setQtSurfaceFormat() {

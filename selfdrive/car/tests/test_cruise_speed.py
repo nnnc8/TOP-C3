@@ -4,7 +4,7 @@ import numpy as np
 
 from parameterized import parameterized_class
 from cereal import log
-from openpilot.selfdrive.car.cruise import VCruiseHelper, V_CRUISE_MIN, V_CRUISE_MAX, V_CRUISE_INITIAL, IMPERIAL_INCREMENT
+from openpilot.selfdrive.car.cruise import VCruiseHelper, V_CRUISE_MIN, V_CRUISE_MAX, V_CRUISE_INITIAL, IMPERIAL_INCREMENT, CRUISE_LONG_PRESS
 from cereal import car
 from openpilot.common.constants import CV
 from openpilot.selfdrive.test.longitudinal_maneuvers.maneuver import Maneuver
@@ -75,6 +75,31 @@ class TestVCruiseHelper:
 
         self.v_cruise_helper.update_v_cruise(CS, enabled=True, is_metric=False, reverse_acc=False)
         assert pressed == (self.v_cruise_helper.v_cruise_kph == self.v_cruise_helper.v_cruise_kph_last)
+
+  def test_reverse_acc_change_metric_steps(self):
+    """
+    Asserts reverse ACC +/- mode uses 2 kph short presses and 5 kph long presses.
+    """
+
+    for btn, sign in ((ButtonType.accelCruise, 1), (ButtonType.decelCruise, -1)):
+      self.reset_cruise_speed_state()
+      self.enable(V_CRUISE_INITIAL * CV.KPH_TO_MS, False)
+
+      for pressed in (True, False):
+        CS = car.CarState(cruiseState={"available": True})
+        CS.buttonEvents = [ButtonEvent(type=btn, pressed=pressed)]
+        self.v_cruise_helper.update_v_cruise(CS, enabled=True, is_metric=True, reverse_acc=True)
+      assert self.v_cruise_helper.v_cruise_kph == V_CRUISE_INITIAL + sign * 2
+
+      self.reset_cruise_speed_state()
+      self.enable(V_CRUISE_INITIAL * CV.KPH_TO_MS, False)
+
+      CS = car.CarState(cruiseState={"available": True})
+      CS.buttonEvents = [ButtonEvent(type=btn, pressed=True)]
+      self.v_cruise_helper.update_v_cruise(CS, enabled=True, is_metric=True, reverse_acc=True)
+      for _ in range(CRUISE_LONG_PRESS):
+        self.v_cruise_helper.update_v_cruise(car.CarState(cruiseState={"available": True}), enabled=True, is_metric=True, reverse_acc=True)
+      assert self.v_cruise_helper.v_cruise_kph == V_CRUISE_INITIAL + sign * 5
 
   def test_rising_edge_enable(self):
     """

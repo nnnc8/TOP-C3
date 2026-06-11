@@ -13,11 +13,11 @@ DialogBase::DialogBase(QWidget *parent) : QDialog(parent) {
   Q_ASSERT(parent != nullptr);
   parent->installEventFilter(this);
 
-  setStyleSheet(R"(
+  setStyleSheet(QString(R"(
     * {
       outline: none;
       color: white;
-      font-family: "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
+      font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
     }
     DialogBase {
       background-color: black;
@@ -33,7 +33,7 @@ DialogBase::DialogBase(QWidget *parent) : QDialog(parent) {
     QPushButton:pressed {
       background-color: #444444;
     }
-  )");
+  )").arg(uiFontFamily()));
 }
 
 bool DialogBase::eventFilter(QObject *o, QEvent *e) {

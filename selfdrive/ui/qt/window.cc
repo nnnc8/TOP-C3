@@ -5,10 +5,11 @@
 #include <QFontDatabase>
 
 #include "system/hardware/hw.h"
+#include "selfdrive/ui/qt/util.h"
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   // load fonts before constructing child widgets so both stylesheets and painted text can use them
-  QFontDatabase::addApplicationFont("../assets/fonts/Cubic_11.ttf");
+  const QString ui_font_family = uiFontFamily();
   QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Regular.otf");
   QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Medium.otf");
   QFontDatabase::addApplicationFont("../assets/fonts/NotoSansCJKtc-Bold.otf");
@@ -21,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   QFontDatabase::addApplicationFont("../assets/fonts/Inter-SemiBold.ttf");
   QFontDatabase::addApplicationFont("../assets/fonts/Inter-Thin.ttf");
   QFontDatabase::addApplicationFont("../assets/fonts/JetBrainsMono-Medium.ttf");
-  QApplication::setFont(QFont("Cubic 11"));
+  QApplication::setFont(QFont(ui_font_family));
 
   main_layout = new QStackedLayout(this);
   main_layout->setMargin(0);
@@ -63,12 +64,12 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
   });
 
   // no outline to prevent the focus rectangle
-  setStyleSheet(R"(
+  setStyleSheet(QString(R"(
     * {
-      font-family: "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
+      font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
       outline: none;
     }
-  )");
+  )").arg(ui_font_family));
   setAttribute(Qt::WA_NoSystemBackground);
 }
 

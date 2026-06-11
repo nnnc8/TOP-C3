@@ -73,6 +73,8 @@ class VCruiseHelper:
 
     v_cruise_delta = 1. if is_metric else IMPERIAL_INCREMENT
     v_cruise_delta_mltplr = 10 if is_metric else 5
+    reverse_short_press_mltplr = 2
+    reverse_long_press_mltplr = 5
 
     for b in CS.buttonEvents:
       if b.type.raw in self.button_timers and not b.pressed:
@@ -99,8 +101,8 @@ class VCruiseHelper:
     if not self.button_change_states[button_type]["enabled"]:
       return
 
-    pressed_value = (1 if long_press else v_cruise_delta_mltplr) if reverse_acc else (v_cruise_delta_mltplr if long_press else 1)
-    long_press_state = not long_press if reverse_acc else long_press
+    pressed_value = (reverse_long_press_mltplr if long_press else reverse_short_press_mltplr) if reverse_acc else (v_cruise_delta_mltplr if long_press else 1)
+    long_press_state = long_press
     v_cruise_delta = v_cruise_delta * pressed_value
     if long_press_state and self.v_cruise_kph % v_cruise_delta != 0:  # partial interval
       self.v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](self.v_cruise_kph / v_cruise_delta) * v_cruise_delta
