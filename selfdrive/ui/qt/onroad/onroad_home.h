@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QColor>
+#include <QFrame>
 #include <QLabel>
 
 #include "common/aegis_achievements.h"
@@ -26,12 +27,14 @@ private:
   void updateAchievements(const UIState &s);
   void saveAchievements(bool force = false);
   bool achievementToastsEnabled();
-  void showAchievementToast(const QString &text, double now_millis);
+  void showAchievementToast(const QString &title, const QString &detail, double now_millis);
 
   OnroadAlerts *alerts;
   AnnotatedCameraWidget *nvg;
   QWidget *achievement_toast_container;
-  QLabel *achievement_toast_text;
+  QFrame *achievement_toast_card;
+  QLabel *achievement_toast_title;
+  QLabel *achievement_toast_detail;
   QColor bg = bg_colors[STATUS_DISENGAGED];
   QHBoxLayout* split;
   Params achievement_params;
@@ -42,7 +45,8 @@ private:
   double last_achievement_update_millis = 0.0;
   double last_achievement_save_millis = 0.0;
   double achievement_toast_until_millis = 0.0;
-  QString pending_achievement_toast;
+  QString pending_achievement_title;
+  QString pending_achievement_detail;
 
   void updateDpIndicatorSideState(bool blinker_state, bool bsm_state, bool &show, bool &show_prev, int &count, QColor &color);
   void updateDpIndicatorStates(const UIState &s);
