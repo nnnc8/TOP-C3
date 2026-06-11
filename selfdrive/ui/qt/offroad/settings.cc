@@ -9,6 +9,7 @@
 #include "common/watchdog.h"
 #include "common/util.h"
 #include "selfdrive/ui/qt/network/networking.h"
+#include "selfdrive/ui/qt/offroad/achievements.h"
 #include "selfdrive/ui/qt/offroad/settings.h"
 #include "selfdrive/ui/qt/qt_window.h"
 #include "selfdrive/ui/qt/widgets/prime.h"
@@ -549,6 +550,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {tr("Toggles"), toggles},
     {tr("Software"), new SoftwarePanel(this)},
     {tr("Firehose"), new FirehosePanel(this)},
+    {tr("Achievements"), new AchievementsPanel(this)},
     {tr("Developer"), new DeveloperPanel(this)},
     {tr("AEGIS"), new TimpilotPanel(this)},
   };
