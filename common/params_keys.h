@@ -156,7 +156,6 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"sng_e2e", {PERSISTENT, BOOL}},
     {"StandstillMode", {PERSISTENT, BOOL}},
     {"TimSignals", {PERSISTENT, BOOL, "1"}},
-    {"topsng", {PERSISTENT, BOOL}},
     {"toyota_bsm", {PERSISTENT, BOOL}},
     {"ToyotaDriveMode", {PERSISTENT, BOOL}},
     {"toyota_stock_long", {PERSISTENT, BOOL}},

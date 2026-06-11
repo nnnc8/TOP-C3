@@ -704,12 +704,6 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
                                   "../assets/icons/road.png",
                                   this));
 
-  toggles.append(new ParamControl("topsng",
-                                  tr("Stop And Go"),
-                                  tr("Enabled the Stop And Go feature and get auto hold."),
-                                  "../assets/icons/road.png",
-                                  this));
-
   toggles.append(new ParamControl("sng_e2e",
                                   tr("Enable Experiment Mode In SNG"),
                                   tr("When vehicle is stopped, enable experiment mode to prevent radar misjudgment of other moving vehicles that could cause continuous forward sliding."),
