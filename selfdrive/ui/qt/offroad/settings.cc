@@ -704,12 +704,6 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
                                   "../assets/icons/road.png",
                                   this));
 
-  toggles.append(new ParamControl("ToyotaTune",
-                                  tr("TSS-P Longitudinal Tuning"),
-                                  tr("Using the longitudinal tuning can improve the smoothness on Toyota TSS-P models when equipped with SDSU for longitudinal control."),
-                                  "../assets/icons/road.png",
-                                  this));
-
   toggles.append(new ParamControl("Dynamic_Follow",
                                   tr("Dynamic Distance Adjustment"),
                                   tr("The distance to the lead car will no longer be a fixed reaction time, but will be dynamically adjusted based on the speed of the vehicle."),

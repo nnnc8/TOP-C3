@@ -25,6 +25,7 @@ LEGACY_TOP_PARAMS = (
   "DrivingModelName",
   "toyotaautolock",
   "toyotaautounlock",
+  "ToyotaTune",
   "topsng",
   "MapAdvisorySpeedLimit",
   "MapdVersion",

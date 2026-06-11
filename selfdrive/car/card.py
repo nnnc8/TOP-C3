@@ -113,9 +113,6 @@ class Car:
       if self.params.get_bool("toyota_stock_long"):
         top_params |= structs.TopFlags.ToyotaStockLong
 
-      if self.params.get_bool("ToyotaTune"):
-        top_params |= structs.TopFlags.ToyotaTSSPTune
-
       if self.params.get_bool("ReverseAccChange"):
         top_params |= structs.TopFlags.ToyotaReverseAccChange
 

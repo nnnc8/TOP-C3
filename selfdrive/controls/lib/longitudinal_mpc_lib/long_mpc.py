@@ -4,9 +4,7 @@ import time
 import numpy as np
 from cereal import log
 from opendbc.car.interfaces import ACCEL_MIN, ACCEL_MAX
-from opendbc.car.toyota.values import ToyotaFlags
 from openpilot.common.constants import CV
-from openpilot.common.params import Params
 from openpilot.common.realtime import DT_MDL
 from openpilot.common.swaglog import cloudlog
 # WARNING: imports outside of constants will not trigger a rebuild
@@ -396,9 +394,6 @@ class LongitudinalMpc:
 
     if self.downhill:
       t_follow += 0.5
-
-    if Params().get_bool("ToyotaTune") and not (self.CP.flags & ToyotaFlags.SMART_DSU):
-      stop_distance += 0.5
 
     self.status = radarstate.leadOne.status or radarstate.leadTwo.status
 
