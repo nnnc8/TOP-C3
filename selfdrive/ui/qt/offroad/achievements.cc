@@ -90,10 +90,8 @@ AchievementsPanel::AchievementsPanel(QWidget *parent) : QWidget(parent) {
 
   QLabel *kicker = makeLabel(tr("AEGIS Festival Playlist"), 32, 800, "#6FFFE9", hero);
   QLabel *title = makeLabel(tr("Journey Board"), 74, 850, "#FFFFFF", hero);
-  QLabel *subtitle = makeLabel(tr("Clean assists, smart restraint, and long-term mastery."), 34, 500, "#C9D4DF", hero);
   hero_layout->addWidget(kicker);
   hero_layout->addWidget(title);
-  hero_layout->addWidget(subtitle);
 
   QHBoxLayout *level_layout = new QHBoxLayout();
   level_layout->setSpacing(28);
@@ -106,7 +104,6 @@ AchievementsPanel::AchievementsPanel(QWidget *parent) : QWidget(parent) {
 
   xp_bar = makeProgressBar(AEGIS_LEVEL_XP, hero);
   hero_layout->addWidget(xp_bar);
-  hero_layout->addWidget(makeLabel(tr("No streaks. No speed targets. Just clean seat time."), 30, 600, "#9AA8B4", hero));
   main_layout->addWidget(hero);
 
   QGridLayout *metrics = new QGridLayout();

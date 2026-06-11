@@ -55,14 +55,6 @@
         <translation>旅程看板</translation>
     </message>
     <message>
-        <source>Clean assists, smart restraint, and long-term mastery.</source>
-        <translation>乾淨輔助、克制判斷，累積長期駕駛熟練度。</translation>
-    </message>
-    <message>
-        <source>No streaks. No speed targets. Just clean seat time.</source>
-        <translation>不做連續天數，不做速度挑戰，只累積乾淨輔助時間。</translation>
-    </message>
-    <message>
         <source>Seat Time</source>
         <translation>座艙時間</translation>
     </message>
@@ -936,7 +928,7 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
     </message>
     <message>
         <source>Firehose</source>
-        <translation>Firehose</translation>
+        <translation>上傳</translation>
     </message>
     <message>
         <source>AEGIS</source>
@@ -944,7 +936,7 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
     </message>
     <message>
         <source>Achievements</source>
-        <translation type="unfinished"></translation>
+        <translation>成就</translation>
     </message>
 </context>
 <context>
