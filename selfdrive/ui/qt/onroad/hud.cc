@@ -212,7 +212,7 @@ void HudRenderer::drawSmartCruiseControlOnroadIcon(QPainter &p, const QRect &sur
   boxPath = boxPath.subtracted(textPath);
 
   p.setPen(Qt::NoPen);
-  p.setBrush(longOverride ? QColor(0x91, 0x9b, 0x95, 0xf1) : QColor(0, 0xff, 0, 0xff));
+  p.setBrush(longOverride ? tesla_theme::standby(0xf1) : tesla_theme::blue());
   p.drawPath(boxPath);
 }
 

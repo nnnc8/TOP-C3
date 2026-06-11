@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <QStyleOption>
 
+#include "selfdrive/ui/qt/util.h"
+
 AbstractControl::AbstractControl(const QString &title, const QString &desc, const QString &icon, QWidget *parent) : QFrame(parent) {
   QVBoxLayout *main_layout = new QVBoxLayout(this);
   main_layout->setMargin(0);
@@ -24,13 +26,21 @@ AbstractControl::AbstractControl(const QString &title, const QString &desc, cons
   // title
   title_label = new QPushButton(title);
   title_label->setFixedHeight(120);
-  title_label->setStyleSheet("font-size: 46px; font-weight: 500; text-align: left; border: none; color: #F4F4F4;");
+  title_label->setStyleSheet(QString(R"(
+    font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
+    font-size: 42px;
+    font-weight: 650;
+    text-align: left;
+    border: none;
+    color: #F4F6FA;
+    background-color: transparent;
+  )").arg(uiFontFamily()));
   hlayout->addWidget(title_label, 1);
 
   // value next to control button
   value = new ElidedLabel();
   value->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-  value->setStyleSheet("color: #aaaaaa");
+  value->setStyleSheet("color: #A6B0BE; background-color: transparent;");
   hlayout->addWidget(value);
 
   main_layout->addLayout(hlayout);
@@ -38,7 +48,13 @@ AbstractControl::AbstractControl(const QString &title, const QString &desc, cons
   // description
   description = new QLabel(desc);
   description->setContentsMargins(40, 20, 40, 20);
-  description->setStyleSheet("font-size: 34px; color: #9BA1A8");
+  description->setStyleSheet(QString(R"(
+    font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
+    font-size: 32px;
+    line-height: 120%;
+    color: #A6B0BE;
+    background-color: transparent;
+  )").arg(uiFontFamily()));
   description->setWordWrap(true);
   description->setVisible(false);
   main_layout->addWidget(description);
@@ -70,22 +86,26 @@ ButtonControl::ButtonControl(const QString &title, const QString &text, const QS
 
 ButtonControl::ButtonControl(const QString &title, const QString &text, const QString &desc, const QString &icon, QWidget *parent) : AbstractControl(title, desc, icon, parent) {
   btn.setText(text);
-  btn.setStyleSheet(R"(
+  btn.setStyleSheet(QString(R"(
     QPushButton {
       padding: 0;
       border-radius: 12px;
       font-size: 34px;
-      font-weight: 500;
-      color: #F4F4F4;
-      background-color: #2B2D31;
+      font-weight: 650;
+      font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
+      color: #F4F6FA;
+      background-color: #7AAECE;
+      border: 1px solid rgba(255, 255, 255, 46);
     }
     QPushButton:pressed {
-      background-color: #3A3D43;
+      background-color: #497C9C;
     }
     QPushButton:disabled {
       color: #55F4F4F4;
+      background-color: #161D2C;
+      border: 1px solid rgba(255, 255, 255, 26);
     }
-  )");
+  )").arg(uiFontFamily()));
   btn.setFixedSize(240, 92);
   QObject::connect(&btn, &QPushButton::clicked, this, &ButtonControl::clicked);
   hlayout->addWidget(&btn);

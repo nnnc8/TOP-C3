@@ -63,10 +63,11 @@ KeyboardLayout::KeyboardLayout(QWidget* parent, const std::vector<QVector<QStrin
       } else if (p == ENTER_KEY) {
         btn->setStyleSheet(R"(
           QPushButton {
-            background-color: #465BEA;
+            color: #07101A;
+            background-color: #7AAECE;
           }
           QPushButton:pressed {
-            background-color: #444444;
+            background-color: #497C9C;
           }
         )");
       }
@@ -91,11 +92,12 @@ KeyboardLayout::KeyboardLayout(QWidget* parent, const std::vector<QVector<QStrin
       margin-bottom: %2px;
       padding: 0px;
       border-radius: 10px;
-      color: #dddddd;
-      background-color: #444444;
+      color: #F4F6FA;
+      background-color: #161D2C;
+      border: 1px solid rgba(122, 174, 206, 52);
     }
     QPushButton:pressed {
-      background-color: #333333;
+      background-color: #1F2A3C;
     }
   )").arg(key_spacing_vertical / 2).arg(key_spacing_horizontal / 2));
 }
@@ -151,7 +153,7 @@ void Keyboard::handleCapsPress() {
   for (KeyButton* btn : main_layout->currentWidget()->findChildren<KeyButton*>()) {
     if (btn->text() == SHIFT_KEY || btn->text() == CAPS_LOCK_KEY) {
       btn->setText(shift_state == 2 ? CAPS_LOCK_KEY : SHIFT_KEY);
-      btn->setStyleSheet(is_uppercase ? "background-color: #465BEA;" : "");
+      btn->setStyleSheet(is_uppercase ? "background-color: #7AAECE; color: #07101A;" : "");
     }
   }
 }

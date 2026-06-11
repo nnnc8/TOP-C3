@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 
 #include "selfdrive/ui/qt/offroad/experimental_mode.h"
+#include "selfdrive/ui/qt/tesla_theme.h"
 #include "selfdrive/ui/qt/util.h"
 #include "selfdrive/ui/qt/widgets/prime.h"
 
@@ -111,13 +112,37 @@ OffroadHome::OffroadHome(QWidget* parent) : QFrame(parent) {
 
   update_notif = new QPushButton(tr("UPDATE"));
   update_notif->setVisible(false);
-  update_notif->setStyleSheet("background-color: #364DEF;");
+  update_notif->setStyleSheet(QString(R"(
+    QPushButton {
+      background-color: #7AAECE;
+      border: 1px solid rgba(255, 255, 255, 52);
+      border-radius: 12px;
+      color: #F4F6FA;
+      font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
+      font-size: 36px;
+      font-weight: 650;
+      padding: 14px 28px;
+    }
+    QPushButton:pressed { background-color: #497C9C; }
+  )").arg(uiFontFamily()));
   QObject::connect(update_notif, &QPushButton::clicked, [=]() { center_layout->setCurrentIndex(1); });
   header_layout->addWidget(update_notif, 0, Qt::AlignHCenter | Qt::AlignLeft);
 
   alert_notif = new QPushButton();
   alert_notif->setVisible(false);
-  alert_notif->setStyleSheet("background-color: #E22C2C;");
+  alert_notif->setStyleSheet(QString(R"(
+    QPushButton {
+      background-color: #C92231;
+      border: 1px solid rgba(255, 255, 255, 52);
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
+      font-size: 36px;
+      font-weight: 650;
+      padding: 14px 28px;
+    }
+    QPushButton:pressed { background-color: #E82127; }
+  )").arg(uiFontFamily()));
   QObject::connect(alert_notif, &QPushButton::clicked, [=] { center_layout->setCurrentIndex(2); });
   header_layout->addWidget(alert_notif, 0, Qt::AlignHCenter | Qt::AlignLeft);
 
@@ -142,14 +167,15 @@ OffroadHome::OffroadHome(QWidget* parent) : QFrame(parent) {
     left_prime_layout->setContentsMargins(0, 0, 0, 0);
     QWidget *prime_user = new PrimeUserWidget();
     prime_user->setStyleSheet(R"(
-    border-radius: 10px;
-    background-color: #333333;
+      border-radius: 14px;
+      background-color: #0D111B;
+      border: 1px solid rgba(122, 174, 206, 128);
     )");
     left_prime_layout->addWidget(prime_user);
     left_prime_layout->addStretch();
     left_widget->addWidget(new LayoutWidget(left_prime_layout));
     left_widget->addWidget(new PrimeAdWidget);
-    left_widget->setStyleSheet("border-radius: 10px;");
+    left_widget->setStyleSheet("border-radius: 14px; background-color: #0D111B;");
 
     connect(uiState()->prime_state, &PrimeState::changed, [left_widget]() {
       left_widget->setCurrentIndex(uiState()->prime_state->isSubscribed() ? 0 : 1);
@@ -192,19 +218,21 @@ OffroadHome::OffroadHome(QWidget* parent) : QFrame(parent) {
 
   setStyleSheet(R"(
     * {
-      color: white;
+      color: #F4F6FA;
+      font-family: "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
     }
     OffroadHome {
-      background-color: black;
+      background-color: #03060E;
     }
     OffroadHome > QPushButton {
       padding: 15px 30px;
-      border-radius: 5px;
-      font-size: 40px;
-      font-weight: 500;
+      border-radius: 12px;
+      font-size: 36px;
+      font-weight: 650;
     }
     OffroadHome > QLabel {
-      font-size: 55px;
+      color: #A6B0BE;
+      font-size: 38px;
     }
   )");
 }

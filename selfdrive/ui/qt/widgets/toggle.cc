@@ -2,6 +2,8 @@
 
 #include <QPainter>
 
+#include "selfdrive/ui/qt/tesla_theme.h"
+
 Toggle::Toggle(QWidget *parent) : QAbstractButton(parent),
 _height(80),
 _height_rect(60),
@@ -28,7 +30,7 @@ void Toggle::paintEvent(QPaintEvent *e) {
   p.drawRoundedRect(QRect(0, _y_rect, _x_circle + _radius, _height_rect), _height_rect/2, _height_rect/2);
 
   // Draw toggle background right
-  p.setBrush(QColor(0x393939));
+  p.setBrush(enabled ? tesla_theme::panel_hover() : QColor(0x2a, 0x2d, 0x34));
   p.drawRoundedRect(QRect(_x_circle - _radius, _y_rect, width() - (_x_circle - _radius), _height_rect), _height_rect/2, _height_rect/2);
 
   // Draw toggle circle
@@ -74,10 +76,10 @@ bool Toggle::getEnabled() {
 void Toggle::setEnabled(bool value) {
   enabled = value;
   if (value) {
-    circleColor.setRgb(0xfafafa);
-    green.setRgb(0x33ab4c);
+    circleColor = tesla_theme::text();
+    green = tesla_theme::blue();
   } else {
-    circleColor.setRgb(0x888888);
-    green.setRgb(0x227722);
+    circleColor = QColor(0x7a, 0x80, 0x88);
+    green = QColor(0x18, 0x1d, 0x28);
   }
 }

@@ -217,7 +217,7 @@ void ModelRenderer::drawLead(QPainter &painter, const cereal::RadarState::LeadDa
     painter.drawText(QRect(x+lock_indicator_dx, y-50, str_w, 50), Qt::AlignBottom | Qt::AlignLeft, dist);
     if (global_a_rel >= global_a_rel_col){
       global_a_rel_col = -0.1; //減少混亂的緩衝區。
-      painter.setPen(QColor(0.09*255, 0.945*255, 0.26*255, 255));
+      painter.setPen(tesla_theme::blue());
     } else {
       global_a_rel_col = 0;
       painter.setPen(QColor(245, 0, 0, 255));
@@ -249,7 +249,7 @@ void ModelRenderer::drawLockon(QPainter &painter, const cereal::ModelDataV2::Lea
   }
   prob_alpha *= 245;
 
-  painter.setPen(QPen(QColor(0.09*255, 0.945*255, 0.26*255, prob_alpha), 2));
+  painter.setPen(QPen(tesla_theme::blue(prob_alpha), 2));
   painter.setBrush(QColor(0, 0, 0, 0));
   float ww = 300, hh = 300;
   if (Hardware::TICI()){
@@ -302,7 +302,7 @@ void ModelRenderer::drawLockon(QPainter &painter, const cereal::ModelDataV2::Lea
 
   painter.setFont(InterFont(38, QFont::DemiBold));
   if (num == 0) {
-    painter.setPen(QPen(QColor(0.09*255, 0.945*255, 0.26*255, prob_alpha), 2));
+    painter.setPen(QPen(tesla_theme::blue(prob_alpha), 2));
     painter.drawRect(r);
 
     if (leadcar_lockon[0].x > leadcar_lockon[1].x - 20) {
@@ -337,7 +337,7 @@ void ModelRenderer::drawLockon(QPainter &painter, const cereal::ModelDataV2::Lea
       float hha = 0;
       if (a_rel > 0) {
         hha = 1 - 0.1 / a_rel;
-        painter.setBrush(QColor(0.09*255, 0.945*255, 0.26*255, prob_alpha*0.9));
+        painter.setBrush(tesla_theme::blue(prob_alpha * 0.9));
 
         if (hha < 0) {
           hha = 0;
@@ -379,7 +379,7 @@ void ModelRenderer::drawLockon(QPainter &painter, const cereal::ModelDataV2::Lea
 
       float tlw = 8;
       float tlw_2 = tlw / 2;
-      painter.setPen(QPen(QColor(0.09*255, 0.945*255, 0.26*255, prob_alpha), tlw));
+      painter.setPen(QPen(tesla_theme::blue(prob_alpha), tlw));
       painter.drawLine(r.center().x(), r.top()-tlw_2, r.center().x(), r.top() - td);
       painter.drawLine(r.left()-tlw_2, r.center().y(), r.left() - td, r.center().y());
       painter.drawLine(r.right()+tlw_2, r.center().y(), r.right() + td, r.center().y());
@@ -391,7 +391,7 @@ void ModelRenderer::drawLockon(QPainter &painter, const cereal::ModelDataV2::Lea
       if (std::abs(y0 - y1) > 300) {
         painter.setPen(QPen(QColor(245, 0, 0, prob_alpha), 2));
       } else {
-        painter.setPen(QPen(QColor(0.09*255, 0.945*255, 0.26*255, prob_alpha), 2));
+        painter.setPen(QPen(tesla_theme::blue(prob_alpha), 2));
       }
 
       if (leadcar_lockon[0].x > leadcar_lockon[1].x - 20) {
@@ -410,9 +410,9 @@ void ModelRenderer::drawLockon(QPainter &painter, const cereal::ModelDataV2::Lea
       }
       painter.drawLine(lxt, r.top(), leadcar_lockon[num].lxf, 0);
     } else if (num == 2) {
-      painter.setPen(QPen(QColor(0.09*255, 0.945*255, 0.26*255, prob_alpha), 2));
+      painter.setPen(QPen(tesla_theme::blue(prob_alpha), 2));
     } else {
-      painter.setPen(QPen(QColor(0.09*255, 0.945*255, 0.26*255, prob_alpha), 2));
+      painter.setPen(QPen(tesla_theme::blue(prob_alpha), 2));
     }
 
     painter.drawRect(r);

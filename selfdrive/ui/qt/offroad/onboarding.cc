@@ -78,7 +78,7 @@ void TrainingGuide::paintEvent(QPaintEvent *event) {
   if (currentIndex > 0 && currentIndex < (boundingRect.size() - 2)) {
     const int h = 20;
     const int w = (currentIndex / (float)(boundingRect.size() - 2)) * width();
-    painter.fillRect(QRect(0, height() - h, w, h), QColor("#465BEA"));
+    painter.fillRect(QRect(0, height() - h, w, h), QColor("#7AAECE"));
   }
 }
 
@@ -96,7 +96,7 @@ void TermsPage::showEvent(QShowEvent *event) {
   vlayout->addWidget(title, 0, Qt::AlignTop | Qt::AlignLeft);
 
   vlayout->addSpacing(90);
-  QLabel *desc = new QLabel(tr("You must accept the Terms and Conditions to use openpilot. Read the latest terms at <span style='color: #465BEA;'>https://comma.ai/terms</span> before continuing."));
+  QLabel *desc = new QLabel(tr("You must accept the Terms and Conditions to use openpilot. Read the latest terms at <span style='color: #7AAECE;'>https://comma.ai/terms</span> before continuing."));
   desc->setWordWrap(true);
   desc->setStyleSheet("font-size: 80px; font-weight: 300;");
   vlayout->addWidget(desc, 0);
@@ -115,10 +115,11 @@ void TermsPage::showEvent(QShowEvent *event) {
   accept_btn = new QPushButton(tr("Agree"));
   accept_btn->setStyleSheet(R"(
     QPushButton {
-      background-color: #465BEA;
+      color: #07101A;
+      background-color: #7AAECE;
     }
     QPushButton:pressed {
-      background-color: #3049F4;
+      background-color: #497C9C;
     }
   )");
   buttons->addWidget(accept_btn);
@@ -196,15 +197,16 @@ OnboardingWindow::OnboardingWindow(QWidget *parent) : QStackedWidget(parent) {
 
   setStyleSheet(R"(
     * {
-      color: white;
-      background-color: black;
+      color: #F4F6FA;
+      background-color: #03060E;
     }
     QPushButton {
       height: 160px;
       font-size: 55px;
-      font-weight: 400;
-      border-radius: 10px;
-      background-color: #4F4F4F;
+      font-weight: 650;
+      border-radius: 12px;
+      background-color: #161D2C;
+      border: 1px solid rgba(122, 174, 206, 52);
     }
   )");
   updateActiveScreen();

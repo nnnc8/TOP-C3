@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "selfdrive/ui/qt/onroad/buttons.h"
+#include "selfdrive/ui/qt/tesla_theme.h"
 #include "selfdrive/ui/qt/util.h"
 
 // Default 3D coordinates for face keypoints
@@ -17,7 +18,7 @@ static constexpr vec3 DEFAULT_FACE_KPTS_3D[] = {
 };
 
 // Colors used for drawing based on monitoring state
-static const QColor DMON_ENGAGED_COLOR = QColor::fromRgbF(0.1, 0.945, 0.26);
+static const QColor DMON_ENGAGED_COLOR = tesla_theme::blue();
 static const QColor DMON_DISENGAGED_COLOR = QColor::fromRgbF(0.545, 0.545, 0.545);
 
 DriverMonitorRenderer::DriverMonitorRenderer() : face_kpts_draw(std::size(DEFAULT_FACE_KPTS_3D)) {

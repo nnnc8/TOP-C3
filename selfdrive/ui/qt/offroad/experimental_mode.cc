@@ -7,6 +7,7 @@
 #include <QStyle>
 
 #include "selfdrive/ui/ui.h"
+#include "selfdrive/ui/qt/tesla_theme.h"
 #include "selfdrive/ui/qt/util.h"
 
 ExperimentalModeButton::ExperimentalModeButton(QWidget *parent) : QPushButton(parent) {
@@ -39,7 +40,7 @@ ExperimentalModeButton::ExperimentalModeButton(QWidget *parent) : QPushButton(pa
       font-weight: 300;
       text-align: left;
       font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
-      color: #000000;
+      color: #F4F6FA;
     }
   )").arg(uiFontFamily()));
 }
@@ -56,16 +57,19 @@ void ExperimentalModeButton::paintEvent(QPaintEvent *event) {
   bool pressed = isDown();
   QLinearGradient gradient(rect().left(), 0, rect().right(), 0);
   if (experimental_mode) {
-    gradient.setColorAt(0, QColor(255, 155, 63, pressed ? 0xcc : 0xff));
-    gradient.setColorAt(1, QColor(219, 56, 34, pressed ? 0xcc : 0xff));
+    gradient.setColorAt(0, tesla_theme::blue(pressed ? 0xcc : 0xff));
+    gradient.setColorAt(1, tesla_theme::blue_soft(pressed ? 0xcc : 0xff));
   } else {
-    gradient.setColorAt(0, QColor(20, 255, 171, pressed ? 0xcc : 0xff));
-    gradient.setColorAt(1, QColor(35, 149, 255, pressed ? 0xcc : 0xff));
+    gradient.setColorAt(0, tesla_theme::panel_solid(pressed ? 0xcc : 0xff));
+    gradient.setColorAt(1, tesla_theme::panel_hover(pressed ? 0xcc : 0xff));
   }
   p.fillPath(path, gradient);
 
+  p.setPen(QPen(tesla_theme::panel_border(experimental_mode ? 180 : 92), 2));
+  p.drawPath(path);
+
   // vertical line
-  p.setPen(QPen(QColor(0, 0, 0, 0x4d), 3, Qt::SolidLine));
+  p.setPen(QPen(QColor(255, 255, 255, 0x2c), 3, Qt::SolidLine));
   int line_x = rect().right() - img_width - (2 * horizontal_padding);
   p.drawLine(line_x, rect().bottom(), line_x, rect().top());
 }

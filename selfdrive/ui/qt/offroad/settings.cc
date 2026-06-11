@@ -356,8 +356,8 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent), parentWin
 //  }
 
   setStyleSheet(R"(
-    #reboot_btn { height: 112px; border-radius: 12px; background-color: #2B2D31; font-size: 42px; color: #F4F4F4; }
-    #reboot_btn:pressed { background-color: #3A3D43; }
+    #reboot_btn { height: 112px; border-radius: 12px; background-color: #7AAECE; border: 1px solid rgba(255, 255, 255, 52); font-size: 42px; color: #07101A; font-weight: 650; }
+    #reboot_btn:pressed { background-color: #497C9C; }
     #poweroff_btn { height: 112px; border-radius: 12px; background-color: #E82127; font-size: 42px; color: #FFFFFF; }
     #poweroff_btn:pressed { background-color: #FF2424; }
   )");
@@ -529,11 +529,13 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
       font-size: 120px;
       padding-bottom: 20px;
       border-radius: 100px;
-      background-color: #1F2126;
+      background-color: #0D111B;
+      border: 1px solid rgba(122, 174, 206, 118);
+      color: #F4F6FA;
       font-weight: 400;
     }
     QPushButton:pressed {
-      background-color: #2B2D31;
+      background-color: #161D2C;
     }
   )");
   close_btn->setFixedSize(140, 140);
@@ -571,25 +573,32 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   nav_btns = new QButtonGroup(this);
   for (auto &[name, icon, panel] : panels) {
     QPushButton *btn = new QPushButton(name);
+    btn->setObjectName("navButton");
     btn->setCheckable(true);
     btn->setChecked(nav_btns->buttons().size() == 0);
     btn->setIcon(QIcon(icon));
     btn->setIconSize(QSize(48, 48));
     btn->setStyleSheet(R"(
-      QPushButton {
-        color: #8E949B;
-        border: none;
-        background: none;
+      QPushButton#navButton {
+        color: #A6B0BE;
+        border: 1px solid transparent;
+        border-left: 5px solid transparent;
+        border-radius: 10px;
+        background-color: transparent;
         font-size: 46px;
-        font-weight: 500;
+        font-weight: 650;
         text-align: left;
-        padding-left: 14px;
+        padding-left: 18px;
       }
-      QPushButton:checked {
-        color: #F4F4F4;
+      QPushButton#navButton:checked {
+        color: #F4F6FA;
+        background-color: rgba(122, 174, 206, 32);
+        border: 1px solid rgba(122, 174, 206, 82);
+        border-left: 5px solid #7AAECE;
       }
-      QPushButton:pressed {
-        color: #C9CDD2;
+      QPushButton#navButton:pressed {
+        color: #FFFFFF;
+        background-color: rgba(122, 174, 206, 52);
       }
     )");
     btn->setMinimumHeight(108);
@@ -619,14 +628,19 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
 
   setStyleSheet(R"(
     * {
-      color: #F4F4F4;
+      color: #F4F6FA;
       font-size: 46px;
+      font-family: "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
     }
     SettingsWindow {
-      background-color: black;
+      background-color: #03060E;
+    }
+    QWidget {
+      background-color: transparent;
     }
     QStackedWidget, ScrollView {
-      background-color: #111318;
+      background-color: #0D111B;
+      border: 1px solid rgba(122, 174, 206, 56);
       border-radius: 18px;
     }
   )");
@@ -670,7 +684,7 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
   main_layout->addWidget(setCar);
 
   QPalette pal = palette();
-  pal.setColor(QPalette::Background, QColor(0x29, 0x29, 0x29));
+  pal.setColor(QPalette::Background, QColor(0x03, 0x06, 0x0e));
   setAutoFillBackground(true);
   setPalette(pal);
 
@@ -679,24 +693,24 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
       font-size: 44px;
       margin: 0px;
       padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 52);
+      border: 1px solid rgba(122, 174, 206, 72);
       border-radius: 12px;
-      color: #F4F4F4;
-      background-color: #191B20;
+      color: #F4F6FA;
+      background-color: #0D111B;
     }
     #homeWidget {
-      background-color: #0B0C0F;
+      background-color: #03060E;
     }
     AbstractControl {
-      background-color: #15171C;
-      border: 1px solid rgba(255, 255, 255, 42);
+      background-color: #0D111B;
+      border: 1px solid rgba(122, 174, 206, 52);
       border-radius: 8px;
     }
     AbstractControl QPushButton {
-      color: #F4F4F4;
+      color: #F4F6FA;
     }
     AbstractControl QLabel {
-      color: #AEB4BA;
+      color: #A6B0BE;
     }
   )");
 

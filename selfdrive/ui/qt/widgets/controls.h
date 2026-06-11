@@ -216,20 +216,23 @@ public:
       QPushButton {
         border-radius: 12px;
         font-size: 36px;
-        font-weight: 500;
+        font-weight: 650;
         height: 92px;
         padding: 0 25 0 25;
-        color: #F4F4F4;
-        background-color: #2B2D31;
+        color: #F4F6FA;
+        background-color: #161D2C;
+        border: 1px solid rgba(255, 255, 255, 32);
       }
       QPushButton:pressed {
-        background-color: #3A3D43;
+        background-color: #1F2A3C;
       }
       QPushButton:checked:enabled {
-        background-color: #E82127;
+        color: #07101A;
+        background-color: #7AAECE;
+        border: 1px solid rgba(255, 255, 255, 72);
       }
       QPushButton:checked:disabled {
-        background-color: #66E82127;
+        background-color: rgba(122, 174, 206, 102);
       }
       QPushButton:disabled {
         color: #55F4F4F4;
@@ -352,13 +355,14 @@ public:
         padding: 15px 30px;
         border-width: 0;
         border-radius: 12px;
-        color: #F4F4F4;
-        background-color: #2B2D31;
+        color: #F4F6FA;
+        background-color: #161D2C;
+        border: 1px solid rgba(122, 174, 206, 52);
         text-align: left;
         min-height: 120px;
       }
       QPushButton:pressed {
-        background-color: #3A3D43;
+        background-color: #1F2A3C;
       }
     )");
   }
@@ -382,11 +386,12 @@ public:
         border-radius: 12px;
         font-size: 30px;
         font-weight: bold;
-        background-color: #2B2D31;
-        color: #F4F4F4;
+        background-color: #161D2C;
+        border: 1px solid rgba(122, 174, 206, 52);
+        color: #F4F6FA;
       }
       QPushButton:pressed {
-        background-color: #3A3D43;
+        background-color: #1F2A3C;
       }
     )");
 
@@ -397,7 +402,7 @@ public:
     value_label = new QLabel();
     value_label->setAlignment(Qt::AlignCenter);
     value_label->setMinimumWidth(150);
-    value_label->setStyleSheet("font-size: 36px; color: #F4F4F4;");
+    value_label->setStyleSheet("font-size: 36px; color: #F4F6FA;");
 
     controls_layout->addWidget(minus_btn);
     controls_layout->addWidget(value_label);
@@ -472,11 +477,12 @@ public:
         padding: 15px;
         border-width: 0;
         border-radius: 12px;
-        color: #F4F4F4;
-        background-color: #2B2D31;
+        color: #F4F6FA;
+        background-color: #161D2C;
+        border: 1px solid rgba(122, 174, 206, 52);
       }
       QPushButton:pressed {
-        background-color: #3A3D43;
+        background-color: #1F2A3C;
       }
     )");
     setFixedSize(400, 100);

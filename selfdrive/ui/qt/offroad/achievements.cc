@@ -80,7 +80,7 @@ QString badgeCardStyle(bool unlocked) {
     return R"(
       QFrame {
         background-color: #15171C;
-        border: 2px solid #E82127;
+        border: 2px solid #7AAECE;
         border-radius: 12px;
       }
       QLabel { background-color: transparent; border: none; }
@@ -231,12 +231,12 @@ AchievementsPanel::AchievementsPanel(QWidget *parent) : QWidget(parent) {
       border-radius: 12px;
     }
     QProgressBar {
-      background-color: #2B2D31;
+      background-color: #161D2C;
       border: none;
       border-radius: 10px;
     }
     QProgressBar::chunk {
-      background-color: #E82127;
+      background-color: #7AAECE;
       border-radius: 10px;
     }
   )");
@@ -305,7 +305,7 @@ void AchievementsPanel::refresh() {
     if (auto label = badge_state_labels.find(badge.id); label != badge_state_labels.end()) {
       label->second->setText(unlocked ? tr("UNLOCKED") : tr("LOCKED"));
       label->second->setStyleSheet(QString("font-size: 24px; font-weight: 700; color: %1; background-color: transparent; border: none;")
-                                       .arg(unlocked ? "#E82127" : "#7A8088"));
+                                       .arg(unlocked ? "#9FD1EC" : "#7A8088"));
     }
   }
 }

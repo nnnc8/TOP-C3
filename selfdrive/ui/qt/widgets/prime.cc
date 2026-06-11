@@ -165,7 +165,7 @@ PrimeAdWidget::PrimeAdWidget(QWidget* parent) : QFrame(parent) {
 
   QVector<QString> bullets = {tr("Remote access"), tr("24/7 LTE connectivity"), tr("1 year of drive storage"), tr("Remote snapshots")};
   for (auto &b : bullets) {
-    const QString check = "<b><font color='#465BEA'>✓</font></b> ";
+    const QString check = "<b><font color='#7AAECE'>✓</font></b> ";
     QLabel *l = new QLabel(check + b);
     l->setAlignment(Qt::AlignLeft);
     l->setStyleSheet("font-size: 50px; margin-bottom: 15px;");
@@ -174,8 +174,9 @@ PrimeAdWidget::PrimeAdWidget(QWidget* parent) : QFrame(parent) {
 
   setStyleSheet(R"(
     PrimeAdWidget {
-      border-radius: 10px;
-      background-color: #333333;
+      border-radius: 14px;
+      background-color: #0D111B;
+      border: 1px solid rgba(122, 174, 206, 72);
     }
   )");
 }
@@ -207,13 +208,14 @@ SetupWidget::SetupWidget(QWidget* parent) : QFrame(parent) {
   pair->setStyleSheet(R"(
     QPushButton {
       font-size: 55px;
-      font-weight: 500;
-      border-radius: 10px;
-      background-color: #465BEA;
+      font-weight: 650;
+      border-radius: 12px;
+      color: #07101A;
+      background-color: #7AAECE;
       padding: 64px;
     }
     QPushButton:pressed {
-      background-color: #3049F4;
+      background-color: #497C9C;
     }
   )");
   finishRegistrationLayout->addWidget(pair);
@@ -244,8 +246,9 @@ SetupWidget::SetupWidget(QWidget* parent) : QFrame(parent) {
 
   setStyleSheet(R"(
     #primeWidget {
-      border-radius: 10px;
-      background-color: #333333;
+      border-radius: 14px;
+      background-color: #0D111B;
+      border: 1px solid rgba(122, 174, 206, 72);
     }
   )");
 

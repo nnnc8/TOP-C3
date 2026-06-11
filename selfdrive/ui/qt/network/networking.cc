@@ -54,7 +54,7 @@ Networking::Networking(QWidget* parent, bool show_advanced) : QFrame(parent) {
   main_layout->addWidget(an);
 
   QPalette pal = palette();
-  pal.setColor(QPalette::Window, QColor(0x29, 0x29, 0x29));
+  pal.setColor(QPalette::Window, QColor(0x03, 0x06, 0x0e));
   setAutoFillBackground(true);
   setPalette(pal);
 
@@ -65,11 +65,12 @@ Networking::Networking(QWidget* parent, bool show_advanced) : QFrame(parent) {
       padding: 15px;
       border-width: 0;
       border-radius: 12px;
-      color: #F4F4F4;
-      background-color: #2B2D31;
+      color: #F4F6FA;
+      background-color: #161D2C;
+      border: 1px solid rgba(122, 174, 206, 52);
     }
     #back_btn:pressed, #advanced_btn:pressed {
-      background-color: #3A3D43;
+      background-color: #1F2A3C;
     }
   )");
   main_layout->setCurrentWidget(wifiScreen);
@@ -285,7 +286,7 @@ WifiUI::WifiUI(QWidget *parent, WifiManager* wifi) : QWidget(parent), wifi(wifi)
   circled_slash = QPixmap(ASSET_PATH + "icons/circled_slash.svg").scaledToWidth(ICON_WIDTH, Qt::SmoothTransformation);
 
   scanningLabel = new QLabel(tr("Scanning for networks..."));
-  scanningLabel->setStyleSheet("font-size: 52px; color: #AEB4BA;");
+  scanningLabel->setStyleSheet("font-size: 52px; color: #A6B0BE;");
   main_layout->addWidget(scanningLabel, 0, Qt::AlignCenter);
 
   wifi_list_widget = new ListWidget(this);
@@ -296,31 +297,31 @@ WifiUI::WifiUI(QWidget *parent, WifiManager* wifi) : QWidget(parent), wifi(wifi)
     QScrollBar::handle:vertical {
       min-height: 0px;
       border-radius: 4px;
-      background-color: #8A8A8A;
+      background-color: #7AAECE;
     }
     #forgetBtn {
       font-size: 32px;
       font-weight: 600;
-      color: #F4F4F4;
-      background-color: #2B2D31;
-      border-width: 1px solid #3A3D43;
+      color: #F4F6FA;
+      background-color: #161D2C;
+      border: 1px solid rgba(122, 174, 206, 52);
       border-radius: 5px;
       padding: 40px;
       padding-bottom: 16px;
       padding-top: 16px;
     }
     #forgetBtn:pressed {
-      background-color: #828282;
+      background-color: #1F2A3C;
     }
     #connecting {
       font-size: 32px;
       font-weight: 600;
-      color: white;
+      color: #07101A;
       border-radius: 0;
       padding: 27px;
       padding-left: 43px;
       padding-right: 43px;
-      background-color: black;
+      background-color: #7AAECE;
     }
     #ssidLabel {
       text-align: left;

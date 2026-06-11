@@ -88,7 +88,7 @@ ForceCarRecognition::ForceCarRecognition(QWidget* parent): QWidget(parent) {
   main_layout->addWidget(back, 0, Qt::AlignLeft);
 
   QListWidget* list = new QListWidget(this);
-  list->setStyleSheet("QListView {padding: 40px; background-color: #393939; border-radius: 15px; height: 140px;} QListView::item{height: 100px}");
+  list->setStyleSheet("QListView {padding: 40px; background-color: #0D111B; border: 1px solid rgba(122, 174, 206, 72); border-radius: 15px; height: 140px; color: #F4F6FA;} QListView::item{height: 100px}");
   QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 

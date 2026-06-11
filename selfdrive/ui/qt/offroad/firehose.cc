@@ -27,7 +27,7 @@ FirehosePanel::FirehosePanel(SettingsWindow *parent) : QWidget((QWidget*)parent)
 
   // Create a container for the content
   QFrame *content = new QFrame();
-  content->setStyleSheet("background-color: #292929; border-radius: 15px; padding: 20px;");
+  content->setStyleSheet("background-color: #0D111B; border: 1px solid rgba(122, 174, 206, 72); border-radius: 15px; padding: 20px;");
   QVBoxLayout *content_layout = new QVBoxLayout(content);
   content_layout->setSpacing(20);
 
@@ -41,11 +41,11 @@ FirehosePanel::FirehosePanel(SettingsWindow *parent) : QWidget((QWidget*)parent)
   QFrame *line = new QFrame();
   line->setFrameShape(QFrame::HLine);
   line->setFrameShadow(QFrame::Sunken);
-  line->setStyleSheet("background-color: #444444; margin-top: 5px; margin-bottom: 5px;");
+  line->setStyleSheet("background-color: rgba(122, 174, 206, 72); margin-top: 5px; margin-bottom: 5px;");
   content_layout->addWidget(line);
 
   toggle_label = new QLabel(tr("Firehose Mode: ACTIVE"));
-  toggle_label->setStyleSheet("font-size: 60px; font-weight: bold; color: white;");
+  toggle_label->setStyleSheet("font-size: 60px; font-weight: bold; color: #9FD1EC;");
   content_layout->addWidget(toggle_label);
 
   // Add contribution label
@@ -59,7 +59,7 @@ FirehosePanel::FirehosePanel(SettingsWindow *parent) : QWidget((QWidget*)parent)
   QFrame *line2 = new QFrame();
   line2->setFrameShape(QFrame::HLine);
   line2->setFrameShadow(QFrame::Sunken);
-  line2->setStyleSheet("background-color: #444444; margin-top: 10px; margin-bottom: 10px;");
+  line2->setStyleSheet("background-color: rgba(122, 174, 206, 72); margin-top: 10px; margin-bottom: 10px;");
   content_layout->addWidget(line2);
 
   // Detailed instructions at the bottom
@@ -74,7 +74,7 @@ FirehosePanel::FirehosePanel(SettingsWindow *parent) : QWidget((QWidget*)parent)
     "<i>What's a good USB-C adapter?</i> Any fast phone or laptop charger should be fine.<br><br>"
     "<i>Does it matter which software I run?</i> Yes, only upstream openpilot (and particular forks) are able to be used for training."
   ));
-  detailed_instructions->setStyleSheet("font-size: 40px; color: #E4E4E4;");
+  detailed_instructions->setStyleSheet("font-size: 40px; color: #A6B0BE;");
   detailed_instructions->setWordWrap(true);
   content_layout->addWidget(detailed_instructions);
 

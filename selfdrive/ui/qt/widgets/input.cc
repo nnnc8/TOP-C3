@@ -16,22 +16,23 @@ DialogBase::DialogBase(QWidget *parent) : QDialog(parent) {
   setStyleSheet(QString(R"(
     * {
       outline: none;
-      color: white;
+      color: #F4F6FA;
       font-family: "%1", "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
     }
     DialogBase {
-      background-color: black;
+      background-color: #03060E;
     }
     QPushButton {
       height: 160;
       font-size: 55px;
-      font-weight: 400;
-      border-radius: 10px;
-      color: white;
-      background-color: #333333;
+      font-weight: 650;
+      border-radius: 12px;
+      color: #F4F6FA;
+      background-color: #161D2C;
+      border: 1px solid rgba(122, 174, 206, 52);
     }
     QPushButton:pressed {
-      background-color: #444444;
+      background-color: #1F2A3C;
     }
   )").arg(uiFontFamily()));
 }
@@ -59,12 +60,12 @@ InputDialog::InputDialog(const QString &title, QWidget *parent, const QString &s
   QVBoxLayout *vlayout = new QVBoxLayout;
   header_layout->addLayout(vlayout);
   label = new QLabel(title, this);
-  label->setStyleSheet("font-size: 90px; font-weight: bold;");
+  label->setStyleSheet("font-size: 86px; font-weight: bold; color: #F4F6FA;");
   vlayout->addWidget(label, 1, Qt::AlignTop | Qt::AlignLeft);
 
   if (!subtitle.isEmpty()) {
     sublabel = new QLabel(subtitle, this);
-    sublabel->setStyleSheet("font-size: 55px; font-weight: light; color: #BDBDBD;");
+    sublabel->setStyleSheet("font-size: 52px; font-weight: light; color: #A6B0BE;");
     vlayout->addWidget(sublabel, 1, Qt::AlignTop | Qt::AlignLeft);
   }
 
@@ -74,11 +75,12 @@ InputDialog::InputDialog(const QString &title, QWidget *parent, const QString &s
     QPushButton {
       font-size: 48px;
       border-radius: 10px;
-      color: #E4E4E4;
-      background-color: #333333;
+      color: #F4F6FA;
+      background-color: #161D2C;
+      border: 1px solid rgba(122, 174, 206, 52);
     }
     QPushButton:pressed {
-      background-color: #444444;
+      background-color: #1F2A3C;
     }
   )");
   header_layout->addWidget(cancel_btn, 0, Qt::AlignRight);
@@ -192,9 +194,9 @@ ConfirmationDialog::ConfirmationDialog(const QString &prompt_text, const QString
                                        const bool rich, QWidget *parent) : DialogBase(parent) {
   QFrame *container = new QFrame(this);
   container->setStyleSheet(R"(
-    QFrame { background-color: #1B1B1B; color: #C9C9C9; }
-    #confirm_btn { background-color: #465BEA; }
-    #confirm_btn:pressed { background-color: #3049F4; }
+    QFrame { background-color: #0D111B; color: #F4F6FA; border: 1px solid rgba(122, 174, 206, 72); border-radius: 18px; }
+    #confirm_btn { background-color: #7AAECE; color: #07101A; }
+    #confirm_btn:pressed { background-color: #497C9C; }
   )");
   QVBoxLayout *main_layout = new QVBoxLayout(container);
   main_layout->setContentsMargins(32, rich ? 32 : 120, 32, 32);
@@ -249,10 +251,10 @@ bool ConfirmationDialog::rich(const QString &prompt_text, QWidget *parent) {
 MultiOptionDialog::MultiOptionDialog(const QString &prompt_text, const QStringList &l, const QString &current, QWidget *parent) : DialogBase(parent) {
   QFrame *container = new QFrame(this);
   container->setStyleSheet(R"(
-    QFrame { background-color: #1B1B1B; }
-    #confirm_btn[enabled="false"] { background-color: #2B2B2B; }
-    #confirm_btn:enabled { background-color: #465BEA; }
-    #confirm_btn:enabled:pressed { background-color: #3049F4; }
+    QFrame { background-color: #0D111B; border: 1px solid rgba(122, 174, 206, 72); border-radius: 18px; }
+    #confirm_btn[enabled="false"] { background-color: #161D2C; color: #667080; }
+    #confirm_btn:enabled { background-color: #7AAECE; color: #07101A; }
+    #confirm_btn:enabled:pressed { background-color: #497C9C; }
   )");
 
   QVBoxLayout *main_layout = new QVBoxLayout(container);
@@ -274,9 +276,10 @@ MultiOptionDialog::MultiOptionDialog(const QString &prompt_text, const QStringLi
       font-size: 55px;
       font-weight: 300;
       border-radius: 10px;
-      background-color: #4F4F4F;
+      background-color: #161D2C;
+      border: 1px solid rgba(122, 174, 206, 52);
     }
-    QPushButton:checked { background-color: #465BEA; }
+    QPushButton:checked { background-color: #7AAECE; color: #07101A; }
   )");
 
   QButtonGroup *group = new QButtonGroup(listWidget);

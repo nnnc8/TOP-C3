@@ -11,6 +11,7 @@
 
 #include "common/util.h"
 #include "system/hardware/hw.h"
+#include "selfdrive/ui/qt/util.h"
 #include "selfdrive/ui/qt/widgets/scrollview.h"
 
 AbstractAlert::AbstractAlert(bool hasRebootBtn, QWidget *parent) : QFrame(parent) {
@@ -44,7 +45,7 @@ AbstractAlert::AbstractAlert(bool hasRebootBtn, QWidget *parent) : QFrame(parent
     }
   });
   QObject::connect(action_btn, &QPushButton::clicked, this, &AbstractAlert::dismiss);
-  action_btn->setStyleSheet("color: white; background-color: #4F4F4F; padding-left: 60px; padding-right: 60px;");
+  action_btn->setStyleSheet("color: #07101A; background-color: #7AAECE; padding-left: 60px; padding-right: 60px;");
 
   if (hasRebootBtn) {
     QPushButton *rebootBtn = new QPushButton(tr("Reboot and Update"));
@@ -55,18 +56,23 @@ AbstractAlert::AbstractAlert(bool hasRebootBtn, QWidget *parent) : QFrame(parent
 
   setStyleSheet(R"(
     * {
-      font-size: 48px;
-      color: white;
+      font-size: 46px;
+      color: #F4F6FA;
+      font-family: "Cubic 11", "[Cubic 11]", Inter, "Noto Sans CJK TC";
     }
     QFrame {
-      border-radius: 30px;
-      background-color: #393939;
+      border-radius: 24px;
+      background-color: #0D111B;
+      border: 1px solid rgba(122, 174, 206, 72);
     }
     QPushButton {
-      color: black;
-      font-weight: 500;
-      border-radius: 30px;
-      background-color: white;
+      color: #07101A;
+      font-weight: 650;
+      border-radius: 18px;
+      background-color: #7AAECE;
+    }
+    QPushButton:pressed {
+      background-color: #497C9C;
     }
   )");
 }
@@ -89,7 +95,9 @@ int OffroadAlert::refresh() {
       alerts[key] = l;
       l->setMargin(60);
       l->setWordWrap(true);
-      l->setStyleSheet(QString("background-color: %1").arg(severity ? "#E22C2C" : "#292929"));
+      l->setStyleSheet(QString("background-color: %1; border-radius: 14px; border: 1px solid %2;")
+                           .arg(severity ? "#C92231" : "#161D2C")
+                           .arg(severity ? "rgba(255, 255, 255, 72)" : "rgba(122, 174, 206, 48)"));
       scrollable_layout->addWidget(l);
     }
     scrollable_layout->addStretch(1);
