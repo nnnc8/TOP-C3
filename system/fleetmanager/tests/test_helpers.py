@@ -76,10 +76,42 @@ def test_get_route_summaries_builds_library_cards(tmp_path, monkeypatch):
   assert summary["cameras"] == ["qcamera", "fcamera", "ecamera", "dcamera"]
   assert summary["previewUrl"].endswith(f"/api/routes/{route_id}/preview")
   assert summary["eventCounts"] == {
-    "hard_brake": 1,
-    "stop": 1,
-    "start": 1,
-    "manual_steer": 1,
+    "hard_brake": 0,
+    "stop": 0,
+    "start": 0,
+    "manual_steer": 0,
+  }
+
+
+def test_get_route_summaries_does_not_scan_qlogs(tmp_path, monkeypatch):
+  route_id = "2026-06-07--13-00-00"
+  cache_root = tmp_path / "cache"
+  monkeypatch.setattr(fleet.Paths, "log_root", lambda: str(tmp_path))
+  monkeypatch.setattr(fleet.Paths, "download_cache_root", lambda: str(cache_root))
+
+  _write_segment(
+    str(tmp_path),
+    route_id,
+    0,
+    qlog_samples=[
+      {"aEgo": 0.0, "vEgo": 8.0, "standstill": False},
+      {"aEgo": -3.1, "vEgo": 8.0, "standstill": False},
+    ],
+  )
+
+  def fail_on_event_scan(_qlog_paths):
+    raise AssertionError("route summaries must not scan qlogs")
+
+  monkeypatch.setattr(fleet, "extract_route_events", fail_on_event_scan)
+
+  summaries = fleet.get_route_summaries()
+
+  assert summaries[0]["routeId"] == route_id
+  assert summaries[0]["eventCounts"] == {
+    "hard_brake": 0,
+    "stop": 0,
+    "start": 0,
+    "manual_steer": 0,
   }
 
 

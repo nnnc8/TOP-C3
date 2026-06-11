@@ -93,7 +93,7 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
                                           tr("Normal is recommended. In sport mode, AEGIS will provide aggressive acceleration for a dynamic driving experience. "
                                              "In eco mode, AEGIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these "
                                              "acceleration personality within Onroad Settings on the driving screen."),
-                                          "../assets/icons/speed_limit.png",
+                                          "../assets/icons/acc_change.png",
                                           accel_personality_texts);
   accel_personality_setting->showDescription();
 
@@ -743,12 +743,6 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
   toggles.append(new ParamControl("SmartCruiseControlVision",
                                   tr("Vision Based Turn Control"),
                                   tr("Use vision path predictions to estimate the appropriate speed to drive through turns ahead."),
-                                  "../assets/icons/road.png",
-                                  this));
-
-  toggles.append(new ParamControl("SmartCruiseControlMap",
-                                  tr("Map Based Turn Control"),
-                                  tr("Use map data to estimate the appropriate speed to drive through turns ahead."),
                                   "../assets/icons/road.png",
                                   this));
 

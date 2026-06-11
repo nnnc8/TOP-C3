@@ -162,33 +162,6 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"toyota_stock_long", {PERSISTENT, BOOL}},
     {"UserExperimentalMode", {CLEAR_ON_MANAGER_START, BOOL}},
 
-    // mapd
-    {"MapAdvisorySpeedLimit", {CLEAR_ON_ONROAD_TRANSITION, FLOAT}},
-    {"MapdVersion", {PERSISTENT, STRING}},
-    {"MapSpeedLimit", {CLEAR_ON_ONROAD_TRANSITION, FLOAT, "0.0"}},
-    {"NextMapSpeedLimit", {CLEAR_ON_ONROAD_TRANSITION, JSON}},
-    {"Offroad_OSMUpdateRequired", {CLEAR_ON_MANAGER_START, JSON}},
-    {"OsmDbUpdatesCheck", {CLEAR_ON_MANAGER_START, BOOL}},
-    {"OSMDownloadBounds", {PERSISTENT, STRING}},
-    {"OsmDownloadedDate", {PERSISTENT, STRING, "0.0"}},
-    {"OSMDownloadLocations", {PERSISTENT, JSON}},
-    {"OSMDownloadProgress", {CLEAR_ON_MANAGER_START, JSON}},
-    {"OsmLocal", {PERSISTENT, BOOL}},
-    {"OsmLocationName", {PERSISTENT, STRING}},
-    {"OsmLocationTitle", {PERSISTENT, STRING}},
-    {"OsmLocationUrl", {PERSISTENT, STRING}},
-    {"OsmStateName", {PERSISTENT, STRING, "All"}},
-    {"OsmStateTitle", {PERSISTENT, STRING}},
-    {"OsmWayTest", {PERSISTENT, STRING}},
-    {"RoadName", {CLEAR_ON_ONROAD_TRANSITION, STRING}},
-
-    // Speed Limit
-    {"SpeedLimitMode", {PERSISTENT, INT, "1"}},
-    {"SpeedLimitOffsetType", {PERSISTENT, INT, "0"}},
-    {"SpeedLimitPolicy", {PERSISTENT, INT, "3"}},
-    {"SpeedLimitValueOffset", {PERSISTENT, INT, "0"}},
     // Smart Cruise Control
-    {"MapTargetVelocities", {CLEAR_ON_ONROAD_TRANSITION, STRING}},
-    {"SmartCruiseControlMap", {PERSISTENT, BOOL, "0"}},
     {"SmartCruiseControlVision", {PERSISTENT, BOOL, "1"}},
 };

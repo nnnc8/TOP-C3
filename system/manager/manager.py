@@ -20,6 +20,45 @@ from openpilot.common.swaglog import cloudlog, add_file_handler
 from openpilot.system.version import get_build_metadata, terms_version, training_version
 from openpilot.system.hardware.hw import Paths
 
+LEGACY_TOP_PARAMS = (
+  "DrivingModel",
+  "DrivingModelName",
+  "toyotaautolock",
+  "toyotaautounlock",
+  "MapAdvisorySpeedLimit",
+  "MapdVersion",
+  "MapSpeedLimit",
+  "MapTargetVelocities",
+  "NextMapSpeedLimit",
+  "Offroad_OSMUpdateRequired",
+  "OsmDbUpdatesCheck",
+  "OSMDownloadBounds",
+  "OsmDownloadedDate",
+  "OSMDownloadLocations",
+  "OSMDownloadProgress",
+  "OsmLocal",
+  "OsmLocationName",
+  "OsmLocationTitle",
+  "OsmLocationUrl",
+  "OsmStateName",
+  "OsmStateTitle",
+  "OsmWayTest",
+  "RoadName",
+  "SmartCruiseControlMap",
+  "SpeedLimitMode",
+  "SpeedLimitOffsetType",
+  "SpeedLimitPolicy",
+  "SpeedLimitValueOffset",
+)
+
+
+def clear_legacy_top_params(params: Params) -> None:
+  for key in LEGACY_TOP_PARAMS:
+    try:
+      os.remove(params.get_param_path(key))
+    except FileNotFoundError:
+      pass
+
 
 def manager_init() -> None:
   save_bootlog()
@@ -31,6 +70,7 @@ def manager_init() -> None:
   build_metadata = get_build_metadata()
 
   params = Params()
+  clear_legacy_top_params(params)
   params.clear_all(ParamKeyFlag.CLEAR_ON_MANAGER_START)
   params.clear_all(ParamKeyFlag.CLEAR_ON_ONROAD_TRANSITION)
   params.clear_all(ParamKeyFlag.CLEAR_ON_OFFROAD_TRANSITION)

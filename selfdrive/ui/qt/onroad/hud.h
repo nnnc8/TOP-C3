@@ -2,9 +2,6 @@
 
 #include <QPainter>
 #include "selfdrive/ui/ui.h"
-#include "selfdrive/ui/qt/offroad/speed_limit/helpers.h"
-
-constexpr int SPEED_LIMIT_AHEAD_VALID_FRAME_THRESHOLD = 5;
 
 class HudRenderer : public QObject {
   Q_OBJECT
@@ -22,15 +19,9 @@ private:
   void drawIcon(QPainter &p, QPoint pos, const QPixmap &img, QColor bg_color = QColor(0,0,0,0), qreal opacity = 1.0);
   void drawDrivingPersonalities(QPainter &p, const QRect &rect);
   void drawTimSignals(QPainter &p, const QRect &rect);
-  void drawSpeedLimitSigns(QPainter &p, QRect &sign_rect);
-  void drawUpcomingSpeedLimit(QPainter &p);
-  void drawSpeedLimitPreActiveArrow(QPainter &p, QRect &sign_rect);
 
   bool pulseElement(int frame);
   void drawSmartCruiseControlOnroadIcon(QPainter &p, const QRect &surface_rect, int x_offset, int y_offset, std::string name);
-
-  QString road_name;
-  void drawRoadName(QPainter &p, const QRect &surface_rect);
 
   static constexpr int btn_size = 250;
   static constexpr int UI_BORDER_SIZE = 15;
@@ -50,28 +41,6 @@ private:
   bool smartCruiseControlVisionEnabled;
   bool smartCruiseControlVisionActive;
   int smartCruiseControlVisionFrame;
-  bool smartCruiseControlMapEnabled;
-  bool smartCruiseControlMapActive;
-  int smartCruiseControlMapFrame;
-
-  float speedLimit;
-  float speedLimitLast;
-  float speedLimitOffset;
-  bool speedLimitValid;
-  bool speedLimitLastValid;
-  float speedLimitFinalLast;
-  cereal::LongitudinalPlanTOP::SpeedLimit::Source speedLimitSource;
-  bool speedLimitAheadValid;
-  float speedLimitAhead;
-  float speedLimitAheadDistance;
-  float speedLimitAheadDistancePrev;
-  int speedLimitAheadValidFrame;
-  SpeedLimitMode speedLimitMode = SpeedLimitMode::OFF;
-  cereal::LongitudinalPlanTOP::SpeedLimit::AssistState speedLimitAssistState;
-  bool speedLimitAssistActive;
-  int speedLimitAssistFrame;
-  QPixmap plus_arrow_up_img;
-  QPixmap minus_arrow_down_img;
 
   bool blindSpotLeft = false;
   bool blindSpotRight = false;

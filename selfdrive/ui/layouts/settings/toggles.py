@@ -98,7 +98,7 @@ class TogglesLayout(Widget):
       button_width=255,
       callback=self._set_longitudinal_personality,
       selected_index=self._params.get("LongitudinalPersonality", return_default=True),
-      icon="speed_limit.png"
+      icon="distance.png"
     )
 
     self._toggles = {}

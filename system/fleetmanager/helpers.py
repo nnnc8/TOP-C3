@@ -115,24 +115,33 @@ def discover_route_segments(route_id: str | None = None) -> list[SegmentRecord]:
 
 
 def get_route_summaries(limit: int | None = None) -> list[dict[str, Any]]:
-  route_ids = sorted({segment.route_id for segment in discover_route_segments()}, key=_route_datetime, reverse=True)
+  segments_by_route: dict[str, list[SegmentRecord]] = {}
+  for segment in discover_route_segments():
+    segments_by_route.setdefault(segment.route_id, []).append(segment)
+
+  route_ids = sorted(
+    segments_by_route,
+    key=lambda route_id: _route_datetime_from_segments(route_id, segments_by_route[route_id]),
+    reverse=True,
+  )
   if limit is not None:
     route_ids = route_ids[:limit]
 
   summaries = []
   for route_id in route_ids:
-    manifest = get_route_manifest(route_id)
-    started_at = _route_datetime(route_id)
-    ended_at = started_at + dt.timedelta(seconds=manifest["durationSec"])
+    segments = segments_by_route[route_id]
+    started_at = _route_datetime_from_segments(route_id, segments)
+    duration_sec = len(segments) * 60
+    ended_at = started_at + dt.timedelta(seconds=duration_sec)
     summaries.append({
       "routeId": route_id,
       "startedAt": started_at.replace(microsecond=0).isoformat(),
       "endedAt": ended_at.replace(microsecond=0).isoformat(),
-      "durationSec": manifest["durationSec"],
-      "segmentCount": len(manifest["segments"]),
-      "cameras": manifest["cameras"],
+      "durationSec": duration_sec,
+      "segmentCount": len(segments),
+      "cameras": [camera for camera in CAMERA_ORDER if any(camera in segment.files for segment in segments)],
       "previewUrl": f"/api/routes/{route_id}/preview",
-      "eventCounts": _count_events(manifest["events"]),
+      "eventCounts": _route_summary_event_counts(route_id, segments),
     })
   return summaries
 
@@ -150,7 +159,7 @@ def get_route_manifest(route_id: str) -> dict[str, Any]:
   cameras = [camera for camera in CAMERA_ORDER if any(camera in segment.files for segment in segments)]
   duration_sec = len(segments) * 60
   events = extract_route_events([segment.qlog_path for segment in segments if segment.qlog_path])
-  started_at = _route_datetime(route_id)
+  started_at = _route_datetime_from_segments(route_id, segments)
   ended_at = started_at + dt.timedelta(seconds=duration_sec)
 
   manifest = {
@@ -468,10 +477,13 @@ def _segment_record_from_entry(entry: str) -> SegmentRecord | None:
 
 
 def _route_datetime(route_id: str) -> dt.datetime:
+  return _route_datetime_from_segments(route_id, discover_route_segments(route_id))
+
+
+def _route_datetime_from_segments(route_id: str, segments: list[SegmentRecord]) -> dt.datetime:
   try:
     return dt.datetime.strptime(route_id, "%Y-%m-%d--%H-%M-%S")
   except ValueError:
-    segments = discover_route_segments(route_id)
     if not segments:
       raise
     first_segment = min(segments, key=lambda segment: segment.index)
@@ -490,6 +502,13 @@ def _count_events(events: list[dict[str, Any]]) -> dict[str, int]:
   for event in events:
     counts[event["type"]] = counts.get(event["type"], 0) + 1
   return counts
+
+
+def _route_summary_event_counts(route_id: str, segments: list[SegmentRecord]) -> dict[str, int]:
+  cached = _read_cache("manifests", route_id, _build_route_signature(segments))
+  if cached is None:
+    return _count_events([])
+  return _count_events(cached.get("events", []))
 
 
 def _event_payload(event_type: str, start_sec: float, end_sec: float) -> dict[str, Any]:

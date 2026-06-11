@@ -90,7 +90,6 @@ void ui_update_params(UIState *s) {
   auto params = Params();
   s->scene.is_metric = params.getBool("IsMetric");
   s->scene.lite = getenv("LITE");
-  s->scene.speed_limit_mode = std::atoi(params.get("SpeedLimitMode").c_str());
   UIScene &scene = s->scene;
   scene.onroadScreenOff = params.getBool("OnroadScreenOff");
   scene.driving_personalities_ui_wheel = params.getBool("DrivingPersonalitiesUIWheel");

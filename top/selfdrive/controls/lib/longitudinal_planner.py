@@ -7,32 +7,20 @@ See the LICENSE.md file in the root directory for more details.
 
 from cereal import messaging, custom
 from opendbc.car import structs
-from openpilot.common.constants import CV
-from openpilot.selfdrive.car.cruise import V_CRUISE_MAX
 from openpilot.top.selfdrive.controls.lib.accel_personality.accel_controller import AccelController
 from openpilot.top.selfdrive.controls.lib.smart_cruise_control.smart_cruise_control import SmartCruiseControl
-from openpilot.top.selfdrive.controls.lib.speed_limit.speed_limit_assist import SpeedLimitAssist
-from openpilot.top.selfdrive.controls.lib.speed_limit.speed_limit_resolver import SpeedLimitResolver
-from openpilot.selfdrive.selfdrived.events import Events
 
 LongitudinalPlanSource = custom.LongitudinalPlanTOP.LongitudinalPlanSource
 class LongitudinalPlannerTOP:
   def __init__(self, CP: structs.CarParams):
-    self.events = Events()
-    self.resolver = SpeedLimitResolver()
+    _ = CP
     self.accel_controller = AccelController()
     self.scc = SmartCruiseControl()
-    self.resolver = SpeedLimitResolver()
-    self.sla = SpeedLimitAssist(CP)
     self.source = LongitudinalPlanSource.cruise
 
     self.output_v_target = 0.
     self.output_a_target = 0.
   def update_targets(self, sm: messaging.SubMaster, v_ego: float, a_ego: float, v_cruise: float) -> tuple[float, float]:
-    CS = sm['carState']
-    v_cruise_cluster_kph = min(CS.vCruiseCluster, V_CRUISE_MAX)
-    v_cruise_cluster = v_cruise_cluster_kph * CV.KPH_TO_MS
-
     long_enabled = sm['carControl'].enabled
     long_override = sm['carControl'].cruiseControl.override
 
@@ -49,8 +37,6 @@ class LongitudinalPlannerTOP:
     return self.output_v_target, self.output_a_target
 
   def update(self, sm: messaging.SubMaster) -> None:
-    self.events.clear()
-
     if hasattr(sm, 'updated') and sm.updated['carState']:
       carstate = sm['carState']
       self.accel_controller.update(carstate)
@@ -78,32 +64,6 @@ class LongitudinalPlannerTOP:
     sccVision.maxPredictedLateralAccel = float(self.scc.vision.max_pred_lat_acc)
     sccVision.enabled = self.scc.vision.is_enabled
     sccVision.active = self.scc.vision.is_active
-    # Map Control
-    sccMap = smartCruiseControl.map
-    sccMap.state = self.scc.map.state
-    sccMap.vTarget = float(self.scc.map.output_v_target)
-    sccMap.aTarget = float(self.scc.map.output_a_target)
-    sccMap.enabled = self.scc.map.is_enabled
-    sccMap.active = self.scc.map.is_active
-
-    # Speed Limit
-    speedLimit = longitudinalPlanTOP.speedLimit
-    resolver = speedLimit.resolver
-    resolver.speedLimit = float(self.resolver.speed_limit)
-    resolver.speedLimitLast = float(self.resolver.speed_limit_last)
-    resolver.speedLimitFinal = float(self.resolver.speed_limit_final)
-    resolver.speedLimitFinalLast = float(self.resolver.speed_limit_final_last)
-    resolver.speedLimitValid = self.resolver.speed_limit_valid
-    resolver.speedLimitLastValid = self.resolver.speed_limit_last_valid
-    resolver.speedLimitOffset = float(self.resolver.speed_limit_offset)
-    resolver.distToSpeedLimit = float(getattr(self.resolver, "distance", 0.0))
-    resolver.source = self.resolver.source
-    assist = speedLimit.assist
-    assist.state = self.sla.state
-    assist.enabled = self.sla.is_enabled
-    assist.active = self.sla.is_active
-    assist.vTarget = float(self.sla.output_v_target)
-    assist.aTarget = float(self.sla.output_a_target)
 
     plan_top_send.longitudinalPlanTOP.accelPersonality = self.accel_controller.personality
     pm.send('longitudinalPlanTOP', plan_top_send)

@@ -47,6 +47,16 @@ class TestManager:
     assert fleetmanager.should_run(False, params, CP)
     assert not fleetmanager.should_run(True, params, CP)
 
+  def test_clear_legacy_top_params_removes_unknown_keys(self):
+    params = Params()
+    legacy_path = params.get_param_path("DrivingModel")
+    with open(legacy_path, "wb") as f:
+      f.write(b"legacy")
+
+    manager.clear_legacy_top_params(params)
+
+    assert not os.path.exists(legacy_path)
+
   def test_set_params_with_default_value(self):
     params = Params()
     params.clear_all()
