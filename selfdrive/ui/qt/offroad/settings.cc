@@ -752,12 +752,6 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
                                   "../assets/icons/road.png",
                                   this));
 
-  toggles.append(new ParamControl("toyota_bsm",
-                                  tr("Fix Toyota BSM Signal"),
-                                  tr("Enhance BSM function for some Toyota vehicles that openpilot currently does not support."),
-                                  "../assets/icons/road.png",
-                                  this));
-
   toggles.append(new ParamControl("ReverseAccChange",
                                   tr("ACC +/-: Long Press Reverse"),
                                   tr("Change the ACC +/- buttons behavior with cruise speed change in openpilot.\nDisabled (Stock): Short = 1, Long = 5.\nEnabled: Short and Long = 5."),

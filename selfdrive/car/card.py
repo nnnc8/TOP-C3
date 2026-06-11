@@ -116,9 +116,6 @@ class Car:
       if self.params.get_bool("ReverseAccChange"):
         top_params |= structs.TopFlags.ToyotaReverseAccChange
 
-      if self.params.get_bool("toyota_bsm"):
-        top_params |= structs.TopFlags.ToyotaBSM
-
       if self.params.get_bool("AleSato_AutomaticBrakeHold"):
         top_params |= structs.TopFlags.ToyotaAutoBrakeHold
 
