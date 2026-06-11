@@ -153,7 +153,6 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"ReverseAccChange", {PERSISTENT, BOOL, "1"}},
     {"road_edge_detection", {PERSISTENT, BOOL, "1"}},
     {"SecondBoot", {PERSISTENT, BOOL}},
-    {"sng_e2e", {PERSISTENT, BOOL}},
     {"StandstillMode", {PERSISTENT, BOOL}},
     {"TimSignals", {PERSISTENT, BOOL, "1"}},
     {"toyota_bsm", {PERSISTENT, BOOL}},

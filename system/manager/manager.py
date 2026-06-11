@@ -45,6 +45,7 @@ LEGACY_TOP_PARAMS = (
   "OsmStateTitle",
   "OsmWayTest",
   "RoadName",
+  "sng_e2e",
   "SmartCruiseControlMap",
   "SpeedLimitMode",
   "SpeedLimitOffsetType",

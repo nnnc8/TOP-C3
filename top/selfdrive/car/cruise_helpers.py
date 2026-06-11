@@ -37,9 +37,6 @@ class CruiseHelper:
     self.manual_exp_mode_change = False
     self.last_exp_mode_state = self.params.get_bool("ExperimentalMode")
 
-    self.sng_e2e_enabled = self.params.get_bool("sng_e2e")
-    self.other_systems_active = self.sng_e2e_enabled
-
   def update(self, CS, events, experimental_mode) -> None:
     if self.CP.openpilotLongitudinalControl:
       if CS.cruiseState.available:
@@ -51,11 +48,7 @@ class CruiseHelper:
           print("CruiseHelper: Detected external experimental mode change, resetting counters")
         distance_button_pressed = self._get_distance_button_state(CS)
 
-        if not self._should_defer_to_other_systems():
-          self._update_distance_button_logic(distance_button_pressed, experimental_mode)
-        else:
-          if distance_button_pressed:
-            self._reset_button_counters()
+        self._update_distance_button_logic(distance_button_pressed, experimental_mode)
 
         # toggle experimental mode once on distance button hold
         self.update_experimental_mode(events, experimental_mode)
@@ -85,11 +78,6 @@ class CruiseHelper:
         return True
     return False
 
-  def _should_defer_to_other_systems(self) -> bool:
-    if self.sng_e2e_enabled:
-      return True
-    return False
-
   def _reset_button_counters(self) -> None:
     self.gap_button_counter = 0
     self.short_press_button_counter = 0
@@ -102,14 +90,11 @@ class CruiseHelper:
       if not self.distance_button_hold:
         self.gap_button_counter += 1
         if self.gap_button_counter > DISTANCE_LONG_PRESS:
-          if not self._should_defer_to_other_systems():
-            new_exp_mode = not self.params.get_bool("ExperimentalMode")
-            self.params.put_bool_nonblocking('ExperimentalMode', new_exp_mode)
-            self.params.put_bool_nonblocking('UserExperimentalMode', new_exp_mode)
-            self.manual_exp_mode_change = True
-            print(f"CruiseHelper: Manual experimental mode switch to {new_exp_mode}")
-          else:
-            print("CruiseHelper: Experimental mode switch deferred to other systems")
+          new_exp_mode = not self.params.get_bool("ExperimentalMode")
+          self.params.put_bool_nonblocking('ExperimentalMode', new_exp_mode)
+          self.params.put_bool_nonblocking('UserExperimentalMode', new_exp_mode)
+          self.manual_exp_mode_change = True
+          print(f"CruiseHelper: Manual experimental mode switch to {new_exp_mode}")
           self.gap_button_counter = 0
 
     if not distance_button_pressed and self.ispressed_prev and self.short_press_button_counter < DISTANCE_SHORT_PRESS:

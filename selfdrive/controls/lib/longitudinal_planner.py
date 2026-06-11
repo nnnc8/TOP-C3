@@ -31,11 +31,6 @@ MIN_ALLOW_THROTTLE_SPEED = 2.5
 _A_TOTAL_MAX_V = [1.7, 3.2]
 _A_TOTAL_MAX_BP = [20., 40.]
 
-RED_LIGHT_DISTANCE_THRESHOLD = 25.0
-GREEN_LIGHT_DISTANCE_THRESHOLD = 35.0
-FILTER_TIME_CONSTANT = 0.5
-FILTER_THRESHOLD = 0.6
-
 def get_max_accel(v_ego):
   return np.interp(v_ego, A_CRUISE_MAX_BP, A_CRUISE_MAX_VALS)
 
@@ -84,115 +79,6 @@ class LongitudinalPlanner(LongitudinalPlannerTOP):
     self.dynamic_follow = False
     self.dynamic_follow = self.params.get_bool("Dynamic_Follow")
 
-    # StandstillMode
-    self.sng_e2e = self.params.get_bool("sng_e2e")
-    if self.sng_e2e:
-      self.standstill_prev = False
-      self.standstill_current = False
-      self.standstill_transit_counter = 0
-      self.STANDSTILL_TRANSIT_FRAMES = 10
-      self.experimental_mode_active_by_standstill = False
-      self.experimental_mode_active_by_traffic_light = False
-      self.LEAD_DISTANCE_THRESHOLD = 5.0
-      self.LEAD_SPEED_THRESHOLD = 3.0 * CV.KPH_TO_MS
-
-      # Red light detection
-      self.red_light_filter = FirstOrderFilter(0, FILTER_TIME_CONSTANT, self.dt)
-      self.red_light_detected = False
-      self.green_light_detected = False
-      self.model_length = 0
-      self.tracking_lead = False
-      self.lead_distance = float('inf')
-      self.lead_moving = False
-      self.lead_velocity = 0.0
-      self.update_counter = 0
-      self.consecutive_red_detections = 0
-      self.consecutive_green_detections = 0
-      self.CONSECUTIVE_THRESHOLD = 3
-
-  def detect_traffic_light(self, sm, v_ego):
-    model_x = sm['modelV2'].position.x
-    if len(model_x) == 0:
-      return self.red_light_detected
-
-    self.model_length = model_x[-1]
-
-    # Get lead vehicle info
-    lead_one = sm['radarState'].leadOne
-    lead_two = sm['radarState'].leadTwo
-    has_lead_primary = lead_one.status
-    has_lead_secondary = lead_two.status
-    self.tracking_lead = has_lead_primary or has_lead_secondary
-    active_lead = lead_one if has_lead_primary else (lead_two if has_lead_secondary else None)
-
-    if active_lead is not None:
-      self.lead_distance = active_lead.dRel
-      self.lead_moving = active_lead.vRel > -0.5  # Consider vehicle moving if relative velocity > -0.5 m/s
-      self.lead_velocity = active_lead.vLead
-    else:
-      self.lead_distance = float('inf')
-      self.lead_moving = False
-      self.lead_velocity = 0.0
-
-    is_standstill = sm['carState'].standstill
-    gas_pressed = sm['carState'].gasPressed
-
-    prev_red_light_detected = self.red_light_detected
-
-    consider_traffic_light = not self.tracking_lead or self.lead_distance > self.model_length
-
-    if consider_traffic_light and is_standstill and not gas_pressed:
-      # Red light detection: short model path suggests stopped traffic/red light
-      if self.model_length < RED_LIGHT_DISTANCE_THRESHOLD:
-        self.consecutive_red_detections += 1
-        self.consecutive_green_detections = 0
-      # Green light detection: long model path suggests clear road/green light
-      elif self.model_length > GREEN_LIGHT_DISTANCE_THRESHOLD:
-        self.consecutive_green_detections += 1
-        self.consecutive_red_detections = 0
-      else:
-        # In between - maintain current state but reduce confidence
-        self.consecutive_red_detections = max(0, self.consecutive_red_detections - 1)
-        self.consecutive_green_detections = max(0, self.consecutive_green_detections - 1)
-    else:
-      # Not in standstill or other conditions not met - reset
-      self.consecutive_red_detections = 0
-      self.consecutive_green_detections = 0
-      self.red_light_detected = False
-      self.green_light_detected = False
-      self.red_light_filter.x = 0
-      return False
-
-    # Update states based on consecutive detections
-    if self.consecutive_red_detections >= self.CONSECUTIVE_THRESHOLD:
-      self.red_light_detected = True
-      self.green_light_detected = False
-      self.red_light_filter.update(1.0)
-    elif self.consecutive_green_detections >= self.CONSECUTIVE_THRESHOLD:
-      self.red_light_detected = False
-      self.green_light_detected = True
-      self.red_light_filter.update(0.0)
-
-    # Apply filter threshold for final decision
-    if self.red_light_filter.x >= FILTER_THRESHOLD and not self.green_light_detected:
-      self.red_light_detected = True
-    elif self.red_light_filter.x < (FILTER_THRESHOLD * 0.5):  # Hysteresis
-      self.red_light_detected = False
-
-    # Logging for state changes
-    if self.red_light_detected != prev_red_light_detected:
-      light_status = "RED LIGHT" if self.red_light_detected else "GREEN LIGHT"
-      print(f"Traffic light status changed: {light_status}, filter: {self.red_light_filter.x:.2f}, model length: {self.model_length:.2f}m, consecutive R/G: {self.consecutive_red_detections}/{self.consecutive_green_detections}")
-    # Periodic status logging
-    self.update_counter += 1
-    if self.update_counter >= 20:  # Every 1 second at 20Hz
-      light_status = "RED" if self.red_light_detected else ("GREEN" if self.green_light_detected else "UNKNOWN")
-      lead_info = f"(dist: {self.lead_distance:.1f}m, v: {self.lead_velocity:.1f}m/s)" if self.tracking_lead else "(no lead)"
-      print(f"Traffic status: {light_status}, filter: {self.red_light_filter.x:.2f}, model: {self.model_length:.2f}m, lead: {lead_info}, consecutive R/G: {self.consecutive_red_detections}/{self.consecutive_green_detections}")
-      self.update_counter = 0
-
-    return self.red_light_detected
-
   @staticmethod
   def parse_model(model_msg):
     if (len(model_msg.position.x) == ModelConstants.IDX_N and
@@ -217,64 +103,6 @@ class LongitudinalPlanner(LongitudinalPlannerTOP):
     LongitudinalPlannerTOP.update(self, sm)
     carstate = sm['carState']
     self.accel_controller.update(carstate)
-
-    # standstill e2e
-    v_ego = sm['carState'].vEgo
-    red_light_detected = self.detect_traffic_light(sm, v_ego) if self.sng_e2e else False
-
-    if self.sng_e2e:
-      self.standstill_current = sm['carState'].standstill
-
-      lead_one = sm['radarState'].leadOne
-      has_lead = lead_one.status
-      lead_dist = lead_one.dRel if has_lead else float('inf')
-      lead_speed = lead_one.vRel + sm['carState'].vEgo if has_lead else 0.0
-      lead_moving_away = has_lead and lead_dist > self.LEAD_DISTANCE_THRESHOLD and lead_speed > self.LEAD_SPEED_THRESHOLD
-
-      # Enhanced exit conditions
-      if lead_moving_away and self.experimental_mode_active_by_standstill:
-        self.params.put_bool_nonblocking("ExperimentalMode", False)
-        self.experimental_mode_active_by_standstill = False
-        print(f"Lead vehicle moving away: dist={lead_dist:.1f}m, speed={lead_speed*3.6:.1f}km/h, disabling ExperimentalMode")
-
-      # Use green light detection for more reliable exit
-      elif (self.green_light_detected or not red_light_detected) and self.experimental_mode_active_by_traffic_light:
-        self.params.put_bool_nonblocking("ExperimentalMode", False)
-        self.experimental_mode_active_by_traffic_light = False
-        print("Traffic light turned green or red light no longer detected: disabling ExperimentalMode")
-
-      if self.standstill_current != self.standstill_prev:
-        self.standstill_transit_counter = self.STANDSTILL_TRANSIT_FRAMES
-        print(f"Standstill state change: {self.standstill_prev} -> {self.standstill_current}")
-
-      if self.standstill_transit_counter > 0:
-        self.standstill_transit_counter -= 1
-
-        if self.standstill_transit_counter == 0:
-          if self.standstill_current:
-            should_enable_experimental = False
-
-            if has_lead:
-              should_enable_experimental = True
-              self.experimental_mode_active_by_standstill = True
-              self.experimental_mode_active_by_traffic_light = False
-              print("Entering standstill with lead vehicle: Enabling ExperimentalMode")
-            elif red_light_detected:
-              should_enable_experimental = True
-              self.experimental_mode_active_by_standstill = False
-              self.experimental_mode_active_by_traffic_light = True
-              print("Entering standstill at red light: Enabling ExperimentalMode")
-
-            if should_enable_experimental:
-              self.params.put_bool_nonblocking("ExperimentalMode", True)
-          else:
-            if self.experimental_mode_active_by_standstill or self.experimental_mode_active_by_traffic_light:
-              self.params.put_bool_nonblocking("ExperimentalMode", False)
-              self.experimental_mode_active_by_standstill = False
-              self.experimental_mode_active_by_traffic_light = False
-              print("Leaving standstill: Disabling ExperimentalMode")
-
-      self.standstill_prev = self.standstill_current
 
     mode = 'blended' if sm['selfdriveState'].experimentalMode else 'acc'
 
