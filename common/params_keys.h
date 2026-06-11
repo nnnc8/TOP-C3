@@ -132,7 +132,6 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
 
     // TOP
     {"AccelPersonality", {PERSISTENT, INT}},
-    {"AleSato_AutomaticBrakeHold", {PERSISTENT, BOOL}},
     {"Dynamic_Follow", {PERSISTENT, BOOL}},
     {"CarModel", {PERSISTENT, STRING, "[-Not selected-]"}},
     {"dp_device_offroad", {CLEAR_ON_MANAGER_START, BOOL}},
