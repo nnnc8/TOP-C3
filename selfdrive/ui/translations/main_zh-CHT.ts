@@ -927,10 +927,6 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
         <translation>開發人員</translation>
     </message>
     <message>
-        <source>Firehose</source>
-        <translation>上傳</translation>
-    </message>
-    <message>
         <source>AEGIS</source>
         <translation>AEGIS</translation>
     </message>
