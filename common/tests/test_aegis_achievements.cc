@@ -8,8 +8,13 @@ static void test_parse_defaults() {
 
   assert(state.xp == 0);
   assert(state.level == 1);
+  assert(state.drive_time_s == 0.0);
+  assert(state.moving_time_s == 0.0);
+  assert(state.moving_distance_m == 0.0);
+  assert(state.top_speed_mps == 0.0);
   assert(state.assisted_time_s == 0.0);
   assert(state.assisted_distance_m == 0.0);
+  assert(state.assisted_top_speed_mps == 0.0);
   assert(state.route_count_snapshot == 0);
   assert(state.unlocked_badges.empty());
 }
@@ -30,6 +35,11 @@ static void test_accrue_only_clean_enabled_assist() {
 
   assert(state.assisted_time_s == 60.0);
   assert(state.assisted_distance_m == 600.0);
+  assert(state.drive_time_s == 60.0);
+  assert(state.moving_time_s == 60.0);
+  assert(state.moving_distance_m == 600.0);
+  assert(state.top_speed_mps == 10.0);
+  assert(state.assisted_top_speed_mps == 10.0);
   assert(state.xp > 0);
   assert(state.level == 1);
   assert(update.xp_awarded == state.xp);
@@ -42,12 +52,15 @@ static void test_accrue_only_clean_enabled_assist() {
   update_aegis_achievements(state, sample);
   assert(state.xp == xp_after_enabled);
   assert(state.assisted_time_s == 60.0);
+  assert(state.drive_time_s == 120.0);
 
   sample.enabled = true;
   sample.has_alert = true;
   update_aegis_achievements(state, sample);
   assert(state.xp == xp_after_enabled);
   assert(state.assisted_time_s == 60.0);
+  assert(state.drive_time_s == 180.0);
+  assert(state.moving_distance_m == 1800.0);
 }
 
 static void test_daily_xp_cap() {
@@ -97,13 +110,22 @@ static void test_persist_and_reset() {
   assert(decoded.xp == state.xp);
   assert(decoded.level == state.level);
   assert(decoded.unlocked_badges == state.unlocked_badges);
+  assert(decoded.drive_time_s == state.drive_time_s);
+  assert(decoded.moving_time_s == state.moving_time_s);
+  assert(decoded.moving_distance_m == state.moving_distance_m);
+  assert(decoded.top_speed_mps == state.top_speed_mps);
   assert(decoded.assisted_time_s == state.assisted_time_s);
   assert(decoded.assisted_distance_m == state.assisted_distance_m);
+  assert(decoded.assisted_top_speed_mps == state.assisted_top_speed_mps);
   assert(decoded.route_count_snapshot == 3);
 
   AegisAchievementState reset = reset_aegis_achievements(9);
   assert(reset.xp == 0);
   assert(reset.level == 1);
+  assert(reset.drive_time_s == 0.0);
+  assert(reset.moving_time_s == 0.0);
+  assert(reset.moving_distance_m == 0.0);
+  assert(reset.top_speed_mps == 0.0);
   assert(reset.route_count_snapshot == 9);
   assert(reset.unlocked_badges.empty());
 }

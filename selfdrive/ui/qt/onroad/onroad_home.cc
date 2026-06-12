@@ -25,12 +25,12 @@ int current_day_key() {
 }
 
 QString achievement_badge_title(const AegisBadge &badge) {
-  if (badge.id == "first_assist") return QCoreApplication::translate("AchievementsPanel", "First Assist");
-  if (badge.id == "assisted_10km") return QCoreApplication::translate("AchievementsPanel", "10 km Assisted");
-  if (badge.id == "assisted_hour") return QCoreApplication::translate("AchievementsPanel", "1 Hour Assisted");
-  if (badge.id == "route_memory") return QCoreApplication::translate("AchievementsPanel", "Route Memory");
-  if (badge.id == "vtsc_companion") return QCoreApplication::translate("AchievementsPanel", "V-TSC Companion");
-  if (badge.id == "brake_hold_companion") return QCoreApplication::translate("AchievementsPanel", "Brake Hold Companion");
+  if (badge.id == "first_assist") return QCoreApplication::translate("AchievementsPanel", "完成第一段乾淨輔助");
+  if (badge.id == "assisted_10km") return QCoreApplication::translate("AchievementsPanel", "輔助里程突破 10 公里");
+  if (badge.id == "assisted_hour") return QCoreApplication::translate("AchievementsPanel", "輔助時間突破 1 小時");
+  if (badge.id == "route_memory") return QCoreApplication::translate("AchievementsPanel", "行程數已更新");
+  if (badge.id == "vtsc_companion") return QCoreApplication::translate("AchievementsPanel", "V-TSC 資料已累積");
+  if (badge.id == "brake_hold_companion") return QCoreApplication::translate("AchievementsPanel", "Brake Hold 資料已累積");
   return QString::fromStdString(badge.title);
 }
 
@@ -228,8 +228,8 @@ void OnroadWindow::updateAchievements(const UIState &s) {
 
   if (!achievement_update.new_badges.empty() && pending_achievement_title.isEmpty() && !toast_shown_this_trip) {
     const AegisBadge &badge = achievement_update.new_badges.front();
-    pending_achievement_title = tr("ACCOLADE UNLOCKED");
-    pending_achievement_detail = tr("%1 secured").arg(achievement_badge_title(badge));
+    pending_achievement_title = tr("旅程里程碑");
+    pending_achievement_detail = achievement_badge_title(badge);
   }
 
   const bool can_show_toast = achievementToastsEnabled() && standstill && !has_alert;

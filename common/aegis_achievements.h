@@ -21,8 +21,13 @@ struct AegisAchievementState {
   int xp = 0;
   int level = 1;
   std::vector<std::string> unlocked_badges;
+  double drive_time_s = 0.0;
+  double moving_time_s = 0.0;
+  double moving_distance_m = 0.0;
+  double top_speed_mps = 0.0;
   double assisted_time_s = 0.0;
   double assisted_distance_m = 0.0;
+  double assisted_top_speed_mps = 0.0;
   int route_count_snapshot = 0;
   int daily_xp_day = 0;
   int daily_xp = 0;

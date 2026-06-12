@@ -28,8 +28,11 @@ void Sidebar::drawMetric(QPainter &p, const QPair<QString, QString> &label, QCol
 Sidebar::Sidebar(QWidget *parent) : QFrame(parent), onroad(false), flag_pressed(false), settings_pressed(false), mic_indicator_pressed(false) {
   home_img = loadPixmap("../assets/tesla_theme/icons/button_home.png", home_btn.size());
   home_img = home_img.scaled(home_img.width() * 1.25, home_img.height() * 1.25, Qt::KeepAspectRatio);
+  home_img = recolorBluePixels(home_img, tesla_theme::blue());
   flag_img = loadPixmap("../assets/tesla_theme/icons/button_flag.png", home_btn.size());
+  flag_img = recolorBluePixels(flag_img, tesla_theme::blue());
   settings_img = loadPixmap("../assets/tesla_theme/icons/button_settings.png", settings_btn.size(), Qt::KeepAspectRatio);
+  settings_img = recolorBluePixels(settings_img, tesla_theme::blue());
   mic_img = loadPixmap("../assets/icons/microphone.png", QSize(30, 30));
   link_img = loadPixmap("../assets/icons/link.png", QSize(60, 60));
 

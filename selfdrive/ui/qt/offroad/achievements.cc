@@ -64,47 +64,15 @@ QFrame *makeMetricCard(const QString &kicker, const QString &title, const QStrin
   QVBoxLayout *label_stack = new QVBoxLayout();
   label_stack->setContentsMargins(0, 0, 0, 0);
   label_stack->setSpacing(4);
-  label_stack->addWidget(makeLabel(kicker, 24, 650, "#AEB4BA", card));
-  label_stack->addWidget(makeLabel(title, 32, 600, "#F4F4F4", card));
+  label_stack->addWidget(makeLabel(kicker, 24, 650, "#A6B0BE", card));
+  label_stack->addWidget(makeLabel(title, 32, 600, "#F4F6FA", card));
   header->addLayout(label_stack, 1);
   layout->addLayout(header);
 
-  *value_label = makeLabel("", 44, 700, "#F4F4F4", card);
+  *value_label = makeLabel("", 44, 700, "#F4F6FA", card);
   (*value_label)->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
   layout->addWidget(*value_label);
   return card;
-}
-
-QString badgeCardStyle(bool unlocked) {
-  if (unlocked) {
-    return R"(
-      QFrame {
-        background-color: #15171C;
-        border: 2px solid #7AAECE;
-        border-radius: 12px;
-      }
-      QLabel { background-color: transparent; border: none; }
-    )";
-  }
-
-  return R"(
-    QFrame {
-      background-color: #15171C;
-      border: 1px solid rgba(255, 255, 255, 42);
-      border-radius: 12px;
-    }
-    QLabel { background-color: transparent; border: none; }
-  )";
-}
-
-QString badgeIconPath(const AegisBadge &badge) {
-  if (badge.id == "first_assist") return "../assets/icons/aegis_badge_first.svg";
-  if (badge.id == "assisted_10km") return "../assets/icons/aegis_badge_10km.svg";
-  if (badge.id == "assisted_hour") return "../assets/icons/aegis_badge_hour.svg";
-  if (badge.id == "route_memory") return "../assets/icons/aegis_badge_route.svg";
-  if (badge.id == "vtsc_companion") return "../assets/icons/aegis_badge_vtsc.svg";
-  if (badge.id == "brake_hold_companion") return "../assets/icons/aegis_badge_brake.svg";
-  return "../assets/icons/aegis_nav_achievements.svg";
 }
 
 }  // namespace
@@ -120,15 +88,15 @@ AchievementsPanel::AchievementsPanel(QWidget *parent) : QWidget(parent) {
   hero_layout->setContentsMargins(42, 38, 42, 38);
   hero_layout->setSpacing(16);
 
-  QLabel *kicker = makeLabel(tr("AEGIS Festival Playlist"), 26, 700, "#AEB4BA", hero);
-  QLabel *title = makeLabel(tr("Journey Board"), 56, 750, "#F4F4F4", hero);
+  QLabel *kicker = makeLabel(tr("AEGIS 旅程資料"), 26, 700, "#A6B0BE", hero);
+  QLabel *title = makeLabel(tr("遙測看板"), 56, 750, "#F4F6FA", hero);
   hero_layout->addWidget(kicker);
   hero_layout->addWidget(title);
 
   QHBoxLayout *level_layout = new QHBoxLayout();
   level_layout->setSpacing(28);
-  level_value = makeLabel("", 48, 700, "#F4F4F4", hero);
-  xp_progress_label = makeLabel("", 30, 550, "#AEB4BA", hero);
+  level_value = makeLabel("", 48, 700, "#F4F6FA", hero);
+  xp_progress_label = makeLabel("", 30, 550, "#A6B0BE", hero);
   xp_progress_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   level_layout->addWidget(level_value, 1);
   level_layout->addWidget(xp_progress_label, 1);
@@ -141,59 +109,23 @@ AchievementsPanel::AchievementsPanel(QWidget *parent) : QWidget(parent) {
   QGridLayout *metrics = new QGridLayout();
   metrics->setHorizontalSpacing(24);
   metrics->setVerticalSpacing(24);
-  metrics->addWidget(makeMetricCard(tr("Seat Time"), tr("Assisted Time"), "../assets/icons/aegis_seat_time.svg", &time_value, this), 0, 0);
-  metrics->addWidget(makeMetricCard(tr("Clean KM"), tr("Assisted Distance"), "../assets/icons/aegis_clean_km.svg", &distance_value, this), 0, 1);
-  metrics->addWidget(makeMetricCard(tr("Garage Log"), tr("Route Snapshot"), "../assets/icons/aegis_route_snapshot.svg", &routes_value, this), 1, 0);
+  metrics->addWidget(makeMetricCard(tr("累積行程"), tr("路線數"), "../assets/icons/aegis_route_snapshot.svg", &routes_value, this), 0, 0);
+  metrics->addWidget(makeMetricCard(tr("累積里程"), tr("總移動里程"), "../assets/icons/aegis_clean_km.svg", &moving_distance_value, this), 0, 1);
+  metrics->addWidget(makeMetricCard(tr("累積時間"), tr("總行駛時間"), "../assets/icons/aegis_seat_time.svg", &drive_time_value, this), 1, 0);
+  metrics->addWidget(makeMetricCard(tr("移動時間"), tr("實際移動時間"), "../assets/icons/aegis_pit_wall.svg", &moving_time_value, this), 1, 1);
+  metrics->addWidget(makeMetricCard(tr("平均速度"), tr("移動均速"), "../assets/icons/aegis_metric.svg", &average_speed_value, this), 2, 0);
+  metrics->addWidget(makeMetricCard(tr("最高速度"), tr("峰值速度"), "../assets/icons/aegis_accel.svg", &top_speed_value, this), 2, 1);
+  metrics->addWidget(makeMetricCard(tr("輔助里程"), tr("openpilot 里程"), "../assets/icons/aegis_enable.svg", &assisted_distance_value, this), 3, 0);
+  metrics->addWidget(makeMetricCard(tr("輔助時間"), tr("openpilot 時間"), "../assets/icons/aegis_driver_monitor.svg", &assisted_time_value, this), 3, 1);
+  metrics->addWidget(makeMetricCard(tr("輔助均速"), tr("openpilot 均速"), "../assets/icons/aegis_follow.svg", &assisted_average_speed_value, this), 4, 0);
+  metrics->addWidget(makeMetricCard(tr("輔助極速"), tr("openpilot 最高"), "../assets/icons/aegis_vision_turn.svg", &assisted_top_speed_value, this), 4, 1);
 
-  QFrame *daily_card = makeMetricCard(tr("Daily Cap"), tr("Today"), "../assets/icons/aegis_daily_cap.svg", &daily_xp_value, this);
+  QFrame *daily_card = makeMetricCard(tr("今日上限"), tr("今日 XP"), "../assets/icons/aegis_daily_cap.svg", &daily_xp_value, this);
   QVBoxLayout *daily_layout = qobject_cast<QVBoxLayout *>(daily_card->layout());
   daily_xp_bar = makeProgressBar(AEGIS_DAILY_XP_CAP, daily_card);
   daily_layout->addWidget(daily_xp_bar);
-  metrics->addWidget(daily_card, 1, 1);
+  metrics->addWidget(daily_card, 5, 0, 1, 2);
   main_layout->addLayout(metrics);
-
-  QFrame *accolades = makeCard("sectionCard", this);
-  QVBoxLayout *accolade_layout = new QVBoxLayout(accolades);
-  accolade_layout->setContentsMargins(34, 32, 34, 34);
-  accolade_layout->setSpacing(22);
-
-  QHBoxLayout *accolade_header = new QHBoxLayout();
-  accolade_header->addWidget(makeLabel(tr("Accolades"), 40, 700, "#F4F4F4", accolades), 1);
-  accolade_summary = makeLabel("", 28, 600, "#AEB4BA", accolades);
-  accolade_summary->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-  accolade_header->addWidget(accolade_summary, 1);
-  accolade_layout->addLayout(accolade_header);
-
-  QGridLayout *badge_grid = new QGridLayout();
-  badge_grid->setHorizontalSpacing(20);
-  badge_grid->setVerticalSpacing(20);
-  int badge_index = 0;
-  for (const AegisBadge &badge : aegis_badge_catalog()) {
-    QFrame *badge_card = makeCard("badgeCard", accolades);
-    badge_card->setStyleSheet(badgeCardStyle(false));
-    QVBoxLayout *badge_layout = new QVBoxLayout(badge_card);
-    badge_layout->setContentsMargins(28, 24, 28, 24);
-    badge_layout->setSpacing(10);
-
-    QHBoxLayout *badge_header = new QHBoxLayout();
-    badge_header->setSpacing(14);
-    badge_header->addWidget(makeIconLabel(badgeIconPath(badge), 54, badge_card), 0, Qt::AlignTop);
-    QLabel *badge_title = makeLabel(badgeTitle(badge), 32, 700, "#F4F4F4", badge_card);
-    badge_header->addWidget(badge_title, 1);
-    QLabel *badge_desc = makeLabel(badgeDescription(badge), 25, 500, "#AEB4BA", badge_card);
-    QLabel *badge_state = makeLabel("", 24, 700, "#7A8088", badge_card);
-    badge_state->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    badge_layout->addLayout(badge_header);
-    badge_layout->addWidget(badge_desc, 1);
-    badge_layout->addWidget(badge_state);
-
-    badge_cards[badge.id] = badge_card;
-    badge_state_labels[badge.id] = badge_state;
-    badge_grid->addWidget(badge_card, badge_index / 2, badge_index % 2);
-    badge_index++;
-  }
-  accolade_layout->addLayout(badge_grid);
-  main_layout->addWidget(accolades);
 
   QFrame *controls = makeCard("sectionCard", this);
   QVBoxLayout *controls_layout = new QVBoxLayout(controls);
@@ -203,13 +135,13 @@ AchievementsPanel::AchievementsPanel(QWidget *parent) : QWidget(parent) {
     params.putBool("AegisAchievementToasts", true);
   }
   controls_layout->addWidget(new ParamControl("AegisAchievementToasts",
-                                              tr("Pit Wall Toasts"),
-                                              tr("Show one compact accolade banner per trip while the car is stopped and no alert is visible."),
+                                              tr("旅程提示"),
+                                              tr("車輛停止且沒有警告時，每趟最多顯示一次小型旅程里程碑提示。"),
                                               "../assets/icons/aegis_pit_wall.svg",
                                               controls));
 
-  ButtonControl *reset_btn = new ButtonControl(tr("Reset Journey Board"), tr("RESET"),
-                                               tr("Clear XP, accolades, assisted counters, and start a fresh RouteCount snapshot."),
+  ButtonControl *reset_btn = new ButtonControl(tr("重置遙測看板"), tr("重置"),
+                                               tr("清除 XP、旅程遙測、輔助累積資料，並重新建立目前路線數快照。"),
                                                "../assets/icons/aegis_reset.svg", controls);
   QObject::connect(reset_btn, &ButtonControl::clicked, [this]() { resetAchievements(); });
   controls_layout->addWidget(reset_btn);
@@ -263,55 +195,40 @@ QString AchievementsPanel::formatDistance(double meters) const {
   return tr("%1 km").arg(QString::number(std::max(0.0, meters) / 1000.0, 'f', 1));
 }
 
-QString AchievementsPanel::badgeTitle(const AegisBadge &badge) const {
-  if (badge.id == "first_assist") return tr("First Assist");
-  if (badge.id == "assisted_10km") return tr("10 km Assisted");
-  if (badge.id == "assisted_hour") return tr("1 Hour Assisted");
-  if (badge.id == "route_memory") return tr("Route Memory");
-  if (badge.id == "vtsc_companion") return tr("V-TSC Companion");
-  if (badge.id == "brake_hold_companion") return tr("Brake Hold Companion");
-  return QString::fromStdString(badge.title);
+QString AchievementsPanel::formatSpeed(double speed_mps) const {
+  return tr("%1 km/h").arg(QString::number(std::max(0.0, speed_mps) * 3.6, 'f', 0));
 }
 
-QString AchievementsPanel::badgeDescription(const AegisBadge &badge) const {
-  if (badge.id == "first_assist") return tr("Completed the first clean assisted minute.");
-  if (badge.id == "assisted_10km") return tr("Reached 10 km of estimated assisted distance.");
-  if (badge.id == "assisted_hour") return tr("Reached 1 hour of clean assisted time.");
-  if (badge.id == "route_memory") return tr("Recorded a new route count snapshot.");
-  if (badge.id == "vtsc_companion") return tr("Observed vision turn control while assisted.");
-  if (badge.id == "brake_hold_companion") return tr("Observed brake hold while assisted.");
-  return QString::fromStdString(badge.description);
+QString AchievementsPanel::formatAverageSpeed(double meters, double seconds) const {
+  if (seconds <= 1.0) {
+    return tr("0 km/h");
+  }
+  return formatSpeed(meters / seconds);
 }
 
 void AchievementsPanel::refresh() {
   AegisAchievementState state = parse_aegis_achievements(params.get("AegisAchievements"));
   const int level_xp = state.xp % AEGIS_LEVEL_XP;
 
-  level_value->setText(tr("Level %1").arg(state.level));
-  xp_progress_label->setText(tr("Festival XP %1 / %2").arg(level_xp).arg(AEGIS_LEVEL_XP));
+  level_value->setText(tr("等級 %1").arg(state.level));
+  xp_progress_label->setText(tr("旅程 XP %1 / %2").arg(level_xp).arg(AEGIS_LEVEL_XP));
   xp_bar->setValue(level_xp);
   daily_xp_value->setText(tr("%1 / %2 XP").arg(state.daily_xp).arg(AEGIS_DAILY_XP_CAP));
   daily_xp_bar->setValue(state.daily_xp);
-  time_value->setText(formatAssistedTime(state.assisted_time_s));
-  distance_value->setText(formatDistance(state.assisted_distance_m));
+  drive_time_value->setText(formatAssistedTime(state.drive_time_s));
+  moving_time_value->setText(formatAssistedTime(state.moving_time_s));
+  moving_distance_value->setText(formatDistance(state.moving_distance_m));
+  average_speed_value->setText(formatAverageSpeed(state.moving_distance_m, state.moving_time_s));
+  top_speed_value->setText(formatSpeed(state.top_speed_mps));
+  assisted_time_value->setText(formatAssistedTime(state.assisted_time_s));
+  assisted_distance_value->setText(formatDistance(state.assisted_distance_m));
+  assisted_average_speed_value->setText(formatAverageSpeed(state.assisted_distance_m, state.assisted_time_s));
+  assisted_top_speed_value->setText(formatSpeed(state.assisted_top_speed_mps));
   routes_value->setText(QString::number(state.route_count_snapshot));
-  accolade_summary->setText(tr("%1 of %2 unlocked").arg(state.unlocked_badges.size()).arg(aegis_badge_catalog().size()));
-
-  for (const AegisBadge &badge : aegis_badge_catalog()) {
-    const bool unlocked = aegis_has_badge(state, badge.id);
-    if (auto card = badge_cards.find(badge.id); card != badge_cards.end()) {
-      card->second->setStyleSheet(badgeCardStyle(unlocked));
-    }
-    if (auto label = badge_state_labels.find(badge.id); label != badge_state_labels.end()) {
-      label->second->setText(unlocked ? tr("UNLOCKED") : tr("LOCKED"));
-      label->second->setStyleSheet(QString("font-size: 24px; font-weight: 700; color: %1; background-color: transparent; border: none;")
-                                       .arg(unlocked ? "#9FD1EC" : "#7A8088"));
-    }
-  }
 }
 
 void AchievementsPanel::resetAchievements() {
-  if (!ConfirmationDialog::confirm(tr("Reset AEGIS Journey Board?"), tr("Reset"), this)) {
+  if (!ConfirmationDialog::confirm(tr("Reset AEGIS telemetry board?"), tr("Reset"), this)) {
     return;
   }
 

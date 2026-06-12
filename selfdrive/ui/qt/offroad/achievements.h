@@ -1,8 +1,5 @@
 #pragma once
 
-#include <map>
-#include <string>
-
 #include <QFrame>
 #include <QLabel>
 #include <QProgressBar>
@@ -21,8 +18,8 @@ public:
 private:
   QString formatAssistedTime(double seconds) const;
   QString formatDistance(double meters) const;
-  QString badgeTitle(const AegisBadge &badge) const;
-  QString badgeDescription(const AegisBadge &badge) const;
+  QString formatSpeed(double speed_mps) const;
+  QString formatAverageSpeed(double meters, double seconds) const;
   void refresh();
   void resetAchievements();
 
@@ -32,10 +29,14 @@ private:
   QProgressBar *xp_bar;
   QLabel *daily_xp_value;
   QProgressBar *daily_xp_bar;
-  QLabel *time_value;
-  QLabel *distance_value;
+  QLabel *drive_time_value;
+  QLabel *moving_time_value;
+  QLabel *moving_distance_value;
+  QLabel *average_speed_value;
+  QLabel *top_speed_value;
+  QLabel *assisted_time_value;
+  QLabel *assisted_distance_value;
+  QLabel *assisted_average_speed_value;
+  QLabel *assisted_top_speed_value;
   QLabel *routes_value;
-  QLabel *accolade_summary;
-  std::map<std::string, QFrame*> badge_cards;
-  std::map<std::string, QLabel*> badge_state_labels;
 };

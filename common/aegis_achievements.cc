@@ -25,8 +25,13 @@ double number_field(const json11::Json &obj, const std::string &key, double fall
 void normalize(AegisAchievementState &state) {
   state.xp = std::max(0, state.xp);
   state.level = compute_level(state.xp);
+  state.drive_time_s = std::max(0.0, state.drive_time_s);
+  state.moving_time_s = std::max(0.0, state.moving_time_s);
+  state.moving_distance_m = std::max(0.0, state.moving_distance_m);
+  state.top_speed_mps = std::max(0.0, state.top_speed_mps);
   state.assisted_time_s = std::max(0.0, state.assisted_time_s);
   state.assisted_distance_m = std::max(0.0, state.assisted_distance_m);
+  state.assisted_top_speed_mps = std::max(0.0, state.assisted_top_speed_mps);
   state.route_count_snapshot = std::max(0, state.route_count_snapshot);
   state.daily_xp_day = std::max(0, state.daily_xp_day);
   state.daily_xp = std::clamp(state.daily_xp, 0, AEGIS_DAILY_XP_CAP);
@@ -87,8 +92,13 @@ AegisAchievementState parse_aegis_achievements(const std::string &json) {
 
   state.xp = int_field(obj, "xp");
   state.level = int_field(obj, "level", compute_level(state.xp));
+  state.drive_time_s = number_field(obj, "drive_time_s");
+  state.moving_time_s = number_field(obj, "moving_time_s");
+  state.moving_distance_m = number_field(obj, "moving_distance_m");
+  state.top_speed_mps = number_field(obj, "top_speed_mps");
   state.assisted_time_s = number_field(obj, "assisted_time_s");
   state.assisted_distance_m = number_field(obj, "assisted_distance_m");
+  state.assisted_top_speed_mps = number_field(obj, "assisted_top_speed_mps");
   state.route_count_snapshot = int_field(obj, "route_count_snapshot");
   state.daily_xp_day = int_field(obj, "daily_xp_day");
   state.daily_xp = int_field(obj, "daily_xp");
@@ -119,8 +129,13 @@ std::string serialize_aegis_achievements(const AegisAchievementState &state) {
     {"xp", normalized.xp},
     {"level", normalized.level},
     {"unlocked_badges", badges},
+    {"drive_time_s", normalized.drive_time_s},
+    {"moving_time_s", normalized.moving_time_s},
+    {"moving_distance_m", normalized.moving_distance_m},
+    {"top_speed_mps", normalized.top_speed_mps},
     {"assisted_time_s", normalized.assisted_time_s},
     {"assisted_distance_m", normalized.assisted_distance_m},
+    {"assisted_top_speed_mps", normalized.assisted_top_speed_mps},
     {"route_count_snapshot", normalized.route_count_snapshot},
     {"daily_xp_day", normalized.daily_xp_day},
     {"daily_xp", normalized.daily_xp},
@@ -146,12 +161,24 @@ AegisAchievementUpdate update_aegis_achievements(AegisAchievementState &state, c
   const double previous_time_s = state.assisted_time_s;
   const double previous_distance_m = state.assisted_distance_m;
   const int previous_route_count = state.route_count_snapshot;
+  const double dt_s = sample.dt_s > 0.0 ? sample.dt_s : 0.0;
+  const double speed_mps = std::max(0.0, sample.v_ego);
 
-  const bool clean_assist = sample.enabled && !sample.has_alert && sample.dt_s > 0.0;
+  if (dt_s > 0.0) {
+    state.drive_time_s += dt_s;
+    state.top_speed_mps = std::max(state.top_speed_mps, speed_mps);
+    if (!sample.standstill && speed_mps > 0.5) {
+      state.moving_time_s += dt_s;
+      state.moving_distance_m += speed_mps * dt_s;
+    }
+    update.changed = true;
+  }
+
+  const bool clean_assist = sample.enabled && !sample.has_alert && dt_s > 0.0;
   if (clean_assist) {
-    const double dt_s = sample.dt_s;
     state.assisted_time_s += dt_s;
-    state.assisted_distance_m += std::max(0.0, sample.v_ego) * dt_s;
+    state.assisted_distance_m += speed_mps * dt_s;
+    state.assisted_top_speed_mps = std::max(state.assisted_top_speed_mps, speed_mps);
     update.changed = true;
   }
 

@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QFontDatabase>
 #include <QHash>
+#include <QImage>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLayoutItem>
@@ -173,6 +174,37 @@ QPixmap loadPixmap(const QString &fileName, const QSize &size, Qt::AspectRatioMo
   } else {
     return QPixmap(fileName).scaled(size, aspectRatioMode, Qt::SmoothTransformation);
   }
+}
+
+QPixmap recolorBluePixels(const QPixmap &source, const QColor &target) {
+  QImage image = source.toImage().convertToFormat(QImage::Format_ARGB32);
+
+  for (int y = 0; y < image.height(); ++y) {
+    QRgb *line = reinterpret_cast<QRgb *>(image.scanLine(y));
+    for (int x = 0; x < image.width(); ++x) {
+      QColor pixel = QColor::fromRgba(line[x]);
+      if (pixel.alpha() == 0) {
+        continue;
+      }
+
+      const int strongest_non_blue = std::max(pixel.red(), pixel.green());
+      const bool saturated_blue = pixel.blue() > 120 && pixel.blue() - strongest_non_blue > 45;
+      if (!saturated_blue) {
+        continue;
+      }
+
+      const double value = std::clamp((0.2126 * pixel.red() + 0.7152 * pixel.green() + 0.0722 * pixel.blue()) / 180.0, 0.72, 1.10);
+      QColor themed(
+        std::clamp(static_cast<int>(target.red() * value), 0, 255),
+        std::clamp(static_cast<int>(target.green() * value), 0, 255),
+        std::clamp(static_cast<int>(target.blue() * value), 0, 255),
+        pixel.alpha()
+      );
+      line[x] = themed.rgba();
+    }
+  }
+
+  return QPixmap::fromImage(image);
 }
 
 void drawRoundedRect(QPainter &painter, const QRectF &rect, qreal xRadiusTop, qreal yRadiusTop, qreal xRadiusBottom, qreal yRadiusBottom){

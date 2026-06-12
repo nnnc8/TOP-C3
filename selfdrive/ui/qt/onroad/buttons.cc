@@ -22,6 +22,7 @@ ExperimentalButton::ExperimentalButton(QWidget *parent) : experimental_mode(fals
 
   engage_img = loadPixmap("../assets/tesla_theme/icons/button_home.png", {img_size, img_size});
   engage_img = engage_img.scaled(engage_img.width() * 1.4, engage_img.height() * 1.4, Qt::KeepAspectRatio);
+  engage_img = recolorBluePixels(engage_img, tesla_theme::blue());
   experimental_img = engage_img;
   QObject::connect(this, &QPushButton::clicked, this, &ExperimentalButton::changeMode);
 }
