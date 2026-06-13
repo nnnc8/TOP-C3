@@ -11,6 +11,7 @@
 #include "common/util.h"
 #include "selfdrive/ui/qt/network/networking.h"
 #include "selfdrive/ui/qt/offroad/journey_board.h"
+#include "selfdrive/ui/qt/offroad/aegis_health.h"
 #include "selfdrive/ui/qt/offroad/settings.h"
 #include "selfdrive/ui/qt/qt_window.h"
 #include "selfdrive/ui/qt/widgets/prime.h"
@@ -566,6 +567,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {tr("Toggles"), "../assets/icons/aegis_nav_toggles.svg", toggles},
     {tr("Software"), "../assets/icons/aegis_nav_software.svg", new SoftwarePanel(this)},
     {tr("Journey Board"), "../assets/icons/aegis_nav_achievements.svg", new JourneyBoardPanel(this)},
+    {tr("Health Center"), "../assets/icons/aegis_clean_km.svg", new AegisHealthPanel(this)},
     {tr("Developer"), "../assets/icons/aegis_nav_developer.svg", new DeveloperPanel(this)},
     {tr("AEGIS"), "../assets/icons/aegis_nav_aegis.svg", new TimpilotPanel(this)},
   };

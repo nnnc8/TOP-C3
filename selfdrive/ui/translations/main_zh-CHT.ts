@@ -934,6 +934,10 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
         <source>Journey Board</source>
         <translation>旅程看板</translation>
     </message>
+    <message>
+        <source>Health Center</source>
+        <translation>健康中心</translation>
+    </message>
 </context>
 <context>
     <name>SetupWidget</name>

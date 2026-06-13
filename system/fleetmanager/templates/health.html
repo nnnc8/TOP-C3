@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+{% block title %}AEGIS 健康中心{% endblock %}
+{% block main %}
+<div class="route-details">
+  <div class="route-header">
+    <div class="route-lockup">
+      <span class="route-eyebrow">本機診斷與老化監控</span>
+      <h1>AEGIS 健康中心</h1>
+      <p class="route-time">檢測時間：{{ health.get('version', 1) }} (Schema Version)</p>
+    </div>
+  </div>
+
+  <div class="segment-clips-section" style="margin-top: 24px;">
+    <h2>車機健康評分</h2>
+    <div style="background: rgba(0,0,0,0.24); border: 1px solid rgba(255,255,255,0.08); padding: 24px; border-radius: 8px;">
+      <div style="display: flex; align-items: center; gap: 24px;">
+        <div style="font-size: 64px; font-weight: 800; color: #f3f4f6;">
+          <span style="color: {% if health.level == 'critical' %}#ff5a60{% elif health.level == 'warning' %}#ffc107{% else %}#4caf50{% endif %};">
+            {{ health.score }}
+          </span> 分
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 24px;">
+            評級：
+            {% if health.level == 'critical' %}
+              <span style="color: #ff5a60;">嚴重警告 (Critical)</span>
+            {% elif health.level == 'warning' %}
+              <span style="color: #ffc107;">提示警告 (Warning)</span>
+            {% else %}
+              <span style="color: #4caf50;">狀態優良 (Normal)</span>
+            {% endif %}
+          </h3>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
+        <h4 style="margin: 0 0 10px 0;">異常原因與建議改善：</h4>
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
+          {% for r in health.critical %}
+            <li style="color: #ff5a60; font-weight: bold;">⚠️ {{ r }}</li>
+          {% endfor %}
+          {% for r in health.reasons %}
+            <li>• {{ r }}</li>
+          {% endfor %}
+          {% if not health.critical and not health.reasons %}
+            <li style="color: #4caf50;">✓ 系統狀態優良，無任何異常警告。</li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="segment-clips-section" style="margin-top: 24px;">
+    <h2>上一趟行車健康摘要</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+      <div style="background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.04); padding: 18px; border-radius: 6px;">
+        <span style="color: #8A95A5; font-size: 14px;">最高溫度</span>
+        <div style="font-size: 24px; font-weight: bold; margin-top: 8px;">{{ health.trip.last.max_temp | round(1) }} °C</div>
+      </div>
+      <div style="background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.04); padding: 18px; border-radius: 6px;">
+        <span style="color: #8A95A5; font-size: 14px;">最低儲存空間</span>
+        <div style="font-size: 24px; font-weight: bold; margin-top: 8px;">{{ health.trip.last.min_space | round(1) }} %</div>
+      </div>
+      <div style="background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.04); padding: 18px; border-radius: 6px;">
+        <span style="color: #8A95A5; font-size: 14px;">安全與警告事件</span>
+        <div style="font-size: 18px; font-weight: bold; margin-top: 12px; line-height: 1.4;">
+          警告次數：{{ health.trip.last.alert_count }}<br>
+          手動介入：{{ health.trip.last.manual_intervention_count }}<br>
+          急煞次數：{{ health.trip.last.hard_brake_count }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="segment-clips-section" style="margin-top: 24px;">
+    <h2>30天老化歷史趨勢</h2>
+    <div style="overflow-x: auto; background: rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.04); border-radius: 6px; padding: 16px;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: #8A95A5;">
+            <th style="padding: 10px;">日期</th>
+            <th style="padding: 10px;">最高溫度</th>
+            <th style="padding: 10px;">警告/紅溫分鐘</th>
+            <th style="padding: 10px;">最低空間</th>
+            <th style="padding: 10px;">故障碼/CAN溢位</th>
+            <th style="padding: 10px;">重啟/Route數</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in health.daily_buckets | reverse %}
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <td style="padding: 10px;">{{ b.day_key }}</td>
+            <td style="padding: 10px;">{{ b.max_temp | round(1) }} °C</td>
+            <td style="padding: 10px;">{{ b.yellow_temp_mins | round(1) }}m / {{ b.red_temp_mins | round(1) }}m</td>
+            <td style="padding: 10px;">{{ b.min_space | round(1) }} %</td>
+            <td style="padding: 10px;">{{ b.panda_fault_count }} / {{ b.can_overflow_count }}</td>
+            <td style="padding: 10px;">{{ b.reboot_count }} / {{ b.route_count }}</td>
+          </tr>
+          {% endfor %}
+          {% if not health.daily_buckets %}
+          <tr>
+            <td colspan="6" style="padding: 20px; text-align: center; color: #8A95A5;">尚無歷史老化趨勢資料</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

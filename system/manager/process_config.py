@@ -192,6 +192,7 @@ procs = [
 
   # TOP
   NativeProcess("fleetmanager", "system/fleetmanager", ["./fleet_manager.py"], flask_ready_offroad_only),
+  PythonProcess("aegis_healthd", "system.aegis_health.aegis_healthd", always_run),
   NativeProcess("locationd_llk", "top/selfdrive/locationd", ["./locationd"], only_onroad),
 
   # debug procs

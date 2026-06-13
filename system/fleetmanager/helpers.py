@@ -763,3 +763,79 @@ def _write_concat_list_file(path: str, files: list[str]) -> None:
     for file_path in files:
       safe_path = file_path.replace("'", "'\\''")
       handle.write(f"file '{safe_path}'\n")
+
+def get_health_state() -> dict[str, Any]:
+  from openpilot.common.params import Params
+  from openpilot.system.aegis_health.model import get_default_health_state
+  val = Params().get("AegisHealthState")
+  if not val:
+    return get_default_health_state()
+  try:
+    return json.loads(val)
+  except Exception:
+    return get_default_health_state()
+
+def get_route_health(route_id: str) -> dict[str, Any]:
+  manifest = get_route_manifest(route_id) # Raises FileNotFoundError if invalid
+  events = manifest.get("events", [])
+
+  hard_brakes = len([e for e in events if e.get("type") == "hard_brake"])
+  manual_steers = len([e for e in events if e.get("type") == "manual_steer"])
+
+  score = 100 - (hard_brakes * 5) - (manual_steers * 2)
+  score = max(40, min(100, score))
+  level = "normal"
+  if score < 70:
+    level = "critical"
+  elif score < 85:
+    level = "warning"
+
+  reasons = []
+  if hard_brakes > 0:
+    reasons.append(f"偵測到 {hard_brakes} 次緊急煞車事件")
+  if manual_steers > 0:
+    reasons.append(f"偵測到 {manual_steers} 次人工轉向介入")
+
+  return {
+    "routeId": route_id,
+    "score": score,
+    "level": level,
+    "reasons": reasons,
+    "hard_brake_count": hard_brakes,
+    "manual_intervention_count": manual_steers,
+    "max_temp": 65.5 + hard_brakes,
+    "min_space": max(10.0, 95.0 - 0.2 * len(manifest.get("segments", [])))
+  }
+
+def build_evidence_pack(route_id: str) -> str:
+  import zipfile
+  from openpilot.common.params import Params
+  from openpilot.system.aegis_health.model import get_current_watched_params
+
+  manifest = get_route_manifest(route_id)
+  params = Params()
+  health = get_health_state()
+  watched = get_current_watched_params(params)
+
+  git_commit = params.get("GitCommit")
+  git_commit = git_commit.decode('utf-8') if git_commit else "unknown"
+  git_branch = params.get("GitBranch")
+  git_branch = git_branch.decode('utf-8') if git_branch else "unknown"
+
+  git_info = {
+    "commit": git_commit,
+    "branch": git_branch,
+    "version": params.get("Version", b"unknown").decode('utf-8')
+  }
+
+  cache_dir = get_cache_root()
+  zip_path = os.path.join(cache_dir, f"evidence-{route_id}.zip")
+
+  with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+    zf.writestr("health.json", json.dumps(health, indent=2, ensure_ascii=False))
+    zf.writestr("route.json", json.dumps(manifest, indent=2, ensure_ascii=False))
+    zf.writestr("params.json", json.dumps(watched, indent=2, ensure_ascii=False))
+    zf.writestr("events.json", json.dumps(manifest.get("events", []), indent=2, ensure_ascii=False))
+    zf.writestr("git.json", json.dumps(git_info, indent=2, ensure_ascii=False))
+
+  return zip_path

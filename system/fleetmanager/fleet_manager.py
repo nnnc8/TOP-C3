@@ -260,6 +260,39 @@ def _preview_placeholder_response(route_id):
   return Response(svg, mimetype="image/svg+xml")
 
 
+@app.route("/health")
+def health_page():
+  health = fleet.get_health_state()
+  return render_template("health.html", health=health)
+
+
+@app.route("/api/health")
+def api_health():
+  return jsonify(fleet.get_health_state())
+
+
+@app.route("/api/routes/<route_id>/health")
+def api_route_health(route_id):
+  try:
+    return jsonify(fleet.get_route_health(route_id))
+  except FileNotFoundError:
+    return _api_error("route not found", 404)
+
+
+@app.route("/api/routes/<route_id>/evidence.zip")
+def api_route_evidence(route_id):
+  try:
+    zip_path = fleet.build_evidence_pack(route_id)
+    return send_file(
+      zip_path,
+      mimetype="application/zip",
+      as_attachment=True,
+      download_name=f"evidence-{route_id}.zip"
+    )
+  except FileNotFoundError:
+    return _api_error("route not found", 404)
+
+
 def main():
   try:
     set_core_affinity([0, 1, 2, 3])

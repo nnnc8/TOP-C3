@@ -18,6 +18,14 @@
         <p>正在準備鏡頭、分段與事件標記。</p>
       </article>
     </div>
+
+    <div style="background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.08); padding: 24px; border-radius: 8px; margin-top: 24px;">
+      <h2>本趟診斷與事件匯出</h2>
+      <p style="color: #a0a7b2; margin-top: 8px; line-height: 1.6;">您可以將此路線的所有 watched params、健康狀態、事件摘要以及 Git 版本資訊打包成 Zip 封包，以供本機故障排除與數據保存之用。</p>
+      <div style="margin-top: 16px;">
+        <a class="ghost-button" style="background: #1f232d; border: 1px solid rgba(255,255,255,0.2); font-weight: bold;" href="/api/routes/{{ route_id }}/evidence.zip" download>下載診斷事件證據包 (evidence.zip)</a>
+      </div>
+    </div>
   </section>
 {% endblock %}
 

@@ -156,3 +156,64 @@ def test_api_clip_download_rejects_invalid_ranges(tmp_path, monkeypatch):
   response = client.get(f"/api/routes/{route_id}/download/qcamera?startSec=30&endSec=10")
 
   assert response.status_code == 400
+
+def test_api_health(tmp_path, monkeypatch):
+  monkeypatch.setattr(fleet, "get_health_state", lambda: {"score": 100})
+  app.testing = True
+  client = app.test_client()
+  response = client.get("/api/health")
+  assert response.status_code == 200
+  payload = response.get_json()
+  assert payload["score"] == 100
+
+def test_api_route_health_valid_and_invalid(tmp_path, monkeypatch):
+  route_id = "2026-06-07--21-00-00"
+  cache_root = tmp_path / "cache"
+  monkeypatch.setattr(fleet.Paths, "log_root", lambda: str(tmp_path))
+  monkeypatch.setattr(fleet.Paths, "download_cache_root", lambda: str(cache_root))
+  _write_segment(tmp_path, route_id, 0)
+
+  def mock_route_health(rid):
+    if rid == "not-a-route":
+      raise FileNotFoundError()
+    return {"routeId": rid, "score": 100}
+  monkeypatch.setattr(fleet, "get_route_health", mock_route_health)
+
+  app.testing = True
+  client = app.test_client()
+
+  # Valid route
+  response = client.get(f"/api/routes/{route_id}/health")
+  assert response.status_code == 200
+  payload = response.get_json()
+  assert payload["score"] == 100
+
+  # Invalid route
+  response2 = client.get("/api/routes/not-a-route/health")
+  assert response2.status_code == 404
+
+def test_api_route_evidence_zip(tmp_path, monkeypatch):
+  route_id = "2026-06-07--22-00-00"
+  cache_root = tmp_path / "cache"
+  monkeypatch.setattr(fleet.Paths, "log_root", lambda: str(tmp_path))
+  monkeypatch.setattr(fleet.Paths, "download_cache_root", lambda: str(cache_root))
+  _write_segment(tmp_path, route_id, 0)
+
+  def fake_build(rid):
+    p = cache_root / "evidence.zip"
+    p.mkdir(parents=True, exist_ok=True) # just create parent dir
+    p_file = cache_root / f"evidence-{rid}.zip"
+    p_file.write_bytes(b"zip")
+    return str(p_file)
+
+  monkeypatch.setattr(fleet, "build_evidence_pack", fake_build)
+
+  app.testing = True
+  client = app.test_client()
+
+  response = client.get(f"/api/routes/{route_id}/evidence.zip")
+  try:
+    assert response.status_code == 200
+    assert response.mimetype == "application/zip"
+  finally:
+    response.close()
