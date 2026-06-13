@@ -1,7 +1,7 @@
 Import('env', 'envCython', 'arch')
 
 common_libs = [
-  'aegis_achievements.cc',
+  'aegis_journey_board.cc',
   'params.cc',
   'swaglog.cc',
   'util.cc',
@@ -17,8 +17,8 @@ if GetOption('extras'):
   env.Program('tests/test_common',
               ['tests/test_runner.cc', 'tests/test_params.cc', 'tests/test_util.cc', 'tests/test_swaglog.cc'],
               LIBS=[_common, 'json11', 'zmq', 'pthread'])
-  env.Program('tests/test_aegis_achievements',
-              ['tests/test_aegis_achievements.cc'],
+  env.Program('tests/test_aegis_journey_board',
+              ['tests/test_aegis_journey_board.cc'],
               LIBS=[_common, 'json11', 'zmq', 'pthread'])
 
 # Cython bindings

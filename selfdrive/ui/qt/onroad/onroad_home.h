@@ -4,7 +4,7 @@
 #include <QFrame>
 #include <QLabel>
 
-#include "common/aegis_achievements.h"
+#include "common/aegis_journey_board.h"
 #include "common/params.h"
 #include "selfdrive/ui/qt/onroad/alerts.h"
 #include "selfdrive/ui/qt/onroad/annotated_camera.h"
@@ -24,29 +24,28 @@ public:
 private:
   void paintEvent(QPaintEvent *event);
   void mousePressEvent(QMouseEvent* e) override;
-  void updateAchievements(const UIState &s);
-  void saveAchievements(bool force = false);
-  bool achievementToastsEnabled();
-  void showAchievementToast(const QString &title, const QString &detail, double now_millis);
+  void updateJourneyBoard(const UIState &s);
+  void saveJourneyBoard(bool force = false);
 
   OnroadAlerts *alerts;
   AnnotatedCameraWidget *nvg;
   QWidget *achievement_toast_container;
   QFrame *achievement_toast_card;
-  QLabel *achievement_toast_title;
-  QLabel *achievement_toast_detail;
+  QLabel *lbl_assist_time_val;
+  QLabel *lbl_assist_dist_val;
+  QLabel *lbl_assist_ratio_val;
+  QLabel *lbl_interv_val;
   QColor bg = bg_colors[STATUS_DISENGAGED];
   QHBoxLayout* split;
-  Params achievement_params;
-  AegisAchievementState achievement_state;
-  bool achievements_loaded = false;
-  bool achievement_dirty = false;
-  bool toast_shown_this_trip = false;
-  double last_achievement_update_millis = 0.0;
-  double last_achievement_save_millis = 0.0;
-  double achievement_toast_until_millis = 0.0;
-  QString pending_achievement_title;
-  QString pending_achievement_detail;
+  Params params;
+  AegisJourneyBoardState journey_state;
+  bool journey_board_loaded = false;
+  bool journey_board_dirty = false;
+  double last_journey_update_millis = 0.0;
+  double last_journey_save_millis = 0.0;
+  bool overriding_prev = false;
+  bool has_alert_prev = false;
+  bool show_onroad_card = true;
 
   void updateDpIndicatorSideState(bool blinker_state, bool bsm_state, bool &show, bool &show_prev, int &count, QColor &color);
   void updateDpIndicatorStates(const UIState &s);
