@@ -69,6 +69,9 @@ static void test_migration() {
   // Ensure the brand new parameters exist and are set
   std::string saved_val = params.get("AegisJourneyBoard");
   assert(!saved_val.empty());
+
+  // Check that totals get_assist_ratio is greater than 0
+  assert(get_assist_ratio(state.totals.assisted_moving_time_s, state.totals.moving_time_s) > 0.0);
 }
 
 static void test_rising_edges() {
@@ -153,12 +156,48 @@ static void test_daily_buckets_trim() {
   assert(state.totals.trip_count == 9);
 }
 
+static void test_7day_ratio_consistency() {
+  AegisJourneyBoardState state;
+  bool overriding_prev = false;
+  bool has_alert_prev = false;
+
+  AegisJourneySample sample = {};
+  sample.dt_s = 500.0;
+  sample.enabled = true;
+  sample.standstill = false;
+  sample.v_ego = 10.0;
+
+  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+
+  // Now close trip to populate daily buckets
+  close_aegis_journey_trip(state, 20260613);
+
+  // Check totals ratio
+  double totals_ratio = get_assist_ratio(state.totals.assisted_moving_time_s, state.totals.moving_time_s);
+  assert(totals_ratio == 1.0);
+
+  // Check last_trip ratio
+  double last_trip_ratio = get_assist_ratio(state.last_trip.assisted_moving_time_s, state.last_trip.moving_time_s);
+  assert(last_trip_ratio == 1.0);
+
+  // Check daily buckets ratio
+  double total_moving_time_7d = 0.0;
+  double total_assisted_moving_time_7d = 0.0;
+  for (const auto &b : state.daily_buckets) {
+    total_moving_time_7d += b.moving_time_s;
+    total_assisted_moving_time_7d += b.assisted_moving_time_s;
+  }
+  double trend_ratio = get_assist_ratio(total_assisted_moving_time_7d, total_moving_time_7d);
+  assert(trend_ratio == 1.0);
+}
+
 int main() {
   test_parse_defaults();
   test_assist_ratio_safety();
   test_migration();
   test_rising_edges();
   test_daily_buckets_trim();
+  test_7day_ratio_consistency();
   std::cout << "All tests passed successfully!" << std::endl;
   return 0;
 }

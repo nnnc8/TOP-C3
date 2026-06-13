@@ -58,6 +58,8 @@ AegisJourneyDailyBucket parse_bucket(const json11::Json &obj) {
   if (!obj.is_object()) return bucket;
   bucket.day_key = int_field(obj, "day_key");
   bucket.trip_count = int_field(obj, "trip_count");
+  bucket.moving_time_s = number_field(obj, "moving_time_s");
+  bucket.assisted_moving_time_s = number_field(obj, "assisted_moving_time_s");
   bucket.moving_distance_m = number_field(obj, "moving_distance_m");
   bucket.assisted_time_s = number_field(obj, "assisted_time_s");
   bucket.assisted_distance_m = number_field(obj, "assisted_distance_m");
@@ -104,6 +106,8 @@ json11::Json serialize_bucket(const AegisJourneyDailyBucket &bucket) {
   return json11::Json::object{
     {"day_key", bucket.day_key},
     {"trip_count", bucket.trip_count},
+    {"moving_time_s", bucket.moving_time_s},
+    {"assisted_moving_time_s", bucket.assisted_moving_time_s},
     {"moving_distance_m", bucket.moving_distance_m},
     {"assisted_time_s", bucket.assisted_time_s},
     {"assisted_distance_m", bucket.assisted_distance_m},
@@ -148,6 +152,8 @@ void normalize_journey_board(AegisJourneyBoardState &state) {
   clamp_trip(state.last_trip);
   for (auto &b : state.daily_buckets) {
     b.trip_count = std::max(0, b.trip_count);
+    b.moving_time_s = std::max(0.0, b.moving_time_s);
+    b.assisted_moving_time_s = std::max(0.0, b.assisted_moving_time_s);
     b.moving_distance_m = std::max(0.0, b.moving_distance_m);
     b.assisted_time_s = std::max(0.0, b.assisted_time_s);
     b.assisted_distance_m = std::max(0.0, b.assisted_distance_m);
@@ -272,6 +278,8 @@ void close_aegis_journey_trip(AegisJourneyBoardState &state, int day_key) {
   for (auto &bucket : state.daily_buckets) {
     if (bucket.day_key == day_key) {
       bucket.trip_count += 1;
+      bucket.moving_time_s += state.current_trip.moving_time_s;
+      bucket.assisted_moving_time_s += state.current_trip.assisted_moving_time_s;
       bucket.moving_distance_m += state.current_trip.moving_distance_m;
       bucket.assisted_time_s += state.current_trip.assisted_time_s;
       bucket.assisted_distance_m += state.current_trip.assisted_distance_m;
@@ -286,6 +294,8 @@ void close_aegis_journey_trip(AegisJourneyBoardState &state, int day_key) {
     AegisJourneyDailyBucket bucket;
     bucket.day_key = day_key;
     bucket.trip_count = 1;
+    bucket.moving_time_s = state.current_trip.moving_time_s;
+    bucket.assisted_moving_time_s = state.current_trip.assisted_moving_time_s;
     bucket.moving_distance_m = state.current_trip.moving_distance_m;
     bucket.assisted_time_s = state.current_trip.assisted_time_s;
     bucket.assisted_distance_m = state.current_trip.assisted_distance_m;
@@ -332,6 +342,7 @@ AegisJourneyBoardState load_journey_board(Params &params) {
       state.totals.moving_distance_m = number_field(obj, "moving_distance_m");
       state.totals.top_speed_mps = number_field(obj, "top_speed_mps");
       state.totals.assisted_time_s = number_field(obj, "assisted_time_s");
+      state.totals.assisted_moving_time_s = state.totals.assisted_time_s;
       state.totals.assisted_distance_m = number_field(obj, "assisted_distance_m");
       state.totals.assisted_top_speed_mps = number_field(obj, "assisted_top_speed_mps");
       state.totals.route_count_snapshot = int_field(obj, "route_count_snapshot");

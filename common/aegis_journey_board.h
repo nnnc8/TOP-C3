@@ -38,6 +38,8 @@ struct AegisJourneyTrip {
 struct AegisJourneyDailyBucket {
   int day_key = 0;
   int trip_count = 0;
+  double moving_time_s = 0.0;
+  double assisted_moving_time_s = 0.0;
   double moving_distance_m = 0.0;
   double assisted_time_s = 0.0;
   double assisted_distance_m = 0.0;

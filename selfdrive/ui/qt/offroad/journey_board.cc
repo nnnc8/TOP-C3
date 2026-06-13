@@ -246,6 +246,8 @@ void JourneyBoardPanel::refresh() {
   double total_dist_7d = 0.0;
   double total_assist_time_7d = 0.0;
   double total_assist_dist_7d = 0.0;
+  double total_moving_time_7d = 0.0;
+  double total_assisted_moving_time_7d = 0.0;
   int total_alerts_7d = 0;
   int total_interventions_7d = 0;
 
@@ -254,14 +256,13 @@ void JourneyBoardPanel::refresh() {
     total_dist_7d += b.moving_distance_m;
     total_assist_time_7d += b.assisted_time_s;
     total_assist_dist_7d += b.assisted_distance_m;
+    total_moving_time_7d += b.moving_time_s;
+    total_assisted_moving_time_7d += b.assisted_moving_time_s;
     total_alerts_7d += b.alert_count;
     total_interventions_7d += b.intervention_count;
   }
 
-  double assist_ratio_7d = 0.0;
-  if (total_dist_7d > 0.0) {
-    assist_ratio_7d = total_assist_dist_7d / total_dist_7d;
-  }
+  double assist_ratio_7d = get_assist_ratio(total_assisted_moving_time_7d, total_moving_time_7d);
 
   double avg_interventions_7d = 0.0;
   double avg_alerts_7d = 0.0;

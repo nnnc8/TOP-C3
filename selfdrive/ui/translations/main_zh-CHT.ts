@@ -931,8 +931,8 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
         <translation>AEGIS</translation>
     </message>
     <message>
-        <source>Achievements</source>
-        <translation>成就</translation>
+        <source>Journey Board</source>
+        <translation>旅程看板</translation>
     </message>
 </context>
 <context>
