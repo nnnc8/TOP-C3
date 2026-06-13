@@ -45,6 +45,8 @@ void HudRenderer::updateState(const UIState &s) {
   drivingPersonalitiesUIWheel = s.scene.driving_personalities_ui_wheel;
   timSignals = s.scene.tim_signals;
   personalityProfile = s.scene.personality_profile;
+  aegisToyotaScenePresets = s.scene.aegis_toyota_scene_presets;
+  toyotaAccelProfile = s.scene.toyota_accel_profile;
   turnSignalLeft = s.scene.turn_signal_left;
   turnSignalRight = s.scene.turn_signal_right;
 
@@ -252,10 +254,22 @@ void HudRenderer::drawDrivingPersonalities(QPainter &p, const QRect &rect) {
   QPixmap &profile_image = profile_data[index].first;
   QString profile_text = profile_data[index].second;
 
+  static int lastAccelProfile = -1;
+  if (aegisToyotaScenePresets) {
+    if (toyotaAccelProfile == 0) {
+      profile_text = tr("山路");
+    } else if (toyotaAccelProfile == 1) {
+      profile_text = tr("市區");
+    } else if (toyotaAccelProfile == 2) {
+      profile_text = tr("高速");
+    }
+  }
+
   // Display the profile text when the user changes profiles
-  if (lastProfile != personalityProfile) {
+  if (lastProfile != personalityProfile || (aegisToyotaScenePresets && lastAccelProfile != toyotaAccelProfile)) {
     displayText = true;
     lastProfile = personalityProfile;
+    lastAccelProfile = toyotaAccelProfile;
     timer.restart();
   }
 

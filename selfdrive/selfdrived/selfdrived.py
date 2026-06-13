@@ -23,6 +23,8 @@ from openpilot.selfdrive.selfdrived.helpers import ExcessiveActuationCheck
 from openpilot.selfdrive.selfdrived.state import StateMachine
 from openpilot.selfdrive.selfdrived.alertmanager import AlertManager, set_offroad_alert
 
+from openpilot.top.selfdrive.controls.lib.accel_personality.toyota_preset_helper import ToyotaScenePresets
+
 from openpilot.system.hardware import HARDWARE
 from openpilot.system.version import get_build_metadata
 
@@ -124,6 +126,9 @@ class SelfdriveD(CruiseHelper):
     self.not_running_prev = None
     self.experimental_mode = False
     self.personality = self.params.get("LongitudinalPersonality", return_default=True)
+    self.toyota_drive_mode = False
+    self.aegis_toyota_scene_presets = False
+    self.last_preset_accel_profile = None
     self.recalibrating_seen = False
     self.state_machine = StateMachine(self.alka)
     self.rk = Ratekeeper(100, print_delay_threshold=None)
@@ -525,6 +530,17 @@ class SelfdriveD(CruiseHelper):
 
     self.publish_selfdriveState(CS)
 
+    if self.toyota_drive_mode and self.aegis_toyota_scene_presets:
+      if hasattr(CS, 'accelProfile') and CS.accelProfile is not None:
+        if CS.accelProfile != self.last_preset_accel_profile:
+          accel_p, long_p, label = ToyotaScenePresets.get_preset(CS.accelProfile)
+          if accel_p is not None and long_p is not None:
+            self.params.put_nonblocking("AccelPersonality", accel_p)
+            self.params.put_nonblocking("LongitudinalPersonality", long_p)
+            self.last_preset_accel_profile = CS.accelProfile
+    else:
+      self.last_preset_accel_profile = None
+
     self.CS_prev = CS
 
   def params_thread(self, evt):
@@ -534,6 +550,8 @@ class SelfdriveD(CruiseHelper):
       self.disengage_on_accelerator = self.params.get_bool("DisengageOnAccelerator")
       self.experimental_mode = self.params.get_bool("ExperimentalMode") and self.CP.openpilotLongitudinalControl
       self.personality = self.params.get("LongitudinalPersonality", return_default=True)
+      self.toyota_drive_mode = self.params.get_bool("ToyotaDriveMode")
+      self.aegis_toyota_scene_presets = self.params.get_bool("AegisToyotaScenePresets")
       time.sleep(0.1)
 
   def run(self):

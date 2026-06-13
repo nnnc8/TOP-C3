@@ -68,6 +68,7 @@ static void update_state(UIState *s) {
       scene.turn_signal_left = sm["carState"].getCarState().getLeftBlinker();
       scene.turn_signal_right = sm["carState"].getCarState().getRightBlinker();
     }
+    scene.toyota_accel_profile = sm["carState"].getCarState().getAccelProfile();
   }
   if (sm.updated("selfdriveState")) {
     scene.experimental_mode = sm["selfdriveState"].getSelfdriveState().getExperimentalMode();
@@ -103,6 +104,7 @@ void ui_live_update_params(UIState *s) {
   if (scene.driving_personalities_ui_wheel) {
     scene.personality_profile = params.getInt("LongitudinalPersonality");
   }
+  scene.aegis_toyota_scene_presets = params.getBool("AegisToyotaScenePresets");
 }
 
 void UIState::updateStatus() {

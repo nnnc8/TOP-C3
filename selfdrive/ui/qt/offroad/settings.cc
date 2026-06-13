@@ -788,6 +788,12 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
                                   "../assets/icons/aegis_drive_mode.svg",
                                   this));
 
+  toggles.append(new ParamControl("AegisToyotaScenePresets",
+                                  tr("Toyota Scene Presets"),
+                                  tr("AEGIS will link the car's physical drive mode selector (Power/Normal/Eco) to custom scene presets (Mountain/City/Highway). Requires enabling ToyotaDriveMode and rebooting/re-onroading.\n\nMountain: Muted automatic throttle, allowing manual accelerator overrides.\nCity: More active start-stop and following distance.\nHighway: Smoother acceleration with active following distance."),
+                                  "../assets/icons/aegis_drive_mode.svg",
+                                  this));
+
   toggles.append(new ParamControl("AleSato_AutomaticBrakeHold",
                                   tr("Automatic Brake Hold"),
                                   tr("Activates the car's brakes after 1 seconds stopped. (Only support on Toyota TSS2 Hybrid vehicles)"),

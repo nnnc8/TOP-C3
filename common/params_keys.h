@@ -12,6 +12,7 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"AegisAchievementToasts", {PERSISTENT, BOOL, "1"}},
     {"AegisJourneyBoard", {PERSISTENT, JSON}},
     {"AegisJourneyBoardOnroadCard", {PERSISTENT, BOOL, "1"}},
+    {"AegisToyotaScenePresets", {PERSISTENT, BOOL}},
     {"AlwaysOnDM", {PERSISTENT, BOOL}},
     {"ApiCache_Device", {PERSISTENT, STRING}},
     {"ApiCache_FirehoseStats", {PERSISTENT, JSON}},

@@ -1317,6 +1317,22 @@ Reboot Required.</source>
         <translation>AEGIS 會將加速模式與車輛實體駕駛模式選擇器連動。
 需要重新開機。</translation>
     </message>
+    <message>
+        <source>Toyota Scene Presets</source>
+        <translation>Toyota 場景模式</translation>
+    </message>
+    <message>
+        <source>AEGIS will link the car&apos;s physical drive mode selector (Power/Normal/Eco) to custom scene presets (Mountain/City/Highway). Requires enabling ToyotaDriveMode and rebooting/re-onroading.
+
+Mountain: Muted automatic throttle, allowing manual accelerator overrides.
+City: More active start-stop and following distance.
+Highway: Smoother acceleration with active following distance.</source>
+        <translation>需要先開 ToyotaDriveMode 並重啟/重新 onroad，之後實體 Power/Normal/Eco 才會驅動場景 preset。
+
+山路：降低自動催油，保留手動油門覆蓋。
+市區：起停與跟車反應較積極。
+高速：加速較平順，但跟車反應維持積極。</translation>
+    </message>
 </context>
 <context>
     <name>TogglesPanel</name>

@@ -24,8 +24,12 @@ class AccelController:
     self.accel_profile_init = False
     self.prev_car_accel_profile = None
     self.toyota_drive_mode_enabled = self.params.get_bool("ToyotaDriveMode")
+    self.aegis_toyota_scene_presets_enabled = self.params.get_bool("AegisToyotaScenePresets")
 
   def update_from_carstate(self, carstate):
+    if self.aegis_toyota_scene_presets_enabled:
+      return False
+
     if (self.toyota_drive_mode_enabled and hasattr(carstate, 'accelProfile') and carstate.accelProfile is not None):
 
       if (not self.accel_profile_init or carstate.accelProfile != self.prev_car_accel_profile):
@@ -38,10 +42,12 @@ class AccelController:
 
   def _update_personality_from_param(self):
     if self.frame % int(1. / DT_MDL) == 0:
+      self.toyota_drive_mode_enabled = self.params.get_bool("ToyotaDriveMode")
+      self.aegis_toyota_scene_presets_enabled = self.params.get_bool("AegisToyotaScenePresets")
       personality_int = self.params.get("AccelPersonality")
       if personality_int is not None:
-        if personality_int in [AccelPersonality.stock, AccelPersonality.normal, AccelPersonality.eco, AccelPersonality.sport]:
-          self.personality = personality_int
+        if int(personality_int) in [AccelPersonality.stock, AccelPersonality.normal, AccelPersonality.eco, AccelPersonality.sport]:
+          self.personality = int(personality_int)
 
   def _get_max_accel_for_speed(self, v_ego: float) -> float:
 
