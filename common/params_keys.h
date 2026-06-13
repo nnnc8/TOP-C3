@@ -150,6 +150,7 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"OnroadScreenOff", {PERSISTENT, BOOL}},
     {"PackagesInstallRequested", {PERSISTENT, BOOL}},
     {"PrimeAd", {PERSISTENT, BOOL}},
+    {"AegisQuietCabin", {PERSISTENT, BOOL}},
     {"QuietDrive", {PERSISTENT, BOOL}},
     {"ReverseAccChange", {PERSISTENT, BOOL, "1"}},
     {"road_edge_detection", {PERSISTENT, BOOL, "1"}},

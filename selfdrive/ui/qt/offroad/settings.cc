@@ -722,6 +722,12 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
                                   "../assets/icons/aegis_quiet.svg",
                                   this));
 
+  toggles.append(new ParamControl("AegisQuietCabin",
+                                  tr("Quiet Cabin"),
+                                  tr("Suppress Toyota's overlapping double beep chimes while maintaining essential safety and openpilot alerts."),
+                                  "../assets/icons/aegis_quiet.svg",
+                                  this));
+
   toggles.append(new ParamControl("OnroadScreenOff",
                                   tr("Driving Screen Off"),
                                   tr("Turn off the device screen to protect the OLED panel after driving starts. It automatically brightens or turns on when a touch or event occurs."),

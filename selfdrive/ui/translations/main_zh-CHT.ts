@@ -1304,6 +1304,14 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
         <translation>AEGIS 會顯示警示，但只播放最重要的警告聲。此功能可在車輛通電時切換。</translation>
     </message>
     <message>
+        <source>Quiet Cabin</source>
+        <translation>安靜座艙</translation>
+    </message>
+    <message>
+        <source>Suppress Toyota's overlapping double beep chimes while maintaining essential safety and openpilot alerts.</source>
+        <translation>壓掉 Toyota 取消時產生的雙嗶聲（TWO_BEEPS）以避免與 openpilot 提示音重疊，同時完整保留其他安全警示與提示。</translation>
+    </message>
+    <message>
         <source>AEGIS will link the Acceleration Personality to the car&apos;s physical drive mode selector.
 Reboot Required.</source>
         <translation>AEGIS 會將加速模式與車輛實體駕駛模式選擇器連動。
