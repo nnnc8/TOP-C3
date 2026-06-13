@@ -1,9 +1,6 @@
 #pragma once
 
 #include <QColor>
-#include <QFrame>
-#include <QLabel>
-
 #include "common/aegis_journey_board.h"
 #include "common/params.h"
 #include "selfdrive/ui/qt/onroad/alerts.h"
@@ -29,12 +26,6 @@ private:
 
   OnroadAlerts *alerts;
   AnnotatedCameraWidget *nvg;
-  QWidget *achievement_toast_container;
-  QFrame *achievement_toast_card;
-  QLabel *lbl_assist_time_val;
-  QLabel *lbl_assist_dist_val;
-  QLabel *lbl_assist_ratio_val;
-  QLabel *lbl_interv_val;
   QColor bg = bg_colors[STATUS_DISENGAGED];
   QHBoxLayout* split;
   Params params;
@@ -45,7 +36,6 @@ private:
   double last_journey_save_millis = 0.0;
   bool overriding_prev = false;
   bool has_alert_prev = false;
-  bool show_onroad_card = true;
 
   void updateDpIndicatorSideState(bool blinker_state, bool bsm_state, bool &show, bool &show_prev, int &count, QColor &color);
   void updateDpIndicatorStates(const UIState &s);

@@ -3,13 +3,11 @@
 #include <chrono>
 #include <cmath>
 #include <algorithm>
-#include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QDate>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStackedLayout>
-#include <QTimer>
 #include <QVBoxLayout>
 
 #include "common/timing.h"
@@ -50,72 +48,6 @@ OnroadWindow::OnroadWindow(QWidget *parent) : QWidget(parent) {
   alerts = new OnroadAlerts(this);
   alerts->setAttribute(Qt::WA_TransparentForMouseEvents, true);
   stacked_layout->addWidget(alerts);
-
-  achievement_toast_container = new QWidget(this);
-  achievement_toast_container->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-  QVBoxLayout *toast_layout = new QVBoxLayout(achievement_toast_container);
-  toast_layout->setContentsMargins(0, 40, 40, 0); // safe margin at top right
-
-  achievement_toast_card = new QFrame(achievement_toast_container);
-  achievement_toast_card->setFixedSize(400, 200);
-  QVBoxLayout *achievement_layout = new QVBoxLayout(achievement_toast_card);
-  achievement_layout->setContentsMargins(24, 16, 24, 16);
-  achievement_layout->setSpacing(8);
-
-  QLabel *onroad_card_title = new QLabel(tr("輔助品質"), achievement_toast_card);
-  onroad_card_title->setStyleSheet("font-size: 22px; font-weight: 700; color: #A6B0BE; background-color: transparent; border: none;");
-  achievement_layout->addWidget(onroad_card_title);
-
-  QGridLayout *grid = new QGridLayout();
-  grid->setContentsMargins(0, 0, 0, 0);
-  grid->setHorizontalSpacing(16);
-  grid->setVerticalSpacing(10);
-
-  auto makeMetricBlock = [](const QString &label, QLabel **val_lbl, QGridLayout *g, int row, int col) {
-    QVBoxLayout *cell_lay = new QVBoxLayout();
-    cell_lay->setSpacing(2);
-    cell_lay->setContentsMargins(0, 0, 0, 0);
-
-    QLabel *lbl_name = new QLabel(label);
-    lbl_name->setStyleSheet("font-size: 16px; font-weight: 600; color: #8A95A5; background-color: transparent; border: none;");
-
-    *val_lbl = new QLabel("-");
-    (*val_lbl)->setStyleSheet("font-size: 26px; font-weight: 700; color: #FFFFFF; background-color: transparent; border: none;");
-
-    cell_lay->addWidget(lbl_name);
-    cell_lay->addWidget(*val_lbl);
-    g->addLayout(cell_lay, row, col);
-  };
-
-  makeMetricBlock(tr("輔助時間"), &lbl_assist_time_val, grid, 0, 0);
-  makeMetricBlock(tr("輔助里程"), &lbl_assist_dist_val, grid, 0, 1);
-  makeMetricBlock(tr("輔助占比"), &lbl_assist_ratio_val, grid, 1, 0);
-  makeMetricBlock(tr("介入次數"), &lbl_interv_val, grid, 1, 1);
-
-  achievement_layout->addLayout(grid);
-
-  achievement_toast_card->setStyleSheet(R"(
-    QFrame {
-      background-color: rgba(21, 23, 28, 220);
-      border: 2px solid rgba(255, 255, 255, 42);
-      border-radius: 12px;
-    }
-    QLabel {
-      background-color: transparent;
-      border: none;
-    }
-  )");
-
-  achievement_toast_card->hide();
-  toast_layout->addWidget(achievement_toast_card, 0, Qt::AlignTop | Qt::AlignRight);
-  toast_layout->addStretch(1);
-  stacked_layout->addWidget(achievement_toast_container);
-
-  // setup stacking order
-  alerts->raise();
-  achievement_toast_container->raise();
-
-  show_onroad_card = params.getBool("AegisJourneyBoardOnroadCard");
 
   setAttribute(Qt::WA_OpaquePaintEvent);
   QObject::connect(uiState(), &UIState::uiUpdate, this, &OnroadWindow::updateState);
@@ -233,43 +165,6 @@ void OnroadWindow::updateJourneyBoard(const UIState &s) {
     journey_board_dirty = true;
   }
 
-  // Show card only when started, toggle is enabled, and there is no active alert
-  if (s.scene.started && show_onroad_card && !has_alert) {
-    auto format_time = [](double seconds) -> QString {
-      int total_mins = static_cast<int>(seconds) / 60;
-      int hours = total_mins / 60;
-      int mins = total_mins % 60;
-      if (hours > 0) {
-        return QString("%1h %2m").arg(hours).arg(mins);
-      } else if (mins > 0) {
-        return QString("%1m").arg(mins);
-      } else {
-        return QString("%1s").arg(static_cast<int>(seconds));
-      }
-    };
-
-    auto format_dist = [](double meters) -> QString {
-      double km = meters / 1000.0;
-      if (km >= 10.0) {
-        return QString("%1 km").arg(QString::number(km, 'f', 0));
-      } else {
-        return QString("%1 km").arg(QString::number(km, 'f', 1));
-      }
-    };
-
-    double ratio = get_assist_ratio(journey_state.current_trip.assisted_moving_time_s, journey_state.current_trip.moving_time_s);
-    QString ratio_str = QString("%1%").arg(static_cast<int>(std::round(ratio * 100.0)));
-
-    lbl_assist_time_val->setText(format_time(journey_state.current_trip.assisted_time_s));
-    lbl_assist_dist_val->setText(format_dist(journey_state.current_trip.assisted_distance_m));
-    lbl_assist_ratio_val->setText(ratio_str);
-    lbl_interv_val->setText(tr("%1 次").arg(journey_state.current_trip.intervention_count));
-
-    achievement_toast_card->show();
-  } else {
-    achievement_toast_card->hide();
-  }
-
   saveJourneyBoard(false);
 }
 
@@ -311,9 +206,7 @@ void OnroadWindow::offroadTransition(bool offroad) {
       close_aegis_journey_trip(journey_state, current_day_key());
       saveJourneyBoard(true);
     }
-    achievement_toast_card->hide();
   } else {
-    show_onroad_card = params.getBool("AegisJourneyBoardOnroadCard");
     last_journey_update_millis = millis_since_boot();
     last_journey_save_millis = millis_since_boot();
     overriding_prev = false;

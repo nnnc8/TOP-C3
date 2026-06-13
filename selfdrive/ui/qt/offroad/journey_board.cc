@@ -149,16 +149,6 @@ JourneyBoardPanel::JourneyBoardPanel(QWidget *parent) : QWidget(parent) {
   controls_layout->setContentsMargins(34, 18, 34, 18);
   controls_layout->setSpacing(10);
 
-  if (params.get("AegisJourneyBoardOnroadCard").empty()) {
-    params.putBool("AegisJourneyBoardOnroadCard", true);
-  }
-
-  controls_layout->addWidget(new ParamControl("AegisJourneyBoardOnroadCard",
-                                              tr("常駐資訊卡"),
-                                              tr("啟用後，在 started 且沒有警告時，右上角將常駐顯示本趟輔助品質資訊卡。"),
-                                              "../assets/icons/aegis_pit_wall.svg",
-                                              controls));
-
   ButtonControl *reset_btn = new ButtonControl(tr("重置旅程看板"), tr("重置"),
                                                tr("清除所有旅程遙測與輔助累積資料，並重新建立目前路線數快照。"),
                                                "../assets/icons/aegis_reset.svg", controls);
