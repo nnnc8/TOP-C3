@@ -38,7 +38,7 @@ QFrame *makeSectionCard(const QString &title, QWidget *parent = nullptr) {
   layout->setContentsMargins(36, 28, 36, 28);
   layout->setSpacing(24);
 
-  QLabel *lbl_title = makeLabel(title, 36, 700, "#F4F6FA", card);
+  QLabel *lbl_title = makeLabel(title, 44, 700, "#F4F6FA", card);
   layout->addWidget(lbl_title);
   return card;
 }
@@ -48,8 +48,8 @@ void makeMetricBlock(const QString &name, QLabel **val_lbl, QGridLayout *grid, i
   layout->setSpacing(6);
   layout->setContentsMargins(0, 0, 0, 0);
 
-  QLabel *lbl_name = makeLabel(name, 24, 600, "#8A95A5", parent);
-  *val_lbl = makeLabel("-", 34, 700, "#FFFFFF", parent);
+  QLabel *lbl_name = makeLabel(name, 32, 600, "#8A95A5", parent);
+  *val_lbl = makeLabel("-", 44, 700, "#FFFFFF", parent);
 
   layout->addWidget(lbl_name);
   layout->addWidget(*val_lbl);
@@ -70,9 +70,9 @@ JourneyBoardPanel::JourneyBoardPanel(QWidget *parent) : QWidget(parent) {
   hero_layout->setContentsMargins(42, 38, 42, 38);
   hero_layout->setSpacing(12);
 
-  QLabel *kicker = makeLabel(tr("AEGIS 旅程資料"), 26, 700, "#A6B0BE", hero);
-  QLabel *title = makeLabel(tr("旅程看板"), 56, 750, "#F4F6FA", hero);
-  QLabel *desc = makeLabel(tr("純旅程遙測與輔助品質追蹤系統"), 28, 500, "#8A95A5", hero);
+  QLabel *kicker = makeLabel(tr("FRIDAY 旅程資料"), 34, 700, "#A6B0BE", hero);
+  QLabel *title = makeLabel(tr("旅程看板"), 60, 750, "#F4F6FA", hero);
+  QLabel *desc = makeLabel(tr("純旅程遙測與輔助品質追蹤系統"), 34, 500, "#8A95A5", hero);
 
   hero_layout->addWidget(kicker);
   hero_layout->addWidget(title);
@@ -200,7 +200,7 @@ QString JourneyBoardPanel::formatSpeed(double speed_mps) const {
 }
 
 QString JourneyBoardPanel::formatRatio(double ratio) const {
-  return QString("%1%").arg(static_cast<int>(std::round(std::clamp(ratio, 0.0, 1.0) * 100.0)));
+  return tr("%1%").arg(static_cast<int>(std::round(std::clamp(ratio, 0.0, 1.0) * 100.0)));
 }
 
 void JourneyBoardPanel::refresh() {

@@ -1,11 +1,13 @@
 <div align="center" style="text-align: center;">
 
-<h1>openpilot</h1>
+<img src="selfdrive/assets/icons/friday_logo.png" width="128" height="128" alt="FRIDAY Logo">
+
+<h1>FRIDAY</h1>
 
 <p>
-  <b>openpilot is an operating system for robotics.</b>
+  <b>FRIDAY is a customized personal AI assistant fork of openpilot.</b>
   <br>
-  Currently, it upgrades the driver assistance system in 300+ supported cars.
+  Based on openpilot (an operating system for robotics), it upgrades the driver assistance system in 300+ supported cars with enhanced features, Journey Board, and local Health monitoring.
 </p>
 
 <h3>

@@ -4,7 +4,7 @@
 #include "selfdrive/ui/qt/window.h"
 
 const QString TEST_TEXT = "(WRAPPED_SOURCE_TEXT)";  // what each string should be translated to
-QRegExp RE_NUM("\\d*");
+QRegExp RE_NUM("[0-9.-]*");
 
 QStringList getParentWidgets(QWidget* widget){
   QStringList parentWidgets;

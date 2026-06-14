@@ -92,8 +92,8 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
   // accel controller
   std::vector<QString> accel_personality_texts{tr("Sport"), tr("Normal"), tr("Eco"), tr("Stock")};
   accel_personality_setting = new ButtonParamControl("AccelPersonality", tr("Acceleration Personality"),
-                                          tr("Normal is recommended. In sport mode, AEGIS will provide aggressive acceleration for a dynamic driving experience. "
-                                             "In eco mode, AEGIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these "
+                                          tr("Normal is recommended. In sport mode, FRIDAY will provide aggressive acceleration for a dynamic driving experience. "
+                                             "In eco mode, FRIDAY will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these "
                                              "acceleration personality within Onroad Settings on the driving screen."),
                                           "../assets/icons/aegis_accel.svg",
                                           accel_personality_texts);
@@ -569,7 +569,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {tr("Journey Board"), "../assets/icons/aegis_nav_achievements.svg", new JourneyBoardPanel(this)},
     {tr("Health Center"), "../assets/icons/aegis_clean_km.svg", new AegisHealthPanel(this)},
     {tr("Developer"), "../assets/icons/aegis_nav_developer.svg", new DeveloperPanel(this)},
-    {tr("AEGIS"), "../assets/icons/aegis_nav_aegis.svg", new TimpilotPanel(this)},
+    {tr("FRIDAY"), "../assets/icons/friday_logo.png", new TimpilotPanel(this)},
   };
 
   nav_btns = new QButtonGroup(this);
@@ -720,7 +720,7 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
 
   toggles.append(new ParamControl("QuietDrive",
                                   tr("Quiet Drive"),
-                                  tr("AEGIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on."),
+                                  tr("FRIDAY will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on."),
                                   "../assets/icons/aegis_quiet.svg",
                                   this));
 
@@ -786,13 +786,13 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
 
   toggles.append(new ParamControl("ToyotaDriveMode",
                                   tr("Enable Toyota Drive Mode Button"),
-                                  tr("AEGIS will link the Acceleration Personality to the car's physical drive mode selector.\nReboot Required."),
+                                  tr("FRIDAY will link the Acceleration Personality to the car's physical drive mode selector.\nReboot Required."),
                                   "../assets/icons/aegis_drive_mode.svg",
                                   this));
 
   toggles.append(new ParamControl("AegisToyotaScenePresets",
                                   tr("Toyota Scene Presets"),
-                                  tr("AEGIS will link the car's physical drive mode selector (Power/Normal/Eco) to custom scene presets (Mountain/City/Highway). Requires enabling ToyotaDriveMode and rebooting/re-onroading.\n\nMountain: Muted automatic throttle, allowing manual accelerator overrides.\nCity: More active start-stop and following distance.\nHighway: Smoother acceleration with active following distance."),
+                                  tr("FRIDAY will link the car's physical drive mode selector (Power/Normal/Eco) to custom scene presets (Mountain/City/Highway). Requires enabling ToyotaDriveMode and rebooting/re-onroading.\n\nMountain: Muted automatic throttle, allowing manual accelerator overrides.\nCity: More active start-stop and following distance.\nHighway: Smoother acceleration with active following distance."),
                                   "../assets/icons/aegis_drive_mode.svg",
                                   this));
 

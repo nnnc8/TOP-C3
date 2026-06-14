@@ -33,7 +33,7 @@ QFrame *makeSectionCard(const QString &title, QWidget *parent = nullptr) {
   layout->setContentsMargins(36, 28, 36, 28);
   layout->setSpacing(24);
 
-  QLabel *lbl_title = makeLabel(title, 36, 700, "#F4F6FA", card);
+  QLabel *lbl_title = makeLabel(title, 44, 700, "#F4F6FA", card);
   layout->addWidget(lbl_title);
   return card;
 }
@@ -43,8 +43,8 @@ void makeMetricBlock(const QString &name, QLabel **val_lbl, QGridLayout *grid, i
   layout->setSpacing(6);
   layout->setContentsMargins(0, 0, 0, 0);
 
-  QLabel *lbl_name = makeLabel(name, 24, 600, "#8A95A5", parent);
-  *val_lbl = makeLabel("-", 34, 700, "#FFFFFF", parent);
+  QLabel *lbl_name = makeLabel(name, 32, 600, "#8A95A5", parent);
+  *val_lbl = makeLabel("-", 44, 700, "#FFFFFF", parent);
 
   layout->addWidget(lbl_name);
   layout->addWidget(*val_lbl);
@@ -65,18 +65,20 @@ AegisHealthPanel::AegisHealthPanel(QWidget *parent) : QWidget(parent) {
   hero_layout->setContentsMargins(42, 38, 42, 38);
   hero_layout->setSpacing(12);
 
-  QLabel *kicker = makeLabel(tr("AEGIS 健康中心"), 26, 700, "#A6B0BE", hero);
-  lbl_score = makeLabel("-分", 68, 750, "#F4F6FA", hero);
-  lbl_level = makeLabel("-", 28, 600, "#8A95A5", hero);
+  QLabel *kicker = makeLabel(tr("FRIDAY 系統狀態"), 34, 700, "#A6B0BE", hero);
+  QLabel *title = makeLabel(tr("健康中心"), 60, 750, "#F4F6FA", hero);
+  lbl_score = makeLabel("-分", 76, 750, "#F4F6FA", hero);
+  lbl_level = makeLabel("-", 34, 600, "#8A95A5", hero);
 
   hero_layout->addWidget(kicker);
+  hero_layout->addWidget(title);
   hero_layout->addWidget(lbl_score);
   hero_layout->addWidget(lbl_level);
   main_layout->addWidget(hero);
 
   // Reasons Card
   QFrame *reasons_card = makeSectionCard(tr("狀態原因與建議措施"), this);
-  lbl_reasons = makeLabel("-", 26, 500, "#FFFFFF", reasons_card);
+  lbl_reasons = makeLabel("-", 34, 500, "#FFFFFF", reasons_card);
   reasons_card->layout()->addWidget(lbl_reasons);
   main_layout->addWidget(reasons_card);
 
@@ -111,7 +113,7 @@ AegisHealthPanel::AegisHealthPanel(QWidget *parent) : QWidget(parent) {
   QFrame *backups_card = makeSectionCard(tr("參數設定自動備份"), this);
   QVBoxLayout *backups_layout = qobject_cast<QVBoxLayout *>(backups_card->layout());
 
-  lbl_backups_status = makeLabel("-", 26, 500, "#A6B0BE", backups_card);
+  lbl_backups_status = makeLabel("-", 34, 500, "#A6B0BE", backups_card);
   backups_layout->addWidget(lbl_backups_status);
 
   QHBoxLayout *btn_lay = new QHBoxLayout();
@@ -168,13 +170,13 @@ AegisHealthPanel::AegisHealthPanel(QWidget *parent) : QWidget(parent) {
       border-radius: 12px;
     }
     QPushButton {
-      height: 60px;
-      font-size: 26px;
+      height: 96px;
+      font-size: 40px;
       font-weight: 500;
       color: #FFFFFF;
       background-color: #1F232D;
       border: 1px solid rgba(255, 255, 255, 30);
-      border-radius: 8px;
+      border-radius: 12px;
     }
     QPushButton:pressed {
       background-color: #313745;
@@ -203,13 +205,13 @@ void AegisHealthPanel::refresh() {
   
   if (level == "critical") {
     lbl_level->setText(tr("嚴重警告 (Critical)"));
-    lbl_level->setStyleSheet("font-size: 28px; font-weight: 600; color: #FF5A60; background-color: transparent;");
+    lbl_level->setStyleSheet("font-size: 34px; font-weight: 600; color: #FF5A60; background-color: transparent;");
   } else if (level == "warning") {
     lbl_level->setText(tr("提示警告 (Warning)"));
-    lbl_level->setStyleSheet("font-size: 28px; font-weight: 600; color: #FFC107; background-color: transparent;");
+    lbl_level->setStyleSheet("font-size: 34px; font-weight: 600; color: #FFC107; background-color: transparent;");
   } else {
     lbl_level->setText(tr("狀態優良 (Normal)"));
-    lbl_level->setStyleSheet("font-size: 28px; font-weight: 600; color: #4CAF50; background-color: transparent;");
+    lbl_level->setStyleSheet("font-size: 34px; font-weight: 600; color: #4CAF50; background-color: transparent;");
   }
 
   // Actionable Reasons List
@@ -235,8 +237,8 @@ void AegisHealthPanel::refresh() {
   int interventions = last["manual_intervention_count"].toInt(0);
   int hard_brakes = last["hard_brake_count"].toInt(0);
 
-  lbl_trip_temp->setText(QString("%1 °C").arg(QString::number(max_temp, 'f', 1)));
-  lbl_trip_space->setText(QString("%1 %").arg(QString::number(min_space, 'f', 1)));
+  lbl_trip_temp->setText(tr("%1 °C").arg(QString::number(max_temp, 'f', 1)));
+  lbl_trip_space->setText(tr("%1 %").arg(QString::number(min_space, 'f', 1)));
   lbl_trip_events->setText(tr("警告: %1 / 介入: %2 / 急煞: %3").arg(alerts).arg(interventions).arg(hard_brakes));
 
   // 30 Days trend Summary
@@ -256,8 +258,8 @@ void AegisHealthPanel::refresh() {
     error_log_count_30d = std::max(error_log_count_30d, bucket["error_log_count"].toInt(0));
   }
 
-  lbl_30d_temp->setText(QString("%1 °C").arg(QString::number(max_temp_30d, 'f', 1)));
-  lbl_30d_space->setText(QString("%1 %").arg(QString::number(min_space_30d, 'f', 1)));
+  lbl_30d_temp->setText(tr("%1 °C").arg(QString::number(max_temp_30d, 'f', 1)));
+  lbl_30d_space->setText(tr("%1 %").arg(QString::number(min_space_30d, 'f', 1)));
   lbl_30d_reboots->setText(tr("%1 趟旅程 / %2 重啟").arg(route_count_30d).arg(reboots_30d));
   lbl_30d_errors->setText(tr("%1 次錯誤記錄").arg(error_log_count_30d));
 

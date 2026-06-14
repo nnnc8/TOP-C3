@@ -1,4 +1,4 @@
-# AEGIS Idle Lock Beep Audit (怠速車外上鎖蜂鳴稽核計畫)
+# FRIDAY Idle Lock Beep Audit (怠速車外上鎖蜂鳴稽核計畫)
 
 ## 1. 稽核目標與背景
 本計畫旨在確認「車輛於怠速（READY 狀態）下，從車外進行上鎖時產生的蜂鳴聲」之訊號來源。

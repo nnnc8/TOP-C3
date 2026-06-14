@@ -146,7 +146,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   addItem(uninstallBtn);
 
   // error log button
-  errorLogBtn = new ButtonControl(tr("Error Log"), tr("VIEW"), "View the error log for debugging purposes when openpilot crashes.",
+  errorLogBtn = new ButtonControl(tr("Error Log"), tr("VIEW"), tr("View the error log for debugging purposes when openpilot crashes."),
                                   "../assets/icons/aegis_error_log.svg", this);
   connect(errorLogBtn, &ButtonControl::clicked, [=]() {
     std::string txt = util::read_file("/data/community/crashes/error.txt");

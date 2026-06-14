@@ -47,8 +47,8 @@
         <translation>重設</translation>
     </message>
     <message>
-        <source>AEGIS Festival Playlist</source>
-        <translation>AEGIS 駕駛嘉年華</translation>
+        <source>FRIDAY Festival Playlist</source>
+        <translation>FRIDAY 駕駛嘉年華</translation>
     </message>
     <message>
         <source>Journey Board</source>
@@ -155,8 +155,8 @@
         <translation>未解鎖</translation>
     </message>
     <message>
-        <source>Reset AEGIS Journey Board?</source>
-        <translation>要重設 AEGIS 旅程看板嗎？</translation>
+        <source>Reset FRIDAY Journey Board?</source>
+        <translation>要重設 FRIDAY 旅程看板嗎？</translation>
     </message>
     <message>
         <source>%1 h %2 min</source>
@@ -730,20 +730,20 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
         <translation>&lt;b&gt;偵測到無法支援的版本&lt;/b&gt; - 目前的版本 &lt;b&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/b&gt; 此版本目前不再支援 C3. 請點選 &lt;b&gt;[裝置 &gt; 軟體]&lt;/b&gt; 安裝可支援的版本其名稱具備 &lt;b&gt;&lt;u&gt;-c3&lt;/u&gt;&lt;/b&gt; 或 &lt;b&gt;&lt;u&gt;-C3&lt;/u&gt;&lt;/b&gt; 此版本名稱適用於C3。</translation>
     </message>
     <message>
-        <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, AEGIS won&apos;t engage in %1</source>
-        <translation>請立即連上網路檢查更新；若未連網，AEGIS 將在 %1 後無法啟用。</translation>
+        <source>Immediately connect to the internet to check for updates. If you do not connect to the internet, FRIDAY won&apos;t engage in %1</source>
+        <translation>請立即連上網路檢查更新；若未連網，FRIDAY 將在 %1 後無法啟用。</translation>
     </message>
     <message>
-        <source>Connect to internet to check for updates. AEGIS won&apos;t automatically start until it connects to internet to check for updates.</source>
-        <translation>請連上網路檢查更新；在完成更新檢查前，AEGIS 不會自動啟動。</translation>
+        <source>Connect to internet to check for updates. FRIDAY won&apos;t automatically start until it connects to internet to check for updates.</source>
+        <translation>請連上網路檢查更新；在完成更新檢查前，FRIDAY 不會自動啟動。</translation>
     </message>
     <message>
-        <source>AEGIS was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
-        <translation>AEGIS 無法識別您的車輛。您的車型可能尚未支援，或其 ECU 韌體未被辨識。請提交 Pull Request 補上正確的韌體版本；若需要協助，請加入 discord.comma.ai。</translation>
+        <source>FRIDAY was unable to identify your car. Your car is either unsupported or its ECUs are not recognized. Please submit a pull request to add the firmware versions to the proper vehicle. Need help? Join discord.comma.ai.</source>
+        <translation>FRIDAY 無法識別您的車輛。您的車型可能尚未支援，或其 ECU 韌體未被辨識。請提交 Pull Request 補上正確的韌體版本；若需要協助，請加入 discord.comma.ai。</translation>
     </message>
     <message>
-        <source>AEGIS detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
-        <translation>AEGIS 偵測到裝置安裝位置發生變化。請確認裝置已完全卡入支架，且支架已牢固固定在擋風玻璃上。</translation>
+        <source>FRIDAY detected a change in the device&apos;s mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.</source>
+        <translation>FRIDAY 偵測到裝置安裝位置發生變化。請確認裝置已完全卡入支架，且支架已牢固固定在擋風玻璃上。</translation>
     </message>
 </context>
 <context>
@@ -896,8 +896,8 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
         <translation>現在</translation>
     </message>
     <message>
-        <source>AEGIS</source>
-        <translation>AEGIS</translation>
+        <source>FRIDAY</source>
+        <translation>FRIDAY</translation>
     </message>
 </context>
 <context>
@@ -927,8 +927,8 @@ Firehose Mode allows you to maximize your training data uploads to improve openp
         <translation>開發人員</translation>
     </message>
     <message>
-        <source>AEGIS</source>
-        <translation>AEGIS</translation>
+        <source>FRIDAY</source>
+        <translation>FRIDAY</translation>
     </message>
     <message>
         <source>Journey Board</source>
@@ -1304,8 +1304,8 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
 注意：這將顯示「盲點偵測到車輛」警告。</translation>
     </message>
     <message>
-        <source>AEGIS will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on.</source>
-        <translation>AEGIS 會顯示警示，但只播放最重要的警告聲。此功能可在車輛通電時切換。</translation>
+        <source>FRIDAY will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on.</source>
+        <translation>FRIDAY 會顯示警示，但只播放最重要的警告聲。此功能可在車輛通電時切換。</translation>
     </message>
     <message>
         <source>Quiet Cabin</source>
@@ -1316,9 +1316,9 @@ NOTE: This will show &apos;Car Detected in Blindspot&apos; warning.</source>
         <translation>壓掉 Toyota 取消時產生的雙嗶聲（TWO_BEEPS）以避免與 openpilot 提示音重疊，同時完整保留其他安全警示與提示。</translation>
     </message>
     <message>
-        <source>AEGIS will link the Acceleration Personality to the car&apos;s physical drive mode selector.
+        <source>FRIDAY will link the Acceleration Personality to the car&apos;s physical drive mode selector.
 Reboot Required.</source>
-        <translation>AEGIS 會將加速模式與車輛實體駕駛模式選擇器連動。
+        <translation>FRIDAY 會將加速模式與車輛實體駕駛模式選擇器連動。
 需要重新開機。</translation>
     </message>
     <message>
@@ -1326,7 +1326,7 @@ Reboot Required.</source>
         <translation>Toyota 場景模式</translation>
     </message>
     <message>
-        <source>AEGIS will link the car&apos;s physical drive mode selector (Power/Normal/Eco) to custom scene presets (Mountain/City/Highway). Requires enabling ToyotaDriveMode and rebooting/re-onroading.
+        <source>FRIDAY will link the car&apos;s physical drive mode selector (Power/Normal/Eco) to custom scene presets (Mountain/City/Highway). Requires enabling ToyotaDriveMode and rebooting/re-onroading.
 
 Mountain: Muted automatic throttle, allowing manual accelerator overrides.
 City: More active start-stop and following distance.
@@ -1481,8 +1481,8 @@ Highway: Smoother acceleration with active following distance.</source>
         <translation>在駕駛時錄製並儲存麥克風音訊。此音訊將會收錄在 comma connect 的行車記錄器影片中。</translation>
     </message>
     <message>
-        <source>Normal is recommended. In sport mode, AEGIS will provide aggressive acceleration for a dynamic driving experience. In eco mode, AEGIS will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these acceleration personality within Onroad Settings on the driving screen.</source>
-        <translation>建議使用普通模式。在運動模式下，AEGIS 會提供較積極的加速，帶來更靈敏的駕駛感；在節能模式下，AEGIS 會採用更平順、更柔和的加速。支援的車型可在行車畫面的 Onroad Settings 中切換這些加速模式。</translation>
+        <source>Normal is recommended. In sport mode, FRIDAY will provide aggressive acceleration for a dynamic driving experience. In eco mode, FRIDAY will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these acceleration personality within Onroad Settings on the driving screen.</source>
+        <translation>建議使用普通模式。在運動模式下，FRIDAY 會提供較積極的加速，帶來更靈敏的駕駛感；在節能模式下，FRIDAY 會採用更平順、更柔和的加速。支援的車型可在行車畫面的 Onroad Settings 中切換這些加速模式。</translation>
     </message>
 </context>
 <context>

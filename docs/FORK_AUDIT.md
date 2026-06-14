@@ -1,6 +1,6 @@
-# AEGIS Fork 功能稽核 (Fork Audit)
+# FRIDAY Fork 功能稽核 (Fork Audit)
 
-本頁面記錄了其他開源 openpilot 分支（Forks）中值得後續研究、移植或借鑒的功能特色，作為 AEGIS 未來發展的規劃參考。
+本頁面記錄了其他開源 openpilot 分支（Forks）中值得後續研究、移植或借鑒的功能特色，作為 FRIDAY 未來發展的規劃參考。
 
 ---
 
@@ -17,4 +17,4 @@
 ## 3. DragonPilot
 * **Toyota/Lexus 專項功能研究**：
   - 深入研究 Toyota 既有車端安全硬體與 LKAS/LTA 的 CAN 控制訊號。
-  - 後續可用於進一步最佳化 Toyota 車款在 AEGIS 中的深度整合與專屬設定。
+  - 後續可用於進一步最佳化 Toyota 車款在 FRIDAY 中的深度整合與專屬設定。
