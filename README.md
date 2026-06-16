@@ -5,105 +5,129 @@
 <h1>FRIDAY</h1>
 
 <p>
-  <b>FRIDAY is a customized personal AI assistant fork of openpilot.</b>
+  <b>FRIDAY is a premium, highly-customized personal AI assistant fork of openpilot.</b>
   <br>
-  Based on openpilot (an operating system for robotics), it upgrades the driver assistance system in 300+ supported cars with enhanced features, Journey Board, and local Health monitoring.
+  Designed to deliver a refined driving experience, FRIDAY upgrades the driver assistance system in 300+ supported cars with a custom UI theme, advanced Toyota control tuning, drive telemetry, and local hardware diagnostics.
 </p>
 
 <h3>
-  <a href="https://docs.comma.ai">Docs</a>
+  <a href="#-key-features">Key Features</a>
   <span> · </span>
-  <a href="https://docs.comma.ai/contributing/roadmap/">Roadmap</a>
+  <a href="#-installation">Installation</a>
   <span> · </span>
-  <a href="https://github.com/commaai/openpilot/blob/master/docs/CONTRIBUTING.md">Contribute</a>
+  <a href="#-supported-vehicles">Supported Vehicles</a>
+  <span> · </span>
+  <a href="#%EF%B8%8F-developer-guide">Developer Guide</a>
   <span> · </span>
   <a href="https://discord.comma.ai">Community</a>
-  <span> · </span>
-  <a href="https://comma.ai/shop">Try it on a comma 3X</a>
 </h3>
 
-Quick start: `bash <(curl -fsSL openpilot.comma.ai)`
-
-[![openpilot tests](https://github.com/commaai/openpilot/actions/workflows/selfdrive_tests.yaml/badge.svg)](https://github.com/commaai/openpilot/actions/workflows/selfdrive_tests.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![X Follow](https://img.shields.io/twitter/follow/comma_ai)](https://x.com/comma_ai)
-[![Discord](https://img.shields.io/discord/469524606043160576)](https://discord.comma.ai)
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/badge.svg)](https://github.com/sindresorhus/awesome)
+[![GitHub stars](https://img.shields.io/github/stars/nnnc8/openpilot.svg?style=flat&label=Stars&color=blue)](https://github.com/nnnc8/openpilot)
+
+---
 
 </div>
 
-<table>
-  <tr>
-    <td><a href="https://youtu.be/NmBfgOanCyk" title="Video By Greer Viau"><img src="https://github.com/commaai/openpilot/assets/8762862/2f7112ae-f748-4f39-b617-fabd689c3772"></a></td>
-    <td><a href="https://youtu.be/VHKyqZ7t8Gw" title="Video By Logan LeGrand"><img src="https://github.com/commaai/openpilot/assets/8762862/92351544-2833-40d7-9e0b-7ef7ae37ec4c"></a></td>
-    <td><a href="https://youtu.be/SUIZYzxtMQs" title="A drive to Taco Bell"><img src="https://github.com/commaai/openpilot/assets/8762862/05ceefc5-2628-439c-a9b2-89ce77dc6f63"></a></td>
-  </tr>
-</table>
+FRIDAY is a customized fork built to improve daily drivability, safety, and visual aesthetics. Inspired by other leading forks such as *sunnypilot* and *frogpilot*, it merges advanced control state machines, localization improvements, and telemetry monitoring into a clean, unified platform.
 
+---
 
-Using openpilot in a car
-------
+## 🎨 Key Features
 
-To use openpilot in a car, you need four things:
-1. **Supported Device:** a comma 3/3X, available at [comma.ai/shop](https://comma.ai/shop/comma-3x).
-2. **Software:** The setup procedure for the comma 3/3X allows users to enter a URL for custom software. Use the URL `openpilot.comma.ai` to install the release version.
-3. **Supported Car:** Ensure that you have one of [the 275+ supported cars](docs/CARS.md).
-4. **Car Harness:** You will also need a [car harness](https://comma.ai/shop/car-harness) to connect your comma 3/3X to your car.
+### 1. Visual Aesthetics & Theming
+FRIDAY completely revamps the stock openpilot interface with a premium design language:
+* **Zandvoort Blue Theme:** A beautifully unified accent color palette applied across all offroad and onroad settings panels.
+* **Tesla-Inspired Dashboard UI:** Clean, modern drive dashboards featuring custom vehicle models and transparent FSD status markers.
+* **Cubic 11 Font Integration:** Standard system fonts are replaced with [Cubic 11 (立方 11)](https://github.com/AkiCode/cubic-11) for crisp, beautiful Traditional Chinese and English text legibility.
+* **Tabler Icons:** Over 70 customized vector SVG icons integrated throughout the settings panels.
 
-We have detailed instructions for [how to install the harness and device in a car](https://comma.ai/setup). Note that it's possible to run openpilot on [other hardware](https://blog.comma.ai/self-driving-car-for-free/), although it's not plug-and-play.
+### 2. Advanced Toyota Optimization & Safety Gates
+Tuned for safety, smoothness, and responsiveness:
+* **Toyota Brake Hold v2:** A custom state machine for automatic brake hold that prevents manual override lockouts and supports smooth resume transitions.
+* **AEB Safety Gate:** Safety interlock that automatically gates and disables custom brake hold commands during Autonomous Emergency Braking (AEB) activations.
+* **Scene Acceleration Presets:** Quick-select presets tailored to specific driving environments (e.g., highway, city, heavy traffic) that optimize ACC response profiles.
+* **Corolla TSS2 Dynamic Follow Tune:** Tighter, more responsive headways specifically optimized for Corolla TSS2 platforms to prevent aggressive cut-ins.
 
-### Branches
-| branch           | URL                                    | description                                                                         |
-|------------------|----------------------------------------|-------------------------------------------------------------------------------------|
-| `release3`         | openpilot.comma.ai                      | This is openpilot's release branch.                                                 |
-| `release3-staging` | openpilot-test.comma.ai                | This is the staging branch for releases. Use it to get new releases slightly early. |
-| `nightly`          | openpilot-nightly.comma.ai             | This is the bleeding edge development branch. Do not expect this to be stable.      |
-| `nightly-dev`      | installer.comma.ai/commaai/nightly-dev | Same as nightly, but includes experimental development features for some cars.      |
+### 3. Drive Telemetry & Journey Board v2
+Keep track of your driving statistics directly from the device:
+* **Journey Board v2:** A telemetry dashboard that replaces legacy achievements with pure drive statistics.
+* **Active Assist Metrics:** Tracks real-time steering/pedal assist ratios and mileage.
+* **Localized Layouts:** Clean layouts with full Traditional Chinese (`zh-CHT`) and Simplified Chinese (`zh-CHS`) translation support.
 
-To start developing openpilot
-------
+### 4. Quiet Cabin & Audio Control
+* **Quiet Cabin v1:** Suppresses repetitive and unnecessary vehicle alert beeps (e.g., lane warnings, TSS feedback beeps) for a quieter, more comfortable passenger cabin.
+* **Custom Acoustic Feedback:** Automatic brake hold activation triggers are coupled with premium audio prompts (e.g., BMW Bong).
+* **Beep Safety Audit:** Features full CAN signal audits for idle door locking and beep suppression.
 
-openpilot is developed by [comma](https://comma.ai/) and by users like you. We welcome both pull requests and issues on [GitHub](http://github.com/commaai/openpilot).
+### 5. Diagnostics & Health Monitor
+* **FRIDAY Health Center:** An active diagnostic daemon (`aegis_healthd`) monitoring CPU temperatures, voltage spikes, and local hardware aging.
+* **Web Diagnostic Portal:** Fully integrated with the local web manager to view hardware statuses remotely.
 
-* Join the [community Discord](https://discord.comma.ai)
-* Check out [the contributing docs](docs/CONTRIBUTING.md)
-* Check out the [openpilot tools](tools/)
-* Code documentation lives at https://docs.comma.ai
-* Information about running openpilot lives on the [community wiki](https://github.com/commaai/openpilot/wiki)
+### 6. Web Manager (Fleet Manager) Optimizations
+* **Optimized Mobile Route Viewer:** Ported from `dev-c3`, featuring a fluid, responsive UI tailored for mobile screens.
+* **Fast Disk Summary:** Restricted directory depth scans reduce disk read amplification and accelerate list load times.
 
-Want to get paid to work on openpilot? [comma is hiring](https://comma.ai/jobs#open-positions) and offers lots of [bounties](https://comma.ai/bounties) for external contributors.
+---
 
-Safety and Testing
-----
+## 💾 Installation
 
-* openpilot observes [ISO26262](https://en.wikipedia.org/wiki/ISO_26262) guidelines, see [SAFETY.md](docs/SAFETY.md) for more details.
-* openpilot has software-in-the-loop [tests](.github/workflows/selfdrive_tests.yaml) that run on every commit.
-* The code enforcing the safety model lives in panda and is written in C, see [code rigor](https://github.com/commaai/panda#code-rigor) for more details.
-* panda has software-in-the-loop [safety tests](https://github.com/commaai/panda/tree/master/tests/safety).
-* Internally, we have a hardware-in-the-loop Jenkins test suite that builds and unit tests the various processes.
-* panda has additional hardware-in-the-loop [tests](https://github.com/commaai/panda/blob/master/Jenkinsfile).
-* We run the latest openpilot in a testing closet containing 10 comma devices continuously replaying routes.
+### Hardware Compatibility
+FRIDAY is designed and optimized specifically for the **comma 3 / 3X** hardware.
 
-<details>
-<summary>MIT Licensed</summary>
+### Installation Steps
+1. Perform a factory reset or choose custom software installation on your comma device.
+2. When prompted for the software URL, enter:
+   ```text
+   https://installer.comma.ai/nnnc8/top-c3
+   ```
+3. Follow the on-screen instructions to complete the installation and reboot your device.
 
-openpilot is released under the MIT license. Some parts of the software are released under other licenses as specified.
+---
 
-Any user of this software shall indemnify and hold harmless Comma.ai, Inc. and its directors, officers, employees, agents, stockholders, affiliates, subcontractors and customers from and against all allegations, claims, actions, suits, demands, damages, liabilities, obligations, losses, settlements, judgments, costs and expenses (including without limitation attorneys’ fees and costs) which arise out of, relate to or result from any use of this software by user.
+## 🚗 Supported Vehicles
 
-**THIS IS ALPHA QUALITY SOFTWARE FOR RESEARCH PURPOSES ONLY. THIS IS NOT A PRODUCT.
-YOU ARE RESPONSIBLE FOR COMPLYING WITH LOCAL LAWS AND REGULATIONS.
-NO WARRANTY EXPRESSED OR IMPLIED.**
-</details>
+FRIDAY inherits support for **over 300+ vehicles** from stock openpilot. Additionally, it offers deep, customized integration for Toyota and Lexus models equipped with Toyota Safety Sense (TSS2 / TSS-P).
 
-<details>
-<summary>User Data and comma Account</summary>
+* Refer to [CARS.md](docs/CARS.md) for the complete list of supported vehicles.
+* Refer to [FORK_AUDIT.md](docs/FORK_AUDIT.md) for audit logs of experimental features borrowed from sunnypilot, frogpilot, and dragonpilot.
 
-By default, openpilot uploads the driving data to our servers. You can also access your data through [comma connect](https://connect.comma.ai/). We use your data to train better models and improve openpilot for everyone.
+---
 
-openpilot is open source software: the user is free to disable data collection if they wish to do so.
+## 🛠️ Developer Guide
 
-openpilot logs the road-facing cameras, CAN, GPS, IMU, magnetometer, thermal sensors, crashes, and operating system logs.
-The driver-facing camera and microphone are only logged if you explicitly opt-in in settings.
+We welcome contributions and community improvements.
 
-By using openpilot, you agree to [our Privacy Policy](https://comma.ai/privacy). You understand that use of this software or its related services will generate certain types of user data, which may be logged and stored at the sole discretion of comma. By accepting this agreement, you grant an irrevocable, perpetual, worldwide right to comma for the use of this data.
-</details>
+### Development Environment Setup
+To get started with developing FRIDAY locally:
+```bash
+git clone https://github.com/nnnc8/openpilot.git
+cd openpilot
+git checkout top-c3
+```
+
+Ensure you have your environment variables set up, and run compilation tests:
+```bash
+scons -j$(nproc)
+```
+
+### Run Stability Check
+Verify code format and run the local sanity checks:
+```bash
+pytest selfdrive/selfdrived/tests/test_toyota_presets_selfdrived.py
+pytest common/tests/test_aegis_journey_board.py
+```
+
+---
+
+## ⚖️ Safety & Licensing
+
+* **Safety Compliance:** FRIDAY maintains openpilot's ISO26262 safety guidelines and compiles safety parameters into the panda firmware. See [SAFETY.md](docs/SAFETY.md) for more details.
+* **Licensing:** FRIDAY is released under the **MIT License**. The [Cubic 11](selfdrive/assets/fonts/Cubic_11_OFL.txt) font is licensed under the SIL Open Font License (OFL).
+
+---
+
+> [!WARNING]
+> **FRIDAY IS ALPHA QUALITY SOFTWARE FOR RESEARCH PURPOSES ONLY.**
+> It is not a certified consumer product. You are entirely responsible for complying with local traffic laws and driving safety regulations. Always keep your hands on the wheel and remain ready to take over manual control at any moment.
