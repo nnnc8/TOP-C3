@@ -3,7 +3,7 @@
 #include <QFrame>
 #include <QLabel>
 
-#include "common/aegis_journey_board.h"
+#include "common/friday_journey_board.h"
 #include "common/params.h"
 #include "selfdrive/ui/qt/widgets/controls.h"
 

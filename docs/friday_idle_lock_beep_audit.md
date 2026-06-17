@@ -57,9 +57,9 @@
 1. **Gate 1：若判定為「來源 C（無可控輸出）」**
    * **結果**：**不新增任何控制功能**，本計畫到此結束，僅提交並保存本稽核文件與分析結論。
 2. **Gate 2：若判定為「來源 A 或 B（有可控之 CAN 控制訊號）」**
-   * **結果**：另行開啟 `feature/aegis-idle-lock-beep-suppress` 分支進行開發。
+   * **結果**：另行開啟 `feature/friday-idle-lock-beep-suppress` 分支進行開發。
    * **抑制功能（Suppress Feature）規範**：
-     * 必須新增持久參數：`AegisIdleLockBeepSuppress`，預設為 `false` (OFF)。
+     * 必須新增持久參數：`FridayIdleLockBeepSuppress`，預設為 `false` (OFF)。
      * 抑制邏輯僅在以下**所有安全條件**同時成立時才會觸發：
        1. 車輛處於怠速（Engine Idle）或 READY 狀態下。
        2. 車速確認為零 (`vEgo == 0`)。

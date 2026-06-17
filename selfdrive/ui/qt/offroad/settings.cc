@@ -11,7 +11,7 @@
 #include "common/util.h"
 #include "selfdrive/ui/qt/network/networking.h"
 #include "selfdrive/ui/qt/offroad/journey_board.h"
-#include "selfdrive/ui/qt/offroad/aegis_health.h"
+#include "selfdrive/ui/qt/offroad/friday_health.h"
 #include "selfdrive/ui/qt/offroad/settings.h"
 #include "selfdrive/ui/qt/qt_window.h"
 #include "selfdrive/ui/qt/widgets/prime.h"
@@ -26,56 +26,56 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
       "OpenpilotEnabledToggle",
       tr("Enable openpilot"),
       tr("Use the openpilot system for adaptive cruise control and lane keep driver assistance. Your attention is required at all times to use this feature."),
-      "../assets/icons/aegis_enable.svg",
+      "../assets/icons/friday_enable.svg",
       true,
     },
     {
       "ExperimentalMode",
       tr("Experimental Mode"),
       "",
-      "../assets/icons/aegis_experimental.svg",
+      "../assets/icons/friday_experimental.svg",
       false,
     },
     {
       "DisengageOnAccelerator",
       tr("Disengage on Accelerator Pedal"),
       tr("When enabled, pressing the accelerator pedal will disengage openpilot."),
-      "../assets/icons/aegis_pedal.svg",
+      "../assets/icons/friday_pedal.svg",
       false,
     },
     {
       "IsLdwEnabled",
       tr("Enable Lane Departure Warnings"),
       tr("Receive alerts to steer back into the lane when your vehicle drifts over a detected lane line without a turn signal activated while driving over 31 mph (50 km/h)."),
-      "../assets/icons/aegis_lane_warning.svg",
+      "../assets/icons/friday_lane_warning.svg",
       false,
     },
     {
       "AlwaysOnDM",
       tr("Always-On Driver Monitoring"),
       tr("Enable driver monitoring even when openpilot is not engaged."),
-      "../assets/icons/aegis_driver_monitor.svg",
+      "../assets/icons/friday_driver_monitor.svg",
       false,
     },
     {
       "RecordFront",
       tr("Record and Upload Driver Camera"),
       tr("Upload data from the driver facing camera and help improve the driver monitoring algorithm."),
-      "../assets/icons/aegis_camera.svg",
+      "../assets/icons/friday_camera.svg",
       true,
     },
     {
       "RecordAudio",
       tr("Record and Upload Microphone Audio"),
       tr("Record and store microphone audio while driving. The audio will be included in the dashcam video in comma connect."),
-      "../assets/icons/aegis_microphone.svg",
+      "../assets/icons/friday_microphone.svg",
       true,
     },
     {
       "IsMetric",
       tr("Use Metric System"),
       tr("Display speed in km/h instead of mph."),
-      "../assets/icons/aegis_metric.svg",
+      "../assets/icons/friday_metric.svg",
       false,
     },
   };
@@ -86,7 +86,7 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
                                           tr("Standard is recommended. In aggressive mode, openpilot will follow lead cars closer and be more aggressive with the gas and brake. "
                                              "In relaxed mode openpilot will stay further away from lead cars. On supported cars, you can cycle through these personalities with "
                                              "your steering wheel distance button."),
-                                          "../assets/icons/aegis_follow.svg",
+                                          "../assets/icons/friday_follow.svg",
                                           longi_button_texts);
 
   // accel controller
@@ -95,7 +95,7 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
                                           tr("Normal is recommended. In sport mode, FRIDAY will provide aggressive acceleration for a dynamic driving experience. "
                                              "In eco mode, FRIDAY will apply smoother and more relaxed acceleration. On supported cars, you can cycle through these "
                                              "acceleration personality within Onroad Settings on the driving screen."),
-                                          "../assets/icons/aegis_accel.svg",
+                                          "../assets/icons/friday_accel.svg",
                                           accel_personality_texts);
   accel_personality_setting->showDescription();
 
@@ -134,7 +134,7 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
   }
 
   // Toggles with confirmation dialogs
-  toggles["ExperimentalMode"]->setActiveIcon("../assets/icons/aegis_experimental_active.svg");
+  toggles["ExperimentalMode"]->setActiveIcon("../assets/icons/friday_experimental_active.svg");
   toggles["ExperimentalMode"]->setConfirmation(true, true);
 }
 
@@ -237,19 +237,19 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent), parentWin
   auto footagePopup = new MyFootagePopup(this);
   auto qrcodeBtn = new ButtonControl(tr("DashCam footage"), tr("QR-Code"),
                                      tr("Watch and/or download recordings from comma device cameras"),
-                                     "../assets/icons/aegis_dashcam.svg", this);
+                                     "../assets/icons/friday_dashcam.svg", this);
   connect(qrcodeBtn, &ButtonControl::clicked, [=] {
       footagePopup->exec();
     });
   addItem(qrcodeBtn);
 
-  addItem(new LabelControl(tr("Dongle ID"), getDongleId().value_or(tr("N/A")), "", "../assets/icons/aegis_dongle.svg", this));
-  addItem(new LabelControl(tr("Serial"), params.get("HardwareSerial").c_str(), "", "../assets/icons/aegis_serial.svg", this));
+  addItem(new LabelControl(tr("Dongle ID"), getDongleId().value_or(tr("N/A")), "", "../assets/icons/friday_dongle.svg", this));
+  addItem(new LabelControl(tr("Serial"), params.get("HardwareSerial").c_str(), "", "../assets/icons/friday_serial.svg", this));
 
   const bool lite = getenv("LITE");
   pair_device = new ButtonControl(tr("Pair Device"), tr("PAIR"),
                                   tr("Pair your device with comma connect (connect.comma.ai) and claim your comma prime offer."),
-                                  "../assets/icons/aegis_pair.svg", this);
+                                  "../assets/icons/friday_pair.svg", this);
   connect(pair_device, &ButtonControl::clicked, [=]() {
     PairingPopup popup(this);
     popup.exec();
@@ -260,11 +260,11 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent), parentWin
   if (!lite) {
     auto dcamBtn = new ButtonControl(tr("Driver Camera"), tr("PREVIEW"),
                                      tr("Preview the driver facing camera to ensure that driver monitoring has good visibility. (vehicle must be off)"),
-                                     "../assets/icons/aegis_driver_camera.svg", this);
+                                     "../assets/icons/friday_driver_camera.svg", this);
     connect(dcamBtn, &ButtonControl::clicked, [=]() { emit showDriverView(); });
     addItem(dcamBtn);
   }
-  resetCalibBtn = new ButtonControl(tr("Reset Calibration"), tr("RESET"), "", "../assets/icons/aegis_calibration.svg", this);
+  resetCalibBtn = new ButtonControl(tr("Reset Calibration"), tr("RESET"), "", "../assets/icons/friday_calibration.svg", this);
   connect(resetCalibBtn, &ButtonControl::showDescriptionEvent, this, &DevicePanel::updateCalibDescription);
   connect(resetCalibBtn, &ButtonControl::clicked, [&]() {
     if (!uiState()->engaged()) {
@@ -288,12 +288,12 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent), parentWin
 
   flashPandaBtn = new ButtonControl(tr("Flash Panda"), tr("FLASH"),
                                     tr("<b>Reinstall the Panda firmware</b> to fix connection or reliability issues."),
-                                    "../assets/icons/aegis_panda.svg", this);
+                                    "../assets/icons/friday_panda.svg", this);
   connect(flashPandaBtn, &ButtonControl::clicked, this, &DevicePanel::flashPanda);
   addItem(flashPandaBtn);
 
   auto retrainingBtn = new ButtonControl(tr("Review Training Guide"), tr("REVIEW"), tr("Review the rules, features, and limitations of openpilot"),
-                                         "../assets/icons/aegis_training.svg", this);
+                                         "../assets/icons/friday_training.svg", this);
   connect(retrainingBtn, &ButtonControl::clicked, [=]() {
     if (ConfirmationDialog::confirm(tr("Are you sure you want to review the training guide?"), tr("Review"), this)) {
       emit reviewTrainingGuide();
@@ -302,7 +302,7 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent), parentWin
   addItem(retrainingBtn);
 
   if (Hardware::TICI()) {
-    auto regulatoryBtn = new ButtonControl(tr("Regulatory"), tr("VIEW"), "", "../assets/icons/aegis_regulatory.svg", this);
+    auto regulatoryBtn = new ButtonControl(tr("Regulatory"), tr("VIEW"), "", "../assets/icons/friday_regulatory.svg", this);
     connect(regulatoryBtn, &ButtonControl::clicked, [=]() {
       const std::string txt = util::read_file("../assets/offroad/fcc.html");
       ConfirmationDialog::rich(QString::fromStdString(txt), this);
@@ -310,7 +310,7 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent), parentWin
     addItem(regulatoryBtn);
   }
 
-  auto translateBtn = new ButtonControl(tr("Change Language"), tr("CHANGE"), "", "../assets/icons/aegis_language.svg", this);
+  auto translateBtn = new ButtonControl(tr("Change Language"), tr("CHANGE"), "", "../assets/icons/friday_language.svg", this);
   connect(translateBtn, &ButtonControl::clicked, [=]() {
     QMap<QString, QString> langs = getSupportedLanguages();
     QString selection = MultiOptionDialog::getSelection(tr("Select a language"), langs.keys(), langs.key(uiState()->language), this);
@@ -340,14 +340,14 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent), parentWin
 
   QPushButton *reboot_btn = new QPushButton(tr("Reboot"));
   reboot_btn->setObjectName("reboot_btn");
-  reboot_btn->setIcon(QIcon("../assets/icons/aegis_reboot.svg"));
+  reboot_btn->setIcon(QIcon("../assets/icons/friday_reboot.svg"));
   reboot_btn->setIconSize(QSize(54, 54));
   power_layout->addWidget(reboot_btn);
   QObject::connect(reboot_btn, &QPushButton::clicked, this, &DevicePanel::reboot);
 
   QPushButton *poweroff_btn = new QPushButton(tr("Power Off"));
   poweroff_btn->setObjectName("poweroff_btn");
-  poweroff_btn->setIcon(QIcon("../assets/icons/aegis_power.svg"));
+  poweroff_btn->setIcon(QIcon("../assets/icons/friday_power.svg"));
   poweroff_btn->setIconSize(QSize(54, 54));
   power_layout->addWidget(poweroff_btn);
   QObject::connect(poweroff_btn, &QPushButton::clicked, this, &DevicePanel::poweroff);
@@ -562,13 +562,13 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     QWidget *panel;
   };
   QList<PanelItem> panels = {
-    {tr("Device"), "../assets/icons/aegis_nav_device.svg", device},
-    {tr("Network"), "../assets/icons/aegis_nav_network.svg", networking},
-    {tr("Toggles"), "../assets/icons/aegis_nav_toggles.svg", toggles},
-    {tr("Software"), "../assets/icons/aegis_nav_software.svg", new SoftwarePanel(this)},
-    {tr("Journey Board"), "../assets/icons/aegis_nav_achievements.svg", new JourneyBoardPanel(this)},
-    {tr("Health Center"), "../assets/icons/aegis_clean_km.svg", new AegisHealthPanel(this)},
-    {tr("Developer"), "../assets/icons/aegis_nav_developer.svg", new DeveloperPanel(this)},
+    {tr("Device"), "../assets/icons/friday_nav_device.svg", device},
+    {tr("Network"), "../assets/icons/friday_nav_network.svg", networking},
+    {tr("Toggles"), "../assets/icons/friday_nav_toggles.svg", toggles},
+    {tr("Software"), "../assets/icons/friday_nav_software.svg", new SoftwarePanel(this)},
+    {tr("Journey Board"), "../assets/icons/friday_nav_achievements.svg", new JourneyBoardPanel(this)},
+    {tr("Health Center"), "../assets/icons/friday_clean_km.svg", new FridayHealthPanel(this)},
+    {tr("Developer"), "../assets/icons/friday_nav_developer.svg", new DeveloperPanel(this)},
     {tr("FRIDAY"), "../assets/icons/friday_logo.png", new TimpilotPanel(this)},
   };
 
@@ -658,7 +658,7 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
 
   QPushButton* setCarBtn = new QPushButton(set.length() ? set : tr("Select Car"));
   setCarBtn->setObjectName("setCarBtn");
-  setCarBtn->setIcon(QIcon("../assets/icons/aegis_car_select.svg"));
+  setCarBtn->setIcon(QIcon("../assets/icons/friday_car_select.svg"));
   setCarBtn->setIconSize(QSize(46, 46));
   setCarBtn->setStyleSheet("margin-right: 30px;");
   connect(setCarBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(setCar); });
@@ -721,91 +721,97 @@ TimpilotPanel::TimpilotPanel(QWidget* parent) : QWidget(parent) {
   toggles.append(new ParamControl("QuietDrive",
                                   tr("Quiet Drive"),
                                   tr("FRIDAY will display alerts but only play the most important warning sounds. This feature can be toggled while the car is on."),
-                                  "../assets/icons/aegis_quiet.svg",
+                                  "../assets/icons/friday_quiet.svg",
                                   this));
 
-  toggles.append(new ParamControl("AegisQuietCabin",
+  toggles.append(new ParamControl("FridayQuietCabin",
                                   tr("Quiet Cabin"),
                                   tr("Suppress Toyota's overlapping double beep chimes while maintaining essential safety and openpilot alerts."),
-                                  "../assets/icons/aegis_quiet.svg",
+                                  "../assets/icons/friday_quiet.svg",
                                   this));
 
   toggles.append(new ParamControl("OnroadScreenOff",
                                   tr("Driving Screen Off"),
                                   tr("Turn off the device screen to protect the OLED panel after driving starts. It automatically brightens or turns on when a touch or event occurs."),
-                                  "../assets/icons/aegis_screen.svg",
+                                  "../assets/icons/friday_screen.svg",
                                   this));
 
   toggles.append(new ParamControl("dp_atl",
                                   tr("Lateral Controls Always On"),
                                   tr("Lateral control will always be on and will not be interrupted by braking."),
-                                  "../assets/icons/aegis_lateral.svg",
+                                  "../assets/icons/friday_lateral.svg",
                                   this));
 
   toggles.append(new ParamControl("NNFF",
                                   tr("NNFF Torque Control"),
                                   tr("Use Twilsonco's Neural Network Feedforward torque system for more precise lateral control."),
-                                  "../assets/icons/aegis_nnff.svg",
+                                  "../assets/icons/friday_nnff.svg",
                                   this));
 
   toggles.append(new ParamControl("Dynamic_Follow",
                                   tr("Dynamic Distance Adjustment"),
                                   tr("The distance to the lead car will no longer be a fixed reaction time, but will be dynamically adjusted based on the speed of the vehicle."),
-                                  "../assets/icons/aegis_dynamic_follow.svg",
+                                  "../assets/icons/friday_dynamic_follow.svg",
                                   this));
 
   toggles.append(new ParamControl("NudgelessLaneChange",
                                   tr("Blinker Lane Change"),
                                   tr("Change lanes without the need to nudge the steering wheel first.\nDisabled: Need to nudge the steering wheel to change lanes.\nEnabled: Nudgeless.\nSpeed limit: Normal mode: above 20mph, Enabled Lateral Controls Always On: above 35mph."),
-                                  "../assets/icons/aegis_lane_change.svg",
+                                  "../assets/icons/friday_lane_change.svg",
                                   this));
 
   toggles.append(new ParamControl("road_edge_detection",
                                   tr("Edge Detection During Lane Changes"),
                                   tr("When the system detects obstacles at the vehicle's edge, lane change assist functionality will be temporarily suspended.\nNOTE: This will show 'Car Detected in Blindspot' warning."),
-                                  "../assets/icons/aegis_edge.svg",
+                                  "../assets/icons/friday_edge.svg",
                                   this));
 
   toggles.append(new ParamControl("SmartCruiseControlVision",
                                   tr("Vision Based Turn Control"),
                                   tr("Use vision path predictions to estimate the appropriate speed to drive through turns ahead."),
-                                  "../assets/icons/aegis_vision_turn.svg",
+                                  "../assets/icons/friday_vision_turn.svg",
+                                  this));
+
+  toggles.append(new ParamControl("FridayLongitudinalBrakeAssist",
+                                  tr("Longitudinal Brake Assist"),
+                                  tr("Use model stop intent and mapped maneuver distance to reduce openpilot longitudinal targets before intersections. Requires openpilot longitudinal control; map distance alone will not command a stop."),
+                                  "../assets/icons/friday_brake_hold.svg",
                                   this));
 
   toggles.append(new ParamControl("fleetmanager",
                                   tr("Enable Local File Server"),
                                   tr("This will allow you to play or download openpilot driving record files through your browser.\nUse web interface to control it: *http://&lt;device_ip&gt;:8082*.\nInternet access from mobile phone (tethering) is required."),
-                                  "../assets/icons/aegis_file_server.svg",
+                                  "../assets/icons/friday_file_server.svg",
                                   this));
 
   toggles.append(new ParamControl("toyota_stock_long",
                                   tr("Use Toyota Stock Longitudinal Control"),
                                   tr("Enable to use Toyota's stock longitudinal control."),
-                                  "../assets/icons/aegis_toyota_stock.svg",
+                                  "../assets/icons/friday_toyota_stock.svg",
                                   this));
 
   toggles.append(new ParamControl("ToyotaDriveMode",
                                   tr("Enable Toyota Drive Mode Button"),
                                   tr("FRIDAY will link the Acceleration Personality to the car's physical drive mode selector.\nReboot Required."),
-                                  "../assets/icons/aegis_drive_mode.svg",
+                                  "../assets/icons/friday_drive_mode.svg",
                                   this));
 
-  toggles.append(new ParamControl("AegisToyotaScenePresets",
+  toggles.append(new ParamControl("FridayToyotaScenePresets",
                                   tr("Toyota Scene Presets"),
                                   tr("FRIDAY will link the car's physical drive mode selector (Power/Normal/Eco) to custom scene presets (Mountain/City/Highway). Requires enabling ToyotaDriveMode and rebooting/re-onroading.\n\nMountain: Muted automatic throttle, allowing manual accelerator overrides.\nCity: More active start-stop and following distance.\nHighway: Smoother acceleration with active following distance."),
-                                  "../assets/icons/aegis_drive_mode.svg",
+                                  "../assets/icons/friday_drive_mode.svg",
                                   this));
 
   toggles.append(new ParamControl("AleSato_AutomaticBrakeHold",
                                   tr("Automatic Brake Hold"),
                                   tr("Activates the car's brakes after 1 seconds stopped. (Only support on Toyota TSS2 Hybrid vehicles)"),
-                                  "../assets/icons/aegis_brake_hold.svg",
+                                  "../assets/icons/friday_brake_hold.svg",
                                   this));
 
   toggles.append(new ParamControl("ReverseAccChange",
                                   tr("ACC +/-: Long Press Reverse"),
                                   tr("Change the ACC +/- buttons behavior with cruise speed change in openpilot.\nDisabled (Stock): Short = 1, Long = 5.\nEnabled: Short = 2, Long = 5."),
-                                  "../assets/icons/aegis_acc_reverse.svg",
+                                  "../assets/icons/friday_acc_reverse.svg",
                                   this));
 
   for (ParamControl *toggle : toggles) {

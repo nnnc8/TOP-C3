@@ -104,7 +104,7 @@ void ui_live_update_params(UIState *s) {
   if (scene.driving_personalities_ui_wheel) {
     scene.personality_profile = params.getInt("LongitudinalPersonality");
   }
-  scene.aegis_toyota_scene_presets = params.getBool("AegisToyotaScenePresets");
+  scene.friday_toyota_scene_presets = params.getBool("FridayToyotaScenePresets");
 }
 
 void UIState::updateStatus() {

@@ -15,7 +15,7 @@
 
 namespace {
 
-constexpr double AEGIS_JOURNEY_SAVE_INTERVAL_MS = 10000.0;
+constexpr double FRIDAY_JOURNEY_SAVE_INTERVAL_MS = 10000.0;
 
 int current_day_key() {
   return QDate::currentDate().toString("yyyyMMdd").toInt();
@@ -110,15 +110,15 @@ void OnroadWindow::saveJourneyBoard(bool force) {
   }
 
   const double now_millis = millis_since_boot();
-  if (!force && (now_millis - last_journey_save_millis) < AEGIS_JOURNEY_SAVE_INTERVAL_MS) {
+  if (!force && (now_millis - last_journey_save_millis) < FRIDAY_JOURNEY_SAVE_INTERVAL_MS) {
     return;
   }
 
-  const std::string serialized = serialize_aegis_journey_board(journey_state);
+  const std::string serialized = serialize_friday_journey_board(journey_state);
   if (force) {
-    params.put("AegisJourneyBoard", serialized);
+    params.put("FridayJourneyBoard", serialized);
   } else {
-    params.putNonBlocking("AegisJourneyBoard", serialized);
+    params.putNonBlocking("FridayJourneyBoard", serialized);
   }
   journey_board_dirty = false;
   last_journey_save_millis = now_millis;
@@ -148,7 +148,7 @@ void OnroadWindow::updateJourneyBoard(const UIState &s) {
                          selfdrive_state.getAlertStatus() != cereal::SelfdriveState::AlertStatus::NORMAL;
   const bool standstill = car_state.getStandstill() || std::abs(car_state.getVEgo()) < 0.01;
 
-  AegisJourneySample sample = {};
+  FridayJourneySample sample = {};
   sample.dt_s = dt_s;
   sample.enabled = selfdrive_state.getEnabled();
   sample.has_alert = has_alert;
@@ -160,7 +160,7 @@ void OnroadWindow::updateJourneyBoard(const UIState &s) {
   sample.gas_pressed = car_state.getGasPressed();
   sample.steering_pressed = car_state.getSteeringPressed();
 
-  update_aegis_journey_board(journey_state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(journey_state, sample, overriding_prev, has_alert_prev);
   if (dt_s > 0.0) {
     journey_board_dirty = true;
   }
@@ -203,7 +203,7 @@ void OnroadWindow::mousePressEvent(QMouseEvent* e) {
 void OnroadWindow::offroadTransition(bool offroad) {
   if (offroad) {
     if (journey_board_loaded) {
-      close_aegis_journey_trip(journey_state, current_day_key());
+      close_friday_journey_trip(journey_state, current_day_key());
       saveJourneyBoard(true);
     }
   } else {

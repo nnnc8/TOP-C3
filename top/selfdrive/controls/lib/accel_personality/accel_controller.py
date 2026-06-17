@@ -24,10 +24,10 @@ class AccelController:
     self.accel_profile_init = False
     self.prev_car_accel_profile = None
     self.toyota_drive_mode_enabled = self.params.get_bool("ToyotaDriveMode")
-    self.aegis_toyota_scene_presets_enabled = self.params.get_bool("AegisToyotaScenePresets")
+    self.friday_toyota_scene_presets_enabled = self.params.get_bool("FridayToyotaScenePresets")
 
   def update_from_carstate(self, carstate):
-    if self.aegis_toyota_scene_presets_enabled:
+    if self.friday_toyota_scene_presets_enabled:
       return False
 
     if (self.toyota_drive_mode_enabled and hasattr(carstate, 'accelProfile') and carstate.accelProfile is not None):
@@ -43,7 +43,7 @@ class AccelController:
   def _update_personality_from_param(self):
     if self.frame % int(1. / DT_MDL) == 0:
       self.toyota_drive_mode_enabled = self.params.get_bool("ToyotaDriveMode")
-      self.aegis_toyota_scene_presets_enabled = self.params.get_bool("AegisToyotaScenePresets")
+      self.friday_toyota_scene_presets_enabled = self.params.get_bool("FridayToyotaScenePresets")
       personality_int = self.params.get("AccelPersonality")
       if personality_int is not None:
         if int(personality_int) in [AccelPersonality.stock, AccelPersonality.normal, AccelPersonality.eco, AccelPersonality.sport]:

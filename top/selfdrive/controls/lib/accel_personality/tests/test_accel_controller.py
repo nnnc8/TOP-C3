@@ -10,12 +10,12 @@ class TestAccelControllerPresets(unittest.TestCase):
 
     mock_params_inst.get_bool.side_effect = lambda key: {
       "ToyotaDriveMode": True,
-      "AegisToyotaScenePresets": False
+      "FridayToyotaScenePresets": False
     }[key]
 
     controller = AccelController()
     self.assertTrue(controller.toyota_drive_mode_enabled)
-    self.assertFalse(controller.aegis_toyota_scene_presets_enabled)
+    self.assertFalse(controller.friday_toyota_scene_presets_enabled)
 
     carstate = Mock()
     carstate.accelProfile = 0
@@ -32,12 +32,12 @@ class TestAccelControllerPresets(unittest.TestCase):
 
     mock_params_inst.get_bool.side_effect = lambda key: {
       "ToyotaDriveMode": True,
-      "AegisToyotaScenePresets": True
+      "FridayToyotaScenePresets": True
     }[key]
 
     controller = AccelController()
     self.assertTrue(controller.toyota_drive_mode_enabled)
-    self.assertTrue(controller.aegis_toyota_scene_presets_enabled)
+    self.assertTrue(controller.friday_toyota_scene_presets_enabled)
 
     carstate = Mock()
     carstate.accelProfile = 0

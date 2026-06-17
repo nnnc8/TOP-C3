@@ -7,7 +7,7 @@
 SshControl::SshControl() :
   ButtonControl(tr("SSH Keys"), "", tr("Warning: This grants SSH access to all public keys in your GitHub settings. Never enter a GitHub username "
                                        "other than your own. A comma employee will NEVER ask you to add their GitHub username."),
-                "../assets/icons/aegis_ssh_keys.svg", nullptr) {
+                "../assets/icons/friday_ssh_keys.svg", nullptr) {
 
   QObject::connect(this, &ButtonControl::clicked, [=]() {
     if (text() == tr("ADD")) {

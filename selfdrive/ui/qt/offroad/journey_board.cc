@@ -151,7 +151,7 @@ JourneyBoardPanel::JourneyBoardPanel(QWidget *parent) : QWidget(parent) {
 
   ButtonControl *reset_btn = new ButtonControl(tr("重置旅程看板"), tr("重置"),
                                                tr("清除所有旅程遙測與輔助累積資料，並重新建立目前路線數快照。"),
-                                               "../assets/icons/aegis_reset.svg", controls);
+                                               "../assets/icons/friday_reset.svg", controls);
   QObject::connect(reset_btn, &ButtonControl::clicked, [this]() { resetJourneyBoard(); });
   controls_layout->addWidget(reset_btn);
   main_layout->addWidget(controls);
@@ -204,7 +204,7 @@ QString JourneyBoardPanel::formatRatio(double ratio) const {
 }
 
 void JourneyBoardPanel::refresh() {
-  AegisJourneyBoardState state = load_journey_board(params);
+  FridayJourneyBoardState state = load_journey_board(params);
 
   // Totals
   total_routes_val->setText(QString::number(state.totals.route_count_snapshot));
@@ -275,7 +275,7 @@ void JourneyBoardPanel::resetJourneyBoard() {
     return;
   }
 
-  AegisJourneyBoardState state = reset_aegis_journey_board(params.getInt("RouteCount"));
-  params.put("AegisJourneyBoard", serialize_aegis_journey_board(state));
+  FridayJourneyBoardState state = reset_friday_journey_board(params.getInt("RouteCount"));
+  params.put("FridayJourneyBoard", serialize_friday_journey_board(state));
   refresh();
 }

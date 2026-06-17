@@ -30,7 +30,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   addItem(onroadLbl);
 
   // dp on/off btn
-  onOffBtn = new ButtonControl(tr("Onroad/Offroad Mode"), tr("Go Offroad"), "", "../assets/icons/aegis_mode_switch.svg", this);
+  onOffBtn = new ButtonControl(tr("Onroad/Offroad Mode"), tr("Go Offroad"), "", "../assets/icons/friday_mode_switch.svg", this);
   connect(onOffBtn, &ButtonControl::clicked, [&]() {
     if (ConfirmationDialog::confirm(tr("Are you sure you want to switch driving mode?"), tr("CONFIRM"), this)) {
       bool val = params.getBool("dp_device_offroad");
@@ -40,7 +40,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   addItem(onOffBtn);
 
   // download update btn
-  downloadBtn = new ButtonControl(tr("Download"), tr("CHECK"), "", "../assets/icons/aegis_download.svg", this);
+  downloadBtn = new ButtonControl(tr("Download"), tr("CHECK"), "", "../assets/icons/friday_download.svg", this);
   connect(downloadBtn, &ButtonControl::clicked, [=]() {
     downloadBtn->setEnabled(false);
     if (downloadBtn->text() == tr("CHECK")) {
@@ -52,7 +52,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   addItem(downloadBtn);
 
   // install update btn
-  installBtn = new ButtonControl(tr("Install Update"), tr("INSTALL"), "", "../assets/icons/aegis_install.svg", this);
+  installBtn = new ButtonControl(tr("Install Update"), tr("INSTALL"), "", "../assets/icons/friday_install.svg", this);
   connect(installBtn, &ButtonControl::clicked, [=]() {
     installBtn->setEnabled(false);
     params.putBool("DoReboot", true);
@@ -60,7 +60,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   addItem(installBtn);
 
   // branch selecting
-  targetBranchBtn = new ButtonControl(tr("Target Branch"), tr("SELECT"), "", "../assets/icons/aegis_branch.svg", this);
+  targetBranchBtn = new ButtonControl(tr("Target Branch"), tr("SELECT"), "", "../assets/icons/friday_branch.svg", this);
   connect(targetBranchBtn, &ButtonControl::clicked, [=]() {
     if (Hardware::get_device_type() == cereal::InitData::DeviceType::TICI) {
       // TICI device special handling - only show -c3/-C3 branches
@@ -137,7 +137,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   }
 
   // uninstall button
-  auto uninstallBtn = new ButtonControl(tr("Uninstall %1").arg(getBrand()), tr("UNINSTALL"), "", "../assets/icons/aegis_uninstall.svg", this);
+  auto uninstallBtn = new ButtonControl(tr("Uninstall %1").arg(getBrand()), tr("UNINSTALL"), "", "../assets/icons/friday_uninstall.svg", this);
   connect(uninstallBtn, &ButtonControl::clicked, [&]() {
     if (ConfirmationDialog::confirm(tr("Are you sure you want to uninstall?"), tr("Uninstall"), this)) {
       params.putBool("DoUninstall", true);
@@ -147,7 +147,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
 
   // error log button
   errorLogBtn = new ButtonControl(tr("Error Log"), tr("VIEW"), tr("View the error log for debugging purposes when openpilot crashes."),
-                                  "../assets/icons/aegis_error_log.svg", this);
+                                  "../assets/icons/friday_error_log.svg", this);
   connect(errorLogBtn, &ButtonControl::clicked, [=]() {
     std::string txt = util::read_file("/data/community/crashes/error.txt");
     ConfirmationDialog::rich(QString::fromStdString(txt), this);

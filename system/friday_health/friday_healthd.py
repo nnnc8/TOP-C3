@@ -6,14 +6,14 @@ import glob as pyglob
 from openpilot.common.realtime import Ratekeeper
 from openpilot.common.params import Params
 import cereal.messaging as messaging
-from openpilot.system.aegis_health.model import (
+from openpilot.system.friday_health.model import (
   get_default_health_state,
   calculate_score_and_reasons,
   rotate_daily_buckets,
   check_and_create_backup
 )
 
-class AegisHealthDaemon:
+class FridayHealthDaemon:
   def __init__(self):
     self.params = Params()
     self.rk = Ratekeeper(1, print_delay_threshold=None) # run at 1Hz, but we throttle writes to 10s
@@ -22,7 +22,7 @@ class AegisHealthDaemon:
     ])
     
     # Load or initialize state
-    state_val = self.params.get("AegisHealthState")
+    state_val = self.params.get("FridayHealthState")
     if state_val:
       try:
         self.state = json.loads(state_val)
@@ -153,8 +153,8 @@ class AegisHealthDaemon:
   def step(self):
     self.sm.update(0)
     
-    # Only run if AegisHealthCenter is enabled
-    if not self.params.get_bool("AegisHealthCenter"):
+    # Only run if FridayHealthCenter is enabled
+    if not self.params.get_bool("FridayHealthCenter"):
       time.sleep(1.0)
       return
 
@@ -166,7 +166,7 @@ class AegisHealthDaemon:
     elif not started and self.started_prev:
       # Transitioned to offroad: finalize and flush
       self.update_trip_on_transition(to_offroad=True)
-      self.params.put("AegisHealthState", json.dumps(self.state))
+      self.params.put("FridayHealthState", json.dumps(self.state))
       self.last_write_time = time.time()
 
     self.started_prev = started
@@ -299,7 +299,7 @@ class AegisHealthDaemon:
     # Periodic write throttling (every 10 seconds)
     now = time.time()
     if (now - self.last_write_time) >= 10.0:
-      self.params.put("AegisHealthState", json.dumps(self.state))
+      self.params.put("FridayHealthState", json.dumps(self.state))
       self.last_write_time = now
 
   def run(self):
@@ -308,11 +308,11 @@ class AegisHealthDaemon:
         self.step()
         self.rk.keep_time()
       except Exception as e:
-        print(f"AegisHealthDaemon error: {e}")
+        print(f"FridayHealthDaemon error: {e}")
         time.sleep(1.0)
 
 def main():
-  daemon = AegisHealthDaemon()
+  daemon = FridayHealthDaemon()
   daemon.run()
 
 if __name__ == "__main__":

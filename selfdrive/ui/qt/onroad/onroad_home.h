@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QColor>
-#include "common/aegis_journey_board.h"
+#include "common/friday_journey_board.h"
 #include "common/params.h"
 #include "selfdrive/ui/qt/onroad/alerts.h"
 #include "selfdrive/ui/qt/onroad/annotated_camera.h"
@@ -29,7 +29,7 @@ private:
   QColor bg = bg_colors[STATUS_DISENGAGED];
   QHBoxLayout* split;
   Params params;
-  AegisJourneyBoardState journey_state;
+  FridayJourneyBoardState journey_state;
   bool journey_board_loaded = false;
   bool journey_board_dirty = false;
   double last_journey_update_millis = 0.0;

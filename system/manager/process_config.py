@@ -180,6 +180,7 @@ procs = [
   PythonProcess("lagd", "selfdrive.locationd.lagd", only_onroad),
   PythonProcess("ubloxd", "system.ubloxd.ubloxd", ublox, enabled=TICI),
   PythonProcess("pigeond", "system.ubloxd.pigeond", ublox, enabled=TICI),
+  PythonProcess("friday_traffic_intentd", "top.selfdrive.controls.lib.acc_integrated_brake_assist.traffic_intentd", only_onroad),
   PythonProcess("plannerd", "selfdrive.controls.plannerd", not_long_maneuver),
   PythonProcess("maneuversd", "tools.longitudinal_maneuvers.maneuversd", long_maneuver),
   PythonProcess("radard", "selfdrive.controls.radard", only_onroad),
@@ -192,7 +193,7 @@ procs = [
 
   # TOP
   NativeProcess("fleetmanager", "system/fleetmanager", ["./fleet_manager.py"], flask_ready_offroad_only),
-  PythonProcess("aegis_healthd", "system.aegis_health.aegis_healthd", always_run),
+  PythonProcess("friday_healthd", "system.friday_health.friday_healthd", always_run),
   NativeProcess("locationd_llk", "top/selfdrive/locationd", ["./locationd"], only_onroad),
 
   # debug procs

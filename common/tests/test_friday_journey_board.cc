@@ -1,11 +1,11 @@
-#include "common/aegis_journey_board.h"
+#include "common/friday_journey_board.h"
 
 #include <cassert>
 #include <cmath>
 #include <iostream>
 
 static void test_parse_defaults() {
-  AegisJourneyBoardState state = parse_aegis_journey_board("");
+  FridayJourneyBoardState state = parse_friday_journey_board("");
 
   assert(state.totals.drive_time_s == 0.0);
   assert(state.totals.moving_time_s == 0.0);
@@ -33,7 +33,7 @@ static void test_assist_ratio_safety() {
 static void test_migration() {
   Params params("/tmp/test_params_migration");
 
-  // Write legacy AegisAchievements param
+  // Write legacy FridayAchievements param
   std::string legacy_json = R"({
     "xp": 500,
     "level": 6,
@@ -49,11 +49,11 @@ static void test_migration() {
     "daily_xp_day": 20260611,
     "daily_xp": 50
   })";
-  params.put("AegisAchievements", legacy_json);
-  params.remove("AegisJourneyBoard");
+  params.put("FridayAchievements", legacy_json);
+  params.remove("FridayJourneyBoard");
 
   // Call load_journey_board
-  AegisJourneyBoardState state = load_journey_board(params);
+  FridayJourneyBoardState state = load_journey_board(params);
 
   // Check transferred totals
   assert(state.totals.drive_time_s == 3600.0);
@@ -67,7 +67,7 @@ static void test_migration() {
 
   // Check non-transferred (XP/Badges/Level should be gone or not in state)
   // Ensure the brand new parameters exist and are set
-  std::string saved_val = params.get("AegisJourneyBoard");
+  std::string saved_val = params.get("FridayJourneyBoard");
   assert(!saved_val.empty());
 
   // Check that totals get_assist_ratio is greater than 0
@@ -75,66 +75,66 @@ static void test_migration() {
 }
 
 static void test_rising_edges() {
-  AegisJourneyBoardState state;
+  FridayJourneyBoardState state;
   bool overriding_prev = false;
   bool has_alert_prev = false;
 
-  AegisJourneySample sample = {};
+  FridayJourneySample sample = {};
   sample.dt_s = 1.0;
   sample.enabled = true;
   sample.standstill = false;
   sample.v_ego = 10.0;
 
   // No alert, no override
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.alert_count == 0);
   assert(state.totals.intervention_count == 0);
 
   // Alert rising edge
   sample.has_alert = true;
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.alert_count == 1);
   assert(state.current_trip.alert_count == 1);
 
   // Alert level/stays true (no edge)
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.alert_count == 1);
 
   // Alert falling edge
   sample.has_alert = false;
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.alert_count == 1);
 
   // Alert rising edge again
   sample.has_alert = true;
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.alert_count == 2);
   assert(state.current_trip.alert_count == 2);
 
   // Override rising edge (gas pressed)
   sample.gas_pressed = true;
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.intervention_count == 1);
   assert(state.current_trip.intervention_count == 1);
 
   // Override stays true
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.intervention_count == 1);
 
   // Override falling edge
   sample.gas_pressed = false;
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.intervention_count == 1);
 
   // Override rising edge (brake pressed)
   sample.brake_pressed = true;
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
   assert(state.totals.intervention_count == 2);
   assert(state.current_trip.intervention_count == 2);
 }
 
 static void test_daily_buckets_trim() {
-  AegisJourneyBoardState state;
+  FridayJourneyBoardState state;
 
   for (int d = 1; d < 10; ++d) {
     int day_key = 20260600 + d;
@@ -144,7 +144,7 @@ static void test_daily_buckets_trim() {
     state.current_trip.alert_count = 1;
     state.current_trip.intervention_count = 2;
 
-    close_aegis_journey_trip(state, day_key);
+    close_friday_journey_trip(state, day_key);
   }
 
   // Should contain exactly 7 daily buckets (the last 7 days: 3 to 9)
@@ -157,20 +157,20 @@ static void test_daily_buckets_trim() {
 }
 
 static void test_7day_ratio_consistency() {
-  AegisJourneyBoardState state;
+  FridayJourneyBoardState state;
   bool overriding_prev = false;
   bool has_alert_prev = false;
 
-  AegisJourneySample sample = {};
+  FridayJourneySample sample = {};
   sample.dt_s = 500.0;
   sample.enabled = true;
   sample.standstill = false;
   sample.v_ego = 10.0;
 
-  update_aegis_journey_board(state, sample, overriding_prev, has_alert_prev);
+  update_friday_journey_board(state, sample, overriding_prev, has_alert_prev);
 
   // Now close trip to populate daily buckets
-  close_aegis_journey_trip(state, 20260613);
+  close_friday_journey_trip(state, 20260613);
 
   // Check totals ratio
   double totals_ratio = get_assist_ratio(state.totals.assisted_moving_time_s, state.totals.moving_time_s);

@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import Mock, patch
 from openpilot.common.params import Params
-from openpilot.system.aegis_health.model import (
+from openpilot.system.friday_health.model import (
   get_default_health_state,
   calculate_score_and_reasons,
   rotate_daily_buckets,
@@ -12,7 +12,7 @@ from openpilot.system.aegis_health.model import (
   WATCHED_KEYS
 )
 
-class TestAegisHealthModel(unittest.TestCase):
+class TestFridayHealthModel(unittest.TestCase):
   def test_default_health_state(self):
     state = get_default_health_state()
     self.assertEqual(state["version"], 1)
@@ -70,7 +70,7 @@ class TestAegisHealthModel(unittest.TestCase):
     self.assertEqual(buckets[0]["day_key"], 20260610)
     self.assertEqual(buckets[-1]["day_key"], 20260639)
 
-  @patch("openpilot.system.aegis_health.model.Params")
+  @patch("openpilot.system.friday_health.model.Params")
   def test_settings_backups_diff_restore(self, mock_params_cls):
     mock_params_inst = Mock()
     mock_params_cls.return_value = mock_params_inst
@@ -78,7 +78,7 @@ class TestAegisHealthModel(unittest.TestCase):
     # Mock parameters storage values
     stored_params = {
       "GitCommit": b"commit_v1",
-      "AegisToyotaScenePresets": b"0",
+      "FridayToyotaScenePresets": b"0",
       "LongitudinalPersonality": b"1"
     }
     mock_params_inst.get.side_effect = lambda key, **kwargs: stored_params.get(key)
@@ -94,7 +94,7 @@ class TestAegisHealthModel(unittest.TestCase):
     backups = json.loads(backups_json)
     self.assertEqual(len(backups), 1)
     self.assertEqual(backups[0]["commit"], "commit_v1")
-    self.assertEqual(backups[0]["params"]["AegisToyotaScenePresets"], "0")
+    self.assertEqual(backups[0]["params"]["FridayToyotaScenePresets"], "0")
 
     # Check secret keys are NOT backed up
     for k in backups[0]["params"].keys():
@@ -102,16 +102,16 @@ class TestAegisHealthModel(unittest.TestCase):
 
     # 2. Modify param and check diff
     mock_params_inst.get.side_effect = lambda key, **kwargs: {
-      "AegisHealthSettingsBackups": backups_json.encode('utf-8'),
+      "FridayHealthSettingsBackups": backups_json.encode('utf-8'),
       "GitCommit": b"commit_v1",
-      "AegisToyotaScenePresets": b"1", # changed!
+      "FridayToyotaScenePresets": b"1", # changed!
       "LongitudinalPersonality": b"1"
     }.get(key)
 
     diff = diff_backup_to_current(mock_params_inst, 0)
-    self.assertIn("AegisToyotaScenePresets", diff)
-    self.assertEqual(diff["AegisToyotaScenePresets"]["backup"], "0")
-    self.assertEqual(diff["AegisToyotaScenePresets"]["current"], "1")
+    self.assertIn("FridayToyotaScenePresets", diff)
+    self.assertEqual(diff["FridayToyotaScenePresets"]["backup"], "0")
+    self.assertEqual(diff["FridayToyotaScenePresets"]["current"], "1")
 
     # 3. Restore backup
     restored = restore_backup(mock_params_inst, 0)

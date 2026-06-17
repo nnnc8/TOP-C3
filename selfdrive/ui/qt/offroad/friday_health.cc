@@ -1,4 +1,4 @@
-#include "selfdrive/ui/qt/offroad/aegis_health.h"
+#include "selfdrive/ui/qt/offroad/friday_health.h"
 
 #include <QDateTime>
 #include <QGridLayout>
@@ -53,8 +53,8 @@ void makeMetricBlock(const QString &name, QLabel **val_lbl, QGridLayout *grid, i
 
 }  // namespace
 
-AegisHealthPanel::AegisHealthPanel(QWidget *parent) : QWidget(parent) {
-  setObjectName("AegisHealthPanel");
+FridayHealthPanel::FridayHealthPanel(QWidget *parent) : QWidget(parent) {
+  setObjectName("FridayHealthPanel");
   QVBoxLayout *main_layout = new QVBoxLayout(this);
   main_layout->setContentsMargins(0, 0, 0, 0);
   main_layout->setSpacing(28);
@@ -136,19 +136,19 @@ AegisHealthPanel::AegisHealthPanel(QWidget *parent) : QWidget(parent) {
   controls_layout->setContentsMargins(34, 18, 34, 18);
   controls_layout->setSpacing(10);
 
-  if (params.get("AegisHealthCenter").empty()) {
-    params.putBool("AegisHealthCenter", true);
+  if (params.get("FridayHealthCenter").empty()) {
+    params.putBool("FridayHealthCenter", true);
   }
 
-  controls_layout->addWidget(new ParamControl("AegisHealthCenter",
+  controls_layout->addWidget(new ParamControl("FridayHealthCenter",
                                               tr("啟用健康中心"),
                                               tr("啟用本機健康監測系統，記錄老化趨勢與設定備份。"),
-                                              "../assets/icons/aegis_clean_km.svg",
+                                              "../assets/icons/friday_clean_km.svg",
                                               controls));
 
   ButtonControl *reset_btn = new ButtonControl(tr("重設健康中心數據"), tr("重設"),
                                                tr("清除本機儲存的所有 30 天健康與老化歷史趨勢資料。"),
-                                               "../assets/icons/aegis_reset.svg", controls);
+                                               "../assets/icons/friday_reset.svg", controls);
   QObject::connect(reset_btn, &ButtonControl::clicked, [this]() { resetHealthData(); });
   controls_layout->addWidget(reset_btn);
   main_layout->addWidget(controls);
@@ -156,7 +156,7 @@ AegisHealthPanel::AegisHealthPanel(QWidget *parent) : QWidget(parent) {
   main_layout->addStretch(1);
 
   setStyleSheet(R"(
-    QWidget#AegisHealthPanel {
+    QWidget#FridayHealthPanel {
       background-color: transparent;
     }
     QFrame#heroCard {
@@ -186,13 +186,13 @@ AegisHealthPanel::AegisHealthPanel(QWidget *parent) : QWidget(parent) {
   refresh();
 }
 
-void AegisHealthPanel::showEvent(QShowEvent *event) {
+void FridayHealthPanel::showEvent(QShowEvent *event) {
   QWidget::showEvent(event);
   refresh();
 }
 
-void AegisHealthPanel::refresh() {
-  std::string val = params.get("AegisHealthState");
+void FridayHealthPanel::refresh() {
+  std::string val = params.get("FridayHealthState");
   QJsonDocument doc = QJsonDocument::fromJson(QString::fromStdString(val).toUtf8());
   QJsonObject obj = doc.object();
 
@@ -264,7 +264,7 @@ void AegisHealthPanel::refresh() {
   lbl_30d_errors->setText(tr("%1 次錯誤記錄").arg(error_log_count_30d));
 
   // Backups Status
-  std::string backups_val = params.get("AegisHealthSettingsBackups");
+  std::string backups_val = params.get("FridayHealthSettingsBackups");
   QJsonDocument backups_doc = QJsonDocument::fromJson(QString::fromStdString(backups_val).toUtf8());
   QJsonArray backups_arr = backups_doc.array();
   if (backups_arr.isEmpty()) {
@@ -278,18 +278,18 @@ void AegisHealthPanel::refresh() {
   }
 }
 
-void AegisHealthPanel::manualBackup() {
+void FridayHealthPanel::manualBackup() {
   // Execute manual backup through python command call or directly in python helper (invoking python is cleaner for consistency)
   if (ConfirmationDialog::confirm(tr("確定要立即建立手動設定備份？"), tr("備份"), this)) {
     // We can run Python code inline via python -c
-    std::string cmd = ".venv/bin/python -c 'from openpilot.common.params import Params; from openpilot.system.aegis_health.model import check_and_create_backup; check_and_create_backup(Params(), force=True)'";
+    std::string cmd = ".venv/bin/python -c 'from openpilot.common.params import Params; from openpilot.system.friday_health.model import check_and_create_backup; check_and_create_backup(Params(), force=True)'";
     system(cmd.c_str());
     refresh();
   }
 }
 
-void AegisHealthPanel::restoreLatest() {
-  std::string backups_val = params.get("AegisHealthSettingsBackups");
+void FridayHealthPanel::restoreLatest() {
+  std::string backups_val = params.get("FridayHealthSettingsBackups");
   QJsonDocument backups_doc = QJsonDocument::fromJson(QString::fromStdString(backups_val).toUtf8());
   QJsonArray backups_arr = backups_doc.array();
   if (backups_arr.isEmpty()) {
@@ -298,18 +298,18 @@ void AegisHealthPanel::restoreLatest() {
   }
 
   if (ConfirmationDialog::confirm(tr("確定要將設定還原到最新備份狀態？這將會覆蓋您目前的參數設定！"), tr("還原"), this)) {
-    std::string cmd = ".venv/bin/python -c 'from openpilot.common.params import Params; from openpilot.system.aegis_health.model import restore_backup, load_backups; p = Params(); backups = load_backups(p); restore_backup(p, len(backups)-1)'";
+    std::string cmd = ".venv/bin/python -c 'from openpilot.common.params import Params; from openpilot.system.friday_health.model import restore_backup, load_backups; p = Params(); backups = load_backups(p); restore_backup(p, len(backups)-1)'";
     system(cmd.c_str());
     refresh();
     ConfirmationDialog::alert(tr("設定還原完成！"), this);
   }
 }
 
-void AegisHealthPanel::resetHealthData() {
+void FridayHealthPanel::resetHealthData() {
   if (!ConfirmationDialog::confirm(tr("確定要清除所有健康與老化歷史趨勢資料？"), tr("重設"), this)) {
     return;
   }
-  std::string cmd = ".venv/bin/python -c 'from openpilot.common.params import Params; from openpilot.system.aegis_health.model import get_default_health_state; import json; Params().put(\"AegisHealthState\", json.dumps(get_default_health_state()))'";
+  std::string cmd = ".venv/bin/python -c 'from openpilot.common.params import Params; from openpilot.system.friday_health.model import get_default_health_state; import json; Params().put(\"FridayHealthState\", json.dumps(get_default_health_state()))'";
   system(cmd.c_str());
   refresh();
 }

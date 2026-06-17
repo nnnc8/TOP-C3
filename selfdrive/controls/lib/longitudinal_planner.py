@@ -54,6 +54,19 @@ def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
   return [a_target[0], min(a_target[1], a_x_allowed)]
 
 
+def apply_brake_assist_output(output_a_target, output_should_stop, brake_assist_output):
+  if getattr(brake_assist_output, 'active', False):
+    output_a_target = min(output_a_target, float(brake_assist_output.a_target))
+    output_should_stop = output_should_stop or bool(brake_assist_output.should_stop)
+  return output_a_target, output_should_stop
+
+
+def apply_brake_assist_allow_throttle(allow_throttle, brake_assist_output):
+  if getattr(brake_assist_output, 'active', False):
+    return allow_throttle and bool(brake_assist_output.allow_throttle)
+  return allow_throttle
+
+
 class LongitudinalPlanner(LongitudinalPlannerTOP):
   def __init__(self, CP, init_v=0.0, init_a=0.0, dt=DT_MDL):
     self.CP = CP
@@ -207,6 +220,9 @@ class LongitudinalPlanner(LongitudinalPlannerTOP):
     else:
       output_a_target = min(output_a_target_mpc, output_a_target_e2e)
       self.output_should_stop = output_should_stop_e2e or output_should_stop_mpc
+
+    output_a_target, self.output_should_stop = apply_brake_assist_output(output_a_target, self.output_should_stop, self.brake_assist_output)
+    self.allow_throttle = apply_brake_assist_allow_throttle(self.allow_throttle, self.brake_assist_output)
 
     for idx in range(2):
       accel_clip[idx] = np.clip(accel_clip[idx], self.prev_accel_clip[idx] - 0.05, self.prev_accel_clip[idx] + 0.05)

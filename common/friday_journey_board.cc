@@ -1,4 +1,4 @@
-#include "common/aegis_journey_board.h"
+#include "common/friday_journey_board.h"
 
 #include <algorithm>
 #include <cmath>
@@ -17,8 +17,8 @@ double number_field(const json11::Json &obj, const std::string &key, double fall
   return value.is_number() ? value.number_value() : fallback;
 }
 
-AegisJourneyTotals parse_totals(const json11::Json &obj) {
-  AegisJourneyTotals totals;
+FridayJourneyTotals parse_totals(const json11::Json &obj) {
+  FridayJourneyTotals totals;
   if (!obj.is_object()) return totals;
   totals.drive_time_s = number_field(obj, "drive_time_s");
   totals.moving_time_s = number_field(obj, "moving_time_s");
@@ -36,8 +36,8 @@ AegisJourneyTotals parse_totals(const json11::Json &obj) {
   return totals;
 }
 
-AegisJourneyTrip parse_trip(const json11::Json &obj) {
-  AegisJourneyTrip trip;
+FridayJourneyTrip parse_trip(const json11::Json &obj) {
+  FridayJourneyTrip trip;
   if (!obj.is_object()) return trip;
   trip.drive_time_s = number_field(obj, "drive_time_s");
   trip.moving_time_s = number_field(obj, "moving_time_s");
@@ -53,8 +53,8 @@ AegisJourneyTrip parse_trip(const json11::Json &obj) {
   return trip;
 }
 
-AegisJourneyDailyBucket parse_bucket(const json11::Json &obj) {
-  AegisJourneyDailyBucket bucket;
+FridayJourneyDailyBucket parse_bucket(const json11::Json &obj) {
+  FridayJourneyDailyBucket bucket;
   if (!obj.is_object()) return bucket;
   bucket.day_key = int_field(obj, "day_key");
   bucket.trip_count = int_field(obj, "trip_count");
@@ -68,7 +68,7 @@ AegisJourneyDailyBucket parse_bucket(const json11::Json &obj) {
   return bucket;
 }
 
-json11::Json serialize_totals(const AegisJourneyTotals &totals) {
+json11::Json serialize_totals(const FridayJourneyTotals &totals) {
   return json11::Json::object{
     {"drive_time_s", totals.drive_time_s},
     {"moving_time_s", totals.moving_time_s},
@@ -86,7 +86,7 @@ json11::Json serialize_totals(const AegisJourneyTotals &totals) {
   };
 }
 
-json11::Json serialize_trip(const AegisJourneyTrip &trip) {
+json11::Json serialize_trip(const FridayJourneyTrip &trip) {
   return json11::Json::object{
     {"drive_time_s", trip.drive_time_s},
     {"moving_time_s", trip.moving_time_s},
@@ -102,7 +102,7 @@ json11::Json serialize_trip(const AegisJourneyTrip &trip) {
   };
 }
 
-json11::Json serialize_bucket(const AegisJourneyDailyBucket &bucket) {
+json11::Json serialize_bucket(const FridayJourneyDailyBucket &bucket) {
   return json11::Json::object{
     {"day_key", bucket.day_key},
     {"trip_count", bucket.trip_count},
@@ -118,8 +118,8 @@ json11::Json serialize_bucket(const AegisJourneyDailyBucket &bucket) {
 
 }  // namespace
 
-void normalize_journey_board(AegisJourneyBoardState &state) {
-  auto clamp_totals = [](AegisJourneyTotals &t) {
+void normalize_journey_board(FridayJourneyBoardState &state) {
+  auto clamp_totals = [](FridayJourneyTotals &t) {
     t.drive_time_s = std::max(0.0, t.drive_time_s);
     t.moving_time_s = std::max(0.0, t.moving_time_s);
     t.standstill_time_s = std::max(0.0, t.standstill_time_s);
@@ -134,7 +134,7 @@ void normalize_journey_board(AegisJourneyBoardState &state) {
     t.alert_count = std::max(0, t.alert_count);
     t.intervention_count = std::max(0, t.intervention_count);
   };
-  auto clamp_trip = [](AegisJourneyTrip &t) {
+  auto clamp_trip = [](FridayJourneyTrip &t) {
     t.drive_time_s = std::max(0.0, t.drive_time_s);
     t.moving_time_s = std::max(0.0, t.moving_time_s);
     t.standstill_time_s = std::max(0.0, t.standstill_time_s);
@@ -162,8 +162,8 @@ void normalize_journey_board(AegisJourneyBoardState &state) {
   }
 }
 
-AegisJourneyBoardState parse_aegis_journey_board(const std::string &json) {
-  AegisJourneyBoardState state;
+FridayJourneyBoardState parse_friday_journey_board(const std::string &json) {
+  FridayJourneyBoardState state;
   std::string err;
   const json11::Json obj = json11::Json::parse(json, err);
   if (!err.empty() || !obj.is_object()) {
@@ -185,8 +185,8 @@ AegisJourneyBoardState parse_aegis_journey_board(const std::string &json) {
   return state;
 }
 
-std::string serialize_aegis_journey_board(const AegisJourneyBoardState &state) {
-  AegisJourneyBoardState normalized = state;
+std::string serialize_friday_journey_board(const FridayJourneyBoardState &state) {
+  FridayJourneyBoardState normalized = state;
   normalize_journey_board(normalized);
 
   json11::Json::array buckets_arr;
@@ -202,13 +202,13 @@ std::string serialize_aegis_journey_board(const AegisJourneyBoardState &state) {
   }).dump();
 }
 
-AegisJourneyBoardState reset_aegis_journey_board(int route_count_snapshot) {
-  AegisJourneyBoardState state;
+FridayJourneyBoardState reset_friday_journey_board(int route_count_snapshot) {
+  FridayJourneyBoardState state;
   state.totals.route_count_snapshot = std::max(0, route_count_snapshot);
   return state;
 }
 
-void update_aegis_journey_board(AegisJourneyBoardState &state, const AegisJourneySample &sample, bool &overriding_prev, bool &has_alert_prev) {
+void update_friday_journey_board(FridayJourneyBoardState &state, const FridayJourneySample &sample, bool &overriding_prev, bool &has_alert_prev) {
   const double dt_s = sample.dt_s > 0.0 ? sample.dt_s : 0.0;
   const double speed_mps = std::max(0.0, sample.v_ego);
 
@@ -271,7 +271,7 @@ void update_aegis_journey_board(AegisJourneyBoardState &state, const AegisJourne
   normalize_journey_board(state);
 }
 
-void close_aegis_journey_trip(AegisJourneyBoardState &state, int day_key) {
+void close_friday_journey_trip(FridayJourneyBoardState &state, int day_key) {
   state.last_trip = state.current_trip;
 
   bool found = false;
@@ -291,7 +291,7 @@ void close_aegis_journey_trip(AegisJourneyBoardState &state, int day_key) {
   }
 
   if (!found && day_key > 0) {
-    AegisJourneyDailyBucket bucket;
+    FridayJourneyDailyBucket bucket;
     bucket.day_key = day_key;
     bucket.trip_count = 1;
     bucket.moving_time_s = state.current_trip.moving_time_s;
@@ -304,7 +304,7 @@ void close_aegis_journey_trip(AegisJourneyBoardState &state, int day_key) {
     state.daily_buckets.push_back(bucket);
   }
 
-  std::sort(state.daily_buckets.begin(), state.daily_buckets.end(), [](const AegisJourneyDailyBucket &a, const AegisJourneyDailyBucket &b) {
+  std::sort(state.daily_buckets.begin(), state.daily_buckets.end(), [](const FridayJourneyDailyBucket &a, const FridayJourneyDailyBucket &b) {
     return a.day_key < b.day_key;
   });
 
@@ -313,7 +313,7 @@ void close_aegis_journey_trip(AegisJourneyBoardState &state, int day_key) {
   }
 
   state.totals.trip_count += 1;
-  state.current_trip = AegisJourneyTrip();
+  state.current_trip = FridayJourneyTrip();
 
   normalize_journey_board(state);
 }
@@ -325,14 +325,14 @@ double get_assist_ratio(double assisted_moving_time, double moving_time) {
   return std::clamp(assisted_moving_time / moving_time, 0.0, 1.0);
 }
 
-AegisJourneyBoardState load_journey_board(Params &params) {
-  std::string j_board_val = params.get("AegisJourneyBoard");
+FridayJourneyBoardState load_journey_board(Params &params) {
+  std::string j_board_val = params.get("FridayJourneyBoard");
   if (!j_board_val.empty()) {
-    return parse_aegis_journey_board(j_board_val);
+    return parse_friday_journey_board(j_board_val);
   }
 
-  AegisJourneyBoardState state;
-  std::string achievements_val = params.get("AegisAchievements");
+  FridayJourneyBoardState state;
+  std::string achievements_val = params.get("FridayAchievements");
   if (!achievements_val.empty()) {
     std::string err;
     auto obj = json11::Json::parse(achievements_val, err);
@@ -351,6 +351,6 @@ AegisJourneyBoardState load_journey_board(Params &params) {
     state.totals.route_count_snapshot = params.getInt("RouteCount");
   }
 
-  params.put("AegisJourneyBoard", serialize_aegis_journey_board(state));
+  params.put("FridayJourneyBoard", serialize_friday_journey_board(state));
   return state;
 }

@@ -127,7 +127,7 @@ class SelfdriveD(CruiseHelper):
     self.experimental_mode = False
     self.personality = self.params.get("LongitudinalPersonality", return_default=True)
     self.toyota_drive_mode = False
-    self.aegis_toyota_scene_presets = False
+    self.friday_toyota_scene_presets = False
     self.last_preset_accel_profile = None
     self.recalibrating_seen = False
     self.state_machine = StateMachine(self.alka)
@@ -530,7 +530,7 @@ class SelfdriveD(CruiseHelper):
 
     self.publish_selfdriveState(CS)
 
-    if self.toyota_drive_mode and self.aegis_toyota_scene_presets:
+    if self.toyota_drive_mode and self.friday_toyota_scene_presets:
       if hasattr(CS, 'accelProfile') and CS.accelProfile is not None:
         if CS.accelProfile != self.last_preset_accel_profile:
           accel_p, long_p, label = ToyotaScenePresets.get_preset(CS.accelProfile)
@@ -551,7 +551,7 @@ class SelfdriveD(CruiseHelper):
       self.experimental_mode = self.params.get_bool("ExperimentalMode") and self.CP.openpilotLongitudinalControl
       self.personality = self.params.get("LongitudinalPersonality", return_default=True)
       self.toyota_drive_mode = self.params.get_bool("ToyotaDriveMode")
-      self.aegis_toyota_scene_presets = self.params.get_bool("AegisToyotaScenePresets")
+      self.friday_toyota_scene_presets = self.params.get_bool("FridayToyotaScenePresets")
       time.sleep(0.1)
 
   def run(self):

@@ -3,11 +3,11 @@ import time
 from openpilot.common.params import Params
 
 WATCHED_KEYS = [
-  "AegisQuietCabin",
-  "AegisAchievements",
-  "AegisAchievementToasts",
-  "AegisJourneyBoard",
-  "AegisToyotaScenePresets",
+  "FridayQuietCabin",
+  "FridayAchievements",
+  "FridayAchievementToasts",
+  "FridayJourneyBoard",
+  "FridayToyotaScenePresets",
   "ToyotaDriveMode",
   "AleSato_AutomaticBrakeHold",
   "AccelPersonality",
@@ -148,7 +148,7 @@ def rotate_daily_buckets(buckets, new_bucket):
 
 # Settings Backup/Diff/Restore Helpers
 def load_backups(params):
-  val = params.get("AegisHealthSettingsBackups")
+  val = params.get("FridayHealthSettingsBackups")
   if not val:
     return []
   try:
@@ -157,7 +157,7 @@ def load_backups(params):
     return []
 
 def save_backups(params, backups):
-  params.put("AegisHealthSettingsBackups", json.dumps(backups[-20:])) # keep last 20 backups
+  params.put("FridayHealthSettingsBackups", json.dumps(backups[-20:])) # keep last 20 backups
 
 def get_current_watched_params(params):
   res = {}

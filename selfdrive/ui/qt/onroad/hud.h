@@ -50,7 +50,7 @@ private:
   bool turnSignalLeft = false;
   bool turnSignalRight = false;
   bool rightHandDM = false;
-  bool aegisToyotaScenePresets = false;
+  bool fridayToyotaScenePresets = false;
   int toyotaAccelProfile = 3;
   int personalityProfile = 0;
   int animationFrameIndex = 0;

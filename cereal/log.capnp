@@ -2643,8 +2643,8 @@ struct Event {
     modelExt @109 :Custom.ModelExt;
     liveMapDataTOP @110 :Custom.LiveMapDataTOP;
     carStateTOP @111 :Custom.CarStateTOP;
-    customReserved5 @112 :Custom.CustomReserved5;
-    customReserved6 @113 :Custom.CustomReserved6;
+    fridayTrafficIntent @112 :Custom.FridayTrafficIntent;
+    fridayIntersectionDistance @113 :Custom.FridayIntersectionDistance;
     customReserved7 @114 :Custom.CustomReserved7;
     customReserved8 @115 :Custom.CustomReserved8;
     customReserved9 @116 :Custom.CustomReserved9;

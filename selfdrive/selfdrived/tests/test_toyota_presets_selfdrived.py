@@ -19,7 +19,7 @@ class TestSelfdriveDToyotaPresets(unittest.TestCase):
 
     s.initialized = True
     s.toyota_drive_mode = True
-    s.aegis_toyota_scene_presets = True
+    s.friday_toyota_scene_presets = True
     s.last_preset_accel_profile = None
     s.params = mock_params_inst
 
@@ -42,7 +42,7 @@ class TestSelfdriveDToyotaPresets(unittest.TestCase):
     mock_params_inst.put_nonblocking.assert_not_called()
 
     # 2. Toggle off -> should reset last_preset_accel_profile
-    s.aegis_toyota_scene_presets = False
+    s.friday_toyota_scene_presets = False
     mock_params_inst.put_nonblocking.reset_mock()
     s.step()
     mock_params_inst.put_nonblocking.assert_not_called()
@@ -50,7 +50,7 @@ class TestSelfdriveDToyotaPresets(unittest.TestCase):
 
     # 3. ToyotaDriveMode disabled -> should not write params
     s.toyota_drive_mode = False
-    s.aegis_toyota_scene_presets = True
+    s.friday_toyota_scene_presets = True
     CS.accelProfile = 1
     mock_params_inst.put_nonblocking.reset_mock()
     s.step()
@@ -58,7 +58,7 @@ class TestSelfdriveDToyotaPresets(unittest.TestCase):
 
     # 4. No accelProfile -> should not write params
     s.toyota_drive_mode = True
-    s.aegis_toyota_scene_presets = True
+    s.friday_toyota_scene_presets = True
     CS.accelProfile = None
     mock_params_inst.put_nonblocking.reset_mock()
     s.step()

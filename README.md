@@ -62,7 +62,7 @@ Keep track of your driving statistics directly from the device:
 * **Beep Safety Audit:** Features full CAN signal audits for idle door locking and beep suppression.
 
 ### 5. Diagnostics & Health Monitor
-* **FRIDAY Health Center:** An active diagnostic daemon (`aegis_healthd`) monitoring CPU temperatures, voltage spikes, and local hardware aging.
+* **FRIDAY Health Center:** An active diagnostic daemon (`friday_healthd`) monitoring CPU temperatures, voltage spikes, and local hardware aging.
 * **Web Diagnostic Portal:** Fully integrated with the local web manager to view hardware statuses remotely.
 
 ### 6. Web Manager (Fleet Manager) Optimizations
@@ -116,7 +116,7 @@ scons -j$(nproc)
 Verify code format and run the local sanity checks:
 ```bash
 pytest selfdrive/selfdrived/tests/test_toyota_presets_selfdrived.py
-pytest common/tests/test_aegis_journey_board.py
+scons common/tests/test_friday_journey_board
 ```
 
 ---

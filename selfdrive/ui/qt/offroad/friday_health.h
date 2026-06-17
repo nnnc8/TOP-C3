@@ -11,11 +11,11 @@
 #include "common/params.h"
 #include "selfdrive/ui/qt/widgets/controls.h"
 
-class AegisHealthPanel : public QWidget {
+class FridayHealthPanel : public QWidget {
   Q_OBJECT
 
 public:
-  explicit AegisHealthPanel(QWidget *parent = nullptr);
+  explicit FridayHealthPanel(QWidget *parent = nullptr);
   void showEvent(QShowEvent *event) override;
 
 private:

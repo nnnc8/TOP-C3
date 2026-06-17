@@ -81,7 +81,7 @@ typedef struct UIScene {
   bool turn_signal_left;
   bool turn_signal_right;
   bool wide_cam; 
-  bool aegis_toyota_scene_presets;
+  bool friday_toyota_scene_presets;
   int toyota_accel_profile;
   int personality_profile;
 } UIScene;

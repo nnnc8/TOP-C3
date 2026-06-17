@@ -766,8 +766,8 @@ def _write_concat_list_file(path: str, files: list[str]) -> None:
 
 def get_health_state() -> dict[str, Any]:
   from openpilot.common.params import Params
-  from openpilot.system.aegis_health.model import get_default_health_state
-  val = Params().get("AegisHealthState")
+  from openpilot.system.friday_health.model import get_default_health_state
+  val = Params().get("FridayHealthState")
   if not val:
     return get_default_health_state()
   try:
@@ -810,7 +810,7 @@ def get_route_health(route_id: str) -> dict[str, Any]:
 def build_evidence_pack(route_id: str) -> str:
   import zipfile
   from openpilot.common.params import Params
-  from openpilot.system.aegis_health.model import get_current_watched_params
+  from openpilot.system.friday_health.model import get_current_watched_params
 
   manifest = get_route_manifest(route_id)
   params = Params()

@@ -21,6 +21,35 @@ struct LongitudinalPlanTOP @0xaedffd8f31e7b55d {
   speedLimit @3 :SpeedLimit;
   vTarget @4 :Float32;
   aTarget @5 :Float32;
+  brakeAssist @6 :BrakeAssist;
+
+  struct BrakeAssist {
+    state @0 :State;
+    active @1 :Bool;
+    confidenceBand @2 :ConfidenceBand;
+    vTarget @3 :Float32;
+    aTarget @4 :Float32;
+    shouldStop @5 :Bool;
+    allowThrottle @6 :Bool;
+    targetDistanceM @7 :Float32;
+    source @8 :Text;
+    releaseReason @9 :Text;
+
+    enum State {
+      inactive @0;
+      prepare @1;
+      brake @2;
+      hardBrake @3;
+      finalStop @4;
+    }
+
+    enum ConfidenceBand {
+      none @0;
+      low @1;
+      mid @2;
+      high @3;
+    }
+  }
 
   enum AccelerationPersonality {
     sport @0;
@@ -113,6 +142,7 @@ struct LongitudinalPlanTOP @0xaedffd8f31e7b55d {
     sccVision @1;
     sccMap @2;
     speedLimitAssist @3;
+    brakeAssist @4;
   }
 }
 
@@ -134,10 +164,39 @@ struct CarStateTOP @0x80ae746ee2596b11 {
   speedLimit @0 :Float32;
 }
 
-struct CustomReserved5 @0xa5cd762cd951a455 {
+struct FridayTrafficIntent @0xa5cd762cd951a455 {
+  color @0 :Color;
+  confidence @1 :Float32;
+  source @2 :Text;
+  ageS @3 :Float32;
+  stale @4 :Bool;
+  range @5 :Range;
+  reason @6 :Text;
+
+  enum Color {
+    unknown @0;
+    red @1;
+    mixed @2;
+    green @3;
+  }
+
+  enum Range {
+    unknown @0;
+    far @1;
+    mid @2;
+    near @3;
+  }
 }
 
-struct CustomReserved6 @0xf98d843bfd7004a3 {
+struct FridayIntersectionDistance @0xf98d843bfd7004a3 {
+  active @0 :Bool;
+  distanceM @1 :Float32;
+  confidence @2 :Float32;
+  source @3 :Text;
+  ageS @4 :Float32;
+  stale @5 :Bool;
+  failReason @6 :Text;
+  computeMs @7 :Float32;
 }
 
 struct CustomReserved7 @0xb86e6369214c01c8 {
