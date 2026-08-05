@@ -48,6 +48,7 @@ OnroadWindow::OnroadWindow(QWidget *parent) : QWidget(parent) {
   alerts = new OnroadAlerts(this);
   alerts->setAttribute(Qt::WA_TransparentForMouseEvents, true);
   stacked_layout->addWidget(alerts);
+  alerts->raise();
 
   setAttribute(Qt::WA_OpaquePaintEvent);
   QObject::connect(uiState(), &UIState::uiUpdate, this, &OnroadWindow::updateState);
