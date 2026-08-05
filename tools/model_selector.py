@@ -297,7 +297,13 @@ def rebuild_artifacts(repo_root: Path, models_dir: Path, python_bin: str, model_
 
 def set_current_model_param(model_id: str, model_name: str) -> None:
   try:
-    from openpilot.common.params import Params
+    repo_root = str(repo_root_from_file())
+    if repo_root not in sys.path:
+      sys.path.insert(0, repo_root)
+    try:
+      from openpilot.common.params import Params
+    except ModuleNotFoundError:
+      from common.params import Params
   except Exception as exc:
     print(f"Warning: unable to update DrivingModel param: {exc}", file=sys.stderr)
     return
