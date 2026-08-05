@@ -128,6 +128,7 @@ class TestModelSelector(unittest.TestCase):
     def stage_files(_model, staging_dir: Path):
       for name in ("driving_vision.onnx", "driving_policy.onnx"):
         (staging_dir / name).write_bytes(f"new {name}".encode())
+      return model_file_plan(_model)
 
     with tempfile.TemporaryDirectory() as temp_dir:
       root = Path(temp_dir)
@@ -158,6 +159,7 @@ class TestModelSelector(unittest.TestCase):
     def stage_files(_model, staging_dir: Path):
       for name in ("driving_vision.onnx", "driving_policy.onnx"):
         (staging_dir / name).write_bytes(f"new {name}".encode())
+      return model_file_plan(_model)
 
     with tempfile.TemporaryDirectory() as temp_dir:
       root = Path(temp_dir)
