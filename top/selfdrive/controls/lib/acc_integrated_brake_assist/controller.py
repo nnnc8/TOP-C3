@@ -264,6 +264,7 @@ def traffic_intent_from_msg(msg) -> TrafficIntent:
   }
   range_map = {
     "far": "far",
+    "farRange": "far",
     "mid": "mid",
     "near": "near",
     "unknown": "unknown",

@@ -182,7 +182,7 @@ struct FridayTrafficIntent @0xa5cd762cd951a455 {
 
   enum Range {
     unknown @0;
-    far @1;
+    farRange @1;
     mid @2;
     near @3;
   }

@@ -126,7 +126,7 @@ def fill_traffic_intent_message(traffic_msg, intent: TrafficIntent) -> None:
     range_name = "mid"
   range_map = {
     "unknown": custom.FridayTrafficIntent.Range.unknown,
-    "far": custom.FridayTrafficIntent.Range.far,
+    "far": custom.FridayTrafficIntent.Range.farRange,
     "mid": custom.FridayTrafficIntent.Range.mid,
     "near": custom.FridayTrafficIntent.Range.near,
   }
