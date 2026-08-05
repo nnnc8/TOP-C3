@@ -15,6 +15,10 @@ except ModuleNotFoundError as exc:
 
 
 MODEL_NAMES = ("driving_vision", "driving_policy")
+SUPERCOMBO_NAME = "driving_supercombo"
+SUPERCOMBO_INPUTS = {"img", "big_img", "features_buffer", "desire_pulse", "traffic_convention", "action_t"}
+SUPERCOMBO_OUTPUTS = {"meta", "desire_pred", "pose", "wide_from_device_euler", "road_transform", "lane_lines",
+                      "lane_lines_prob", "road_edges", "lead", "lead_prob", "hidden_state", "plan", "desire_state"}
 
 
 def get_name_and_shape(value_info: onnx.ValueInfoProto) -> tuple[str, tuple[int, ...]]:
@@ -46,15 +50,29 @@ def inspect_bundle(bundle_dir: pathlib.Path) -> tuple[str, list[str]]:
   bundle_metadata: dict[str, dict] = {}
   errors: list[str] = []
 
-  for model_name in MODEL_NAMES:
-    model_path = bundle_dir / f"{model_name}.onnx"
-    if not model_path.is_file():
-      errors.append(f"missing {model_path.name}")
-      continue
+  supercombo_path = bundle_dir / f"{SUPERCOMBO_NAME}.onnx"
+  if supercombo_path.is_file():
     try:
-      bundle_metadata[model_name] = load_model_metadata(model_path)
+      bundle_metadata[SUPERCOMBO_NAME] = load_model_metadata(supercombo_path)
+      metadata = bundle_metadata[SUPERCOMBO_NAME]
+      missing_inputs = SUPERCOMBO_INPUTS - metadata["input_shapes"].keys()
+      missing_outputs = SUPERCOMBO_OUTPUTS - metadata["output_slices"].keys()
+      if missing_inputs:
+        errors.append(f"{supercombo_path.name}: missing inputs {sorted(missing_inputs)}")
+      if missing_outputs:
+        errors.append(f"{supercombo_path.name}: missing output slices {sorted(missing_outputs)}")
     except Exception as exc:
-      errors.append(f"{model_path.name}: {exc}")
+      errors.append(f"{supercombo_path.name}: {exc}")
+  else:
+    for model_name in MODEL_NAMES:
+      model_path = bundle_dir / f"{model_name}.onnx"
+      if not model_path.is_file():
+        errors.append(f"missing {model_path.name}")
+        continue
+      try:
+        bundle_metadata[model_name] = load_model_metadata(model_path)
+      except Exception as exc:
+        errors.append(f"{model_path.name}: {exc}")
 
   print(f"Bundle directory: {bundle_dir}")
   for model_name, metadata in bundle_metadata.items():
@@ -63,7 +81,7 @@ def inspect_bundle(bundle_dir: pathlib.Path) -> tuple[str, list[str]]:
     print(f"graph outputs: {metadata['output_shapes']}")
     print(f"slice keys: {sorted(k for k in metadata['output_slices'].keys() if k != 'pad')}")
 
-  layout = "top01013-two-onnx" if not errors else "unsupported"
+  layout = "top01013-supercombo" if supercombo_path.is_file() and not errors else "top01013-two-onnx" if not errors else "unsupported"
   print(f"\nDetected layout: {layout}")
   if errors:
     print("Validation errors:")
@@ -77,7 +95,7 @@ def inspect_bundle(bundle_dir: pathlib.Path) -> tuple[str, list[str]]:
 
 def main() -> int:
   parser = argparse.ArgumentParser(description="Inspect TOP01013 driving model ONNX metadata.")
-  parser.add_argument("--bundle-dir", default="selfdrive/modeld/models", help="Directory containing driving_vision/driving_policy ONNX files")
+  parser.add_argument("--bundle-dir", default="selfdrive/modeld/models", help="Directory containing a supported model bundle")
   parser.add_argument("--validate", action="store_true", help="Exit non-zero when the bundle is unsupported")
   args = parser.parse_args()
 

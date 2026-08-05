@@ -40,6 +40,8 @@ VISION_PKL_PATH = Path(__file__).parent / 'models/driving_vision_tinygrad.pkl'
 POLICY_PKL_PATH = Path(__file__).parent / 'models/driving_policy_tinygrad.pkl'
 VISION_METADATA_PATH = Path(__file__).parent / 'models/driving_vision_metadata.pkl'
 POLICY_METADATA_PATH = Path(__file__).parent / 'models/driving_policy_metadata.pkl'
+SUPERCOMBO_PKL_PATH = Path(__file__).parent / 'models/driving_supercombo_tinygrad.pkl'
+SUPERCOMBO_METADATA_PATH = Path(__file__).parent / 'models/driving_supercombo_metadata.pkl'
 
 LAT_SMOOTH_SECONDS = 0.1
 LONG_SMOOTH_SECONDS = 0.3
@@ -223,6 +225,76 @@ class ModelState:
     return combined_outputs_dict
 
 
+class SupercomboModelState:
+  """Runtime for the signed single-file TOP01013 model bundle."""
+
+  def __init__(self, context: CLContext):
+    with open(SUPERCOMBO_METADATA_PATH, 'rb') as f:
+      metadata = pickle.load(f)
+
+    self.input_shapes = metadata['input_shapes']
+    self.vision_input_names = [name for name in self.input_shapes if 'img' in name]
+    self.output_slices = metadata['output_slices']
+    self.frames = {name: DrivingModelFrame(context, ModelConstants.MODEL_RUN_FREQ//ModelConstants.MODEL_CONTEXT_FREQ)
+                   for name in self.vision_input_names}
+    self.prev_desire = np.zeros(ModelConstants.DESIRE_LEN, dtype=np.float32)
+    self.hidden_state = np.zeros((1, ModelConstants.FEATURE_LEN), dtype=np.float32)
+    self.numpy_inputs = {name: np.zeros(shape, dtype=np.float32)
+                         for name, shape in self.input_shapes.items() if name not in self.vision_input_names}
+    self.full_input_queues = InputQueues(ModelConstants.MODEL_CONTEXT_FREQ, ModelConstants.MODEL_RUN_FREQ, ModelConstants.N_FRAMES)
+    self.full_input_queues.update_dtypes_and_shapes(
+      {name: self.numpy_inputs[name].dtype for name in ('desire_pulse', 'features_buffer')},
+      {name: self.numpy_inputs[name].shape for name in ('desire_pulse', 'features_buffer')},
+    )
+    self.full_input_queues.reset()
+    self.image_inputs: dict[str, Tensor] = {}
+    self.scalar_inputs = {name: Tensor(value, device='NPY').realize() for name, value in self.numpy_inputs.items()}
+    self.parser = Parser()
+
+    with open(SUPERCOMBO_PKL_PATH, 'rb') as f:
+      self.run_model = pickle.load(f)
+
+  def slice_outputs(self, model_outputs: np.ndarray) -> dict[str, np.ndarray]:
+    return {name: model_outputs[np.newaxis, output_slice]
+            for name, output_slice in self.output_slices.items() if name != 'pad'}
+
+  def run(self, bufs: dict[str, VisionBuf], transforms: dict[str, np.ndarray],
+          inputs: dict[str, np.ndarray], prepare_only: bool) -> dict[str, np.ndarray] | None:
+    inputs['desire_pulse'][0] = 0
+    new_desire = np.where(inputs['desire_pulse'] - self.prev_desire > .99, inputs['desire_pulse'], 0)
+    self.prev_desire[:] = inputs['desire_pulse']
+
+    imgs_cl = {name: self.frames[name].prepare(bufs[name], transforms[name].flatten()) for name in self.vision_input_names}
+    if TICI and not USBGPU:
+      for key in imgs_cl:
+        if key not in self.image_inputs:
+          self.image_inputs[key] = qcom_tensor_from_opencl_address(imgs_cl[key].mem_address, self.input_shapes[key], dtype=dtypes.uint8)
+    else:
+      for key in imgs_cl:
+        frame_input = self.frames[key].buffer_from_cl(imgs_cl[key]).reshape(self.input_shapes[key])
+        self.image_inputs[key] = Tensor(frame_input, dtype=dtypes.uint8).realize()
+
+    if prepare_only:
+      return None
+
+    self.full_input_queues.enqueue({'features_buffer': self.hidden_state, 'desire_pulse': new_desire})
+    for name in ('desire_pulse', 'features_buffer'):
+      self.numpy_inputs[name][:] = self.full_input_queues.get(name)[name]
+    self.numpy_inputs['traffic_convention'][:] = inputs['traffic_convention']
+    self.numpy_inputs['action_t'][:] = inputs['action_t']
+
+    model_inputs = {**self.image_inputs, **self.scalar_inputs}
+    output = self.run_model(**model_inputs).contiguous().realize().uop.base.buffer.numpy()
+    if output.ndim == 2 and output.shape[0] == 1:
+      output = output[0]
+    outputs = self.slice_outputs(output)
+    parsed_outputs = self.parser.parse_outputs(outputs)
+    self.hidden_state = parsed_outputs['hidden_state'].copy()
+    if SEND_RAW_PRED:
+      parsed_outputs['raw_pred'] = output.copy()
+    return parsed_outputs
+
+
 def main(demo=False):
   cloudlog.warning("modeld init")
 
@@ -235,7 +307,7 @@ def main(demo=False):
   cloudlog.warning("setting up CL context")
   cl_context = CLContext()
   cloudlog.warning("CL context ready; loading model")
-  model = ModelState(cl_context)
+  model = SupercomboModelState(cl_context) if SUPERCOMBO_PKL_PATH.is_file() and SUPERCOMBO_METADATA_PATH.is_file() else ModelState(cl_context)
   cloudlog.warning(f"models loaded in {time.monotonic() - st:.1f}s, modeld starting")
 
   # visionipc clients
@@ -367,6 +439,7 @@ def main(demo=False):
     inputs:dict[str, np.ndarray] = {
       'desire_pulse': vec_desire,
       'traffic_convention': traffic_convention,
+      'action_t': np.array([lat_delay + DT_MDL, long_delay + DT_MDL], dtype=np.float32),
     }
 
     mt1 = time.perf_counter()

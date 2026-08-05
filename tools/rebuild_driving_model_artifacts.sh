@@ -31,7 +31,13 @@ fi
 
 export PYTHONPATH="$ROOT/tinygrad_repo${PYTHONPATH:+:$PYTHONPATH}"
 
-for model_name in driving_vision driving_policy; do
+if [ "$#" -gt 0 ]; then
+  model_names=("$@")
+else
+  model_names=(driving_vision driving_policy)
+fi
+
+for model_name in "${model_names[@]}"; do
   model_path="$MODELS_DIR/${model_name}.onnx"
   metadata_path="$MODELS_DIR/${model_name}_metadata.pkl"
   tinygrad_path="$MODELS_DIR/${model_name}_tinygrad.pkl"

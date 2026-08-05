@@ -21,8 +21,6 @@ from openpilot.system.version import get_build_metadata, terms_version, training
 from openpilot.system.hardware.hw import Paths
 
 LEGACY_TOP_PARAMS = (
-  "DrivingModel",
-  "DrivingModelName",
   "toyotaautolock",
   "toyotaautounlock",
   "toyota_bsm",
