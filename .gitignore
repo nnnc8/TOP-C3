@@ -64,6 +64,9 @@ cppcheck_report.txt
 comma*.sh
 
 selfdrive/modeld/models/*.pkl
+selfdrive/modeld/models/driving_supercombo.onnx
+selfdrive/modeld/models/driving_supercombo_metadata.pkl
+selfdrive/modeld/models/backups/
 
 # openpilot log files
 *.bz2

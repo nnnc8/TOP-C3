@@ -244,6 +244,8 @@ def restore_bundle_from_backup(models_dir: Path, backup_dir: Path) -> None:
 def clear_model_artifacts(models_dir: Path) -> None:
   for model_name in MODEL_NAMES:
     for suffix in MODEL_ARTIFACT_SUFFIXES:
+      if suffix == ".onnx" and model_name in ("driving_vision", "driving_policy"):
+        continue
       (models_dir / f"{model_name}{suffix}").unlink(missing_ok=True)
 
 
