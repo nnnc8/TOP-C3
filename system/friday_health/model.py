@@ -149,28 +149,40 @@ def rotate_daily_buckets(buckets, new_bucket):
 # Settings Backup/Diff/Restore Helpers
 def load_backups(params):
   val = params.get("FridayHealthSettingsBackups")
-  if not val:
-    return []
-  try:
-    return json.loads(val)
-  except Exception:
-    return []
+  if isinstance(val, list):
+    return val
+  elif isinstance(val, (str, bytes)):
+    try:
+      return json.loads(val)
+    except Exception:
+      return []
+  return []
 
 def save_backups(params, backups):
-  params.put("FridayHealthSettingsBackups", json.dumps(backups[-20:])) # keep last 20 backups
+  params.put("FridayHealthSettingsBackups", backups[-20:])
 
 def get_current_watched_params(params):
   res = {}
   for key in WATCHED_KEYS:
     val = params.get(key)
-    res[key] = val.decode('utf-8') if val is not None else None
+    if isinstance(val, bytes):
+      res[key] = val.decode('utf-8', errors='ignore')
+    elif val is not None:
+      res[key] = str(val)
+    else:
+      res[key] = None
   return res
 
 def check_and_create_backup(params, force=False):
   backups = load_backups(params)
   curr_params = get_current_watched_params(params)
   git_commit = params.get("GitCommit")
-  git_commit = git_commit.decode('utf-8') if git_commit else "unknown"
+  if isinstance(git_commit, bytes):
+    git_commit = git_commit.decode('utf-8', errors='ignore')
+  elif git_commit is not None:
+    git_commit = str(git_commit)
+  else:
+    git_commit = "unknown"
 
   needed = force or len(backups) == 0
   if not needed:

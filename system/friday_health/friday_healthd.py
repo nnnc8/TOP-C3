@@ -23,7 +23,9 @@ class FridayHealthDaemon:
     
     # Load or initialize state
     state_val = self.params.get("FridayHealthState")
-    if state_val:
+    if isinstance(state_val, dict):
+      self.state = state_val
+    elif isinstance(state_val, (str, bytes)):
       try:
         self.state = json.loads(state_val)
       except Exception:
@@ -166,7 +168,7 @@ class FridayHealthDaemon:
     elif not started and self.started_prev:
       # Transitioned to offroad: finalize and flush
       self.update_trip_on_transition(to_offroad=True)
-      self.params.put("FridayHealthState", json.dumps(self.state))
+      self.params.put("FridayHealthState", self.state)
       self.last_write_time = time.time()
 
     self.started_prev = started
@@ -299,7 +301,7 @@ class FridayHealthDaemon:
     # Periodic write throttling (every 10 seconds)
     now = time.time()
     if (now - self.last_write_time) >= 10.0:
-      self.params.put("FridayHealthState", json.dumps(self.state))
+      self.params.put("FridayHealthState", self.state)
       self.last_write_time = now
 
   def run(self):
