@@ -36,16 +36,26 @@ from top.selfdrive.controls.lib.road_edge_detector import RoadEdgeDetector
 PROCESS_NAME = "selfdrive.modeld.modeld"
 SEND_RAW_PRED = os.getenv('SEND_RAW_PRED')
 
-VISION_PKL_PATH = Path(__file__).parent / 'models/driving_vision_tinygrad.pkl'
-POLICY_PKL_PATH = Path(__file__).parent / 'models/driving_policy_tinygrad.pkl'
-VISION_METADATA_PATH = Path(__file__).parent / 'models/driving_vision_metadata.pkl'
-POLICY_METADATA_PATH = Path(__file__).parent / 'models/driving_policy_metadata.pkl'
-SUPERCOMBO_PKL_PATH = Path(__file__).parent / 'models/driving_supercombo_tinygrad.pkl'
-SUPERCOMBO_METADATA_PATH = Path(__file__).parent / 'models/driving_supercombo_metadata.pkl'
+DEFAULT_MODEL_DIR = Path(__file__).parent / 'models'
 
 LAT_SMOOTH_SECONDS = 0.1
 LONG_SMOOTH_SECONDS = 0.3
 MIN_LAT_CONTROL_SPEED = 0.3
+
+
+def model_cache_root() -> Path:
+  configured = os.environ.get('OPENPILOT_MODEL_CACHE')
+  return Path(configured) if configured else Path('/data/model-cache')
+
+
+def resolve_model_dir() -> Path:
+  active_dir = model_cache_root() / 'active'
+  has_supercombo = (active_dir / 'driving_supercombo_tinygrad.pkl').is_file() and \
+                   (active_dir / 'driving_supercombo_metadata.pkl').is_file()
+  has_split = all((active_dir / f'{name}_{suffix}.pkl').is_file()
+                  for name in ('driving_vision', 'driving_policy')
+                  for suffix in ('tinygrad', 'metadata'))
+  return active_dir if has_supercombo or has_split else DEFAULT_MODEL_DIR
 
 
 def get_action_from_model(model_output: dict[str, np.ndarray], prev_action: log.ModelDataV2.Action,
@@ -144,15 +154,20 @@ class ModelState:
   output: np.ndarray
   prev_desire: np.ndarray  # for tracking the rising edge of the pulse
 
-  def __init__(self, context: CLContext):
-    with open(VISION_METADATA_PATH, 'rb') as f:
+  def __init__(self, context: CLContext, model_dir: Path):
+    vision_metadata_path = model_dir / 'driving_vision_metadata.pkl'
+    policy_metadata_path = model_dir / 'driving_policy_metadata.pkl'
+    vision_pkl_path = model_dir / 'driving_vision_tinygrad.pkl'
+    policy_pkl_path = model_dir / 'driving_policy_tinygrad.pkl'
+
+    with open(vision_metadata_path, 'rb') as f:
       vision_metadata = pickle.load(f)
       self.vision_input_shapes =  vision_metadata['input_shapes']
       self.vision_input_names = list(self.vision_input_shapes.keys())
       self.vision_output_slices = vision_metadata['output_slices']
       vision_output_size = vision_metadata['output_shapes']['outputs'][1]
 
-    with open(POLICY_METADATA_PATH, 'rb') as f:
+    with open(policy_metadata_path, 'rb') as f:
       policy_metadata = pickle.load(f)
       self.policy_input_shapes =  policy_metadata['input_shapes']
       self.policy_output_slices = policy_metadata['output_slices']
@@ -175,10 +190,10 @@ class ModelState:
     self.policy_output = np.zeros(policy_output_size, dtype=np.float32)
     self.parser = Parser()
 
-    with open(VISION_PKL_PATH, "rb") as f:
+    with open(vision_pkl_path, "rb") as f:
       self.vision_run = pickle.load(f)
 
-    with open(POLICY_PKL_PATH, "rb") as f:
+    with open(policy_pkl_path, "rb") as f:
       self.policy_run = pickle.load(f)
 
   def slice_outputs(self, model_outputs: np.ndarray, output_slices: dict[str, slice]) -> dict[str, np.ndarray]:
@@ -228,8 +243,11 @@ class ModelState:
 class SupercomboModelState:
   """Runtime for the signed single-file TOP01013 model bundle."""
 
-  def __init__(self, context: CLContext):
-    with open(SUPERCOMBO_METADATA_PATH, 'rb') as f:
+  def __init__(self, context: CLContext, model_dir: Path):
+    metadata_path = model_dir / 'driving_supercombo_metadata.pkl'
+    pkl_path = model_dir / 'driving_supercombo_tinygrad.pkl'
+
+    with open(metadata_path, 'rb') as f:
       metadata = pickle.load(f)
 
     self.input_shapes = metadata['input_shapes']
@@ -251,7 +269,7 @@ class SupercomboModelState:
     self.scalar_inputs = {name: Tensor(value, device='NPY').realize() for name, value in self.numpy_inputs.items()}
     self.parser = Parser()
 
-    with open(SUPERCOMBO_PKL_PATH, 'rb') as f:
+    with open(pkl_path, 'rb') as f:
       self.run_model = pickle.load(f)
 
   def slice_outputs(self, model_outputs: np.ndarray) -> dict[str, np.ndarray]:
@@ -297,6 +315,8 @@ class SupercomboModelState:
 
 def main(demo=False):
   cloudlog.warning("modeld init")
+  params = Params()
+  model_dir = resolve_model_dir()
 
   if not USBGPU:
     # USB GPU currently saturates a core so can't do this yet,
@@ -307,7 +327,17 @@ def main(demo=False):
   cloudlog.warning("setting up CL context")
   cl_context = CLContext()
   cloudlog.warning("CL context ready; loading model")
-  model = SupercomboModelState(cl_context) if SUPERCOMBO_PKL_PATH.is_file() and SUPERCOMBO_METADATA_PATH.is_file() else ModelState(cl_context)
+  supercombo = (model_dir / 'driving_supercombo_tinygrad.pkl').is_file() and \
+               (model_dir / 'driving_supercombo_metadata.pkl').is_file()
+  layout = 'top01013-supercombo' if supercombo else 'top01013-two-onnx'
+  cloudlog.event(
+    "driving_model_loaded",
+    model_id=params.get("DrivingModel"),
+    model_name=params.get("DrivingModelName"),
+    model_dir=str(model_dir),
+    layout=layout,
+  )
+  model = SupercomboModelState(cl_context, model_dir) if supercombo else ModelState(cl_context, model_dir)
   cloudlog.warning(f"models loaded in {time.monotonic() - st:.1f}s, modeld starting")
 
   # visionipc clients
@@ -338,7 +368,6 @@ def main(demo=False):
   sm = SubMaster(["deviceState", "carState", "roadCameraState", "liveCalibration", "driverMonitoringState", "carControl", "liveDelay"])
 
   publish_state = PublishState()
-  params = Params()
 
   # setup filter to track dropped frames
   frame_dropped_filter = FirstOrderFilter(0., 10., 1. / ModelConstants.MODEL_RUN_FREQ)

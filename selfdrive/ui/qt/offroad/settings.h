@@ -101,6 +101,8 @@ private:
   bool is_onroad = false;
 
   QLabel *onroadLbl;
+  LabelControl *modelLbl;
+  DrivingModelSelectorControl *modelSelector;
   ButtonControl *errorLogBtn;
   ButtonControl *installBtn;
   ButtonControl *downloadBtn;
