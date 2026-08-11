@@ -1,10 +1,13 @@
+import io
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
 from openpilot.tools.model_selector import (
   install_model,
+  download_file,
   load_cached_manifest,
   SELECTOR_VERSION,
   list_installable_models,
@@ -47,6 +50,30 @@ def file_spec(size: int = 4096, sha256: str = "0" * 64) -> dict:
 
 
 class TestModelSelector(unittest.TestCase):
+  def test_download_file_reports_live_progress(self):
+    class Response:
+      def __init__(self):
+        self.chunks = [b"a" * 2, b"b"]
+
+      def __enter__(self):
+        return self
+
+      def __exit__(self, *_args):
+        return False
+
+      def read(self, _size):
+        return self.chunks.pop(0) if self.chunks else b""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+      output_path = Path(temp_dir) / "model.onnx"
+      output = io.StringIO()
+      with patch("openpilot.tools.model_selector.urllib.request.urlopen", return_value=Response()), \
+           redirect_stdout(output):
+        download_file("https://example.test/model.onnx", output_path, progress_label="model.onnx", expected_size=3)
+
+      self.assertEqual(output_path.read_bytes(), b"aab")
+      self.assertIn("MODEL_PROGRESS model.onnx 3 3", output.getvalue())
+
   def test_verify_manifest_signature_accepts_valid_manifest(self):
     manifest, public_key = signed_manifest()
 

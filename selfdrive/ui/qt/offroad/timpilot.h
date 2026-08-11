@@ -24,6 +24,8 @@ private:
   void startList();
   void startSync();
   void startInstall(const QString &model_id, const QString &model_name);
+  void processOutput();
+  void handleProgressLine(const QByteArray &line);
   void processFinished(int exit_code, QProcess::ExitStatus exit_status);
   void processError(QProcess::ProcessError error);
   void writeLog(const QByteArray &output);
@@ -37,6 +39,8 @@ private:
   QString pending_model_name;
   QString root;
   QString log_file;
+  QByteArray operation_output;
+  QByteArray pending_output;
 };
 
 class ForceCarRecognition : public QWidget

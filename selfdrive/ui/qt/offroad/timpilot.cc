@@ -29,6 +29,7 @@ DrivingModelSelectorControl::DrivingModelSelectorControl(QWidget *parent) : Butt
   process->setProcessChannelMode(QProcess::MergedChannels);
   connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
           this, &DrivingModelSelectorControl::processFinished);
+  connect(process, &QProcess::readyRead, this, &DrivingModelSelectorControl::processOutput);
   connect(process, &QProcess::errorOccurred, this, &DrivingModelSelectorControl::processError);
   connect(this, &ButtonControl::clicked, this, &DrivingModelSelectorControl::selectModel);
   refresh();
@@ -77,6 +78,8 @@ QString DrivingModelSelectorControl::logPath(const QString &root_path) const {
 
 void DrivingModelSelectorControl::startList() {
   operation = Operation::List;
+  operation_output.clear();
+  pending_output.clear();
   setEnabled(false);
   setValue(tr("Loading..."));
   process->setWorkingDirectory(root);
@@ -88,6 +91,8 @@ void DrivingModelSelectorControl::startList() {
 
 void DrivingModelSelectorControl::startSync() {
   operation = Operation::Sync;
+  operation_output.clear();
+  pending_output.clear();
   setEnabled(false);
   setValue(tr("Syncing..."));
   process->setWorkingDirectory(root);
@@ -123,8 +128,10 @@ void DrivingModelSelectorControl::startInstall(const QString &model_id, const QS
 
   pending_model_name = model_name;
   operation = Operation::Install;
+  operation_output.clear();
+  pending_output.clear();
   setEnabled(false);
-  setValue(tr("Installing..."));
+  setValue(tr("Preparing..."));
   process->setWorkingDirectory(root);
   process->start("python3", QStringList()
     << "tools/model_selector.py"
@@ -145,9 +152,78 @@ void DrivingModelSelectorControl::writeLog(const QByteArray &output) {
   }
 }
 
+void DrivingModelSelectorControl::processOutput() {
+  const QByteArray chunk = process->readAll();
+  if (chunk.isEmpty()) {
+    return;
+  }
+
+  operation_output += chunk;
+  pending_output += chunk;
+  while (true) {
+    const int newline = pending_output.indexOf('\n');
+    if (newline < 0) {
+      break;
+    }
+    const QByteArray line = pending_output.left(newline).trimmed();
+    pending_output.remove(0, newline + 1);
+    if (!line.isEmpty()) {
+      handleProgressLine(line);
+    }
+  }
+}
+
+void DrivingModelSelectorControl::handleProgressLine(const QByteArray &line) {
+  const QString text = QString::fromUtf8(line).trimmed();
+  if (text.startsWith("MODEL_PROGRESS ")) {
+    const QStringList parts = text.split(' ', QString::SkipEmptyParts);
+    if (parts.size() >= 4) {
+      bool downloaded_ok = false;
+      bool total_ok = false;
+      const qint64 downloaded = parts[2].toLongLong(&downloaded_ok);
+      const qint64 total = parts[3].toLongLong(&total_ok);
+      if (downloaded_ok && total_ok && total > 0) {
+        const int percent = qBound(0, static_cast<int>((downloaded * 100) / total), 100);
+        setValue(tr("Downloading %1%").arg(percent));
+      }
+    }
+    return;
+  }
+
+  const QString status_prefix = "MODEL_STATUS ";
+  if (!text.startsWith(status_prefix)) {
+    return;
+  }
+
+  const QString status = text.mid(status_prefix.size()).trimmed();
+  if (status.startsWith("downloading ")) {
+    setValue(tr("Downloading %1...").arg(status.mid(QString("downloading ").size())));
+  } else if (status.startsWith("verified ")) {
+    setValue(tr("Verified %1").arg(status.mid(QString("verified ").size())));
+  } else if (status == "validating") {
+    setValue(tr("Validating model..."));
+  } else if (status.startsWith("validated")) {
+    setValue(tr("Validated %1").arg(status.mid(QString("validated").size()).trimmed()));
+  } else if (status.startsWith("compiling ")) {
+    setValue(tr("Compiling %1...").arg(status.mid(QString("compiling ").size())));
+  } else if (status.startsWith("compiled ")) {
+    setValue(tr("Compiled %1").arg(status.mid(QString("compiled ").size())));
+  } else if (status == "activating") {
+    setValue(tr("Activating model..."));
+  } else if (status.startsWith("using_cached")) {
+    setValue(tr("Using cached model..."));
+  }
+}
+
 void DrivingModelSelectorControl::processFinished(int exit_code, QProcess::ExitStatus exit_status) {
-  const QByteArray output = process->readAll();
+  processOutput();
+  if (!pending_output.isEmpty()) {
+    handleProgressLine(pending_output.trimmed());
+  }
+  pending_output.clear();
+  const QByteArray output = operation_output;
   writeLog(output);
+  operation_output.clear();
   const Operation finished_operation = operation;
   operation = Operation::None;
 

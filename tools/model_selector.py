@@ -329,9 +329,22 @@ def verify_downloaded_file(path: Path, expected_size: int, expected_sha256: str)
     raise ValueError(f"{path.name} sha256 mismatch: got {actual_sha256}, expected {expected_sha256}")
 
 
-def download_file(url: str, output_path: Path) -> None:
+def download_file(
+  url: str,
+  output_path: Path,
+  progress_label: str = "",
+  expected_size: int = 0,
+) -> None:
   with urllib.request.urlopen(url, timeout=120) as response, output_path.open("wb") as output:
-    shutil.copyfileobj(response, output)
+    downloaded = 0
+    while True:
+      chunk = response.read(1024 * 1024)
+      if not chunk:
+        break
+      output.write(chunk)
+      downloaded += len(chunk)
+      if progress_label:
+        print(f"MODEL_PROGRESS {progress_label} {downloaded} {expected_size}", flush=True)
 
 
 def stage_model_files(model: dict, staging_dir: Path) -> list[ModelFilePlan]:
@@ -340,9 +353,10 @@ def stage_model_files(model: dict, staging_dir: Path) -> list[ModelFilePlan]:
 
   for item in plan:
     output_path = staging_dir / item.install_name
-    print(f"Downloading {item.remote_name} -> {item.install_name}")
-    download_file(item.url, output_path)
+    print(f"MODEL_STATUS downloading {item.remote_name}", flush=True)
+    download_file(item.url, output_path, progress_label=item.install_name, expected_size=item.size)
     verify_downloaded_file(output_path, item.size, item.sha256)
+    print(f"MODEL_STATUS verified {item.install_name}", flush=True)
 
   return plan
 
@@ -360,6 +374,7 @@ def run_checked(cmd: list[str], cwd: Path, env: dict[str, str] | None = None) ->
 
 
 def inspect_staged_bundle(repo_root: Path, staging_dir: Path, python_bin: str) -> str:
+  print("MODEL_STATUS validating", flush=True)
   proc = run_checked([
     python_bin,
     str(repo_root / "tools/inspect_model_outputs.py"),
@@ -371,7 +386,10 @@ def inspect_staged_bundle(repo_root: Path, staging_dir: Path, python_bin: str) -
   for line in proc.stdout.splitlines():
     line = line.strip()
     if line.startswith("Detected layout:"):
-      return line.removeprefix("Detected layout:").strip()
+      layout = line.removeprefix("Detected layout:").strip()
+      print(f"MODEL_STATUS validated {layout}", flush=True)
+      return layout
+  print("MODEL_STATUS validated", flush=True)
   return "validated"
 
 
@@ -492,6 +510,7 @@ def prepare_bundle(
   bundle_dir = bundle_dir_for_model(cache_root, model)
 
   if (skip_rebuild and bundle_files_are_valid(bundle_dir, plan)) or bundle_is_compiled(bundle_dir, plan):
+    print("MODEL_STATUS using_cached_bundle", flush=True)
     layout = "top01013-supercombo" if any(item.install_name == "driving_supercombo.onnx" for item in plan) else "top01013-two-onnx"
     return bundle_dir, plan, layout
 
@@ -499,6 +518,7 @@ def prepare_bundle(
   work_dir = Path(tempfile.mkdtemp(prefix="bundle-", dir=cache_tmp_root(cache_root)))
   try:
     if bundle_files_are_valid(bundle_dir, plan):
+      print("MODEL_STATUS using_cached_files", flush=True)
       for item in plan:
         shutil.copy2(bundle_dir / item.install_name, work_dir / item.install_name)
     elif offline:
@@ -581,8 +601,10 @@ def rebuild_artifacts(
     if not model_path.is_file():
       raise RuntimeError(f"missing model file: {model_path}")
 
+    print(f"MODEL_STATUS compiling {model_name}", flush=True)
     run_checked([python_bin, str(metadata_script), str(model_path)], repo_root, env=env)
     run_checked([python_bin, str(compile_script), str(model_path), str(models_dir / f"{model_name}_tinygrad.pkl")], repo_root, env=env)
+    print(f"MODEL_STATUS compiled {model_name}", flush=True)
 
 
 def set_current_model_param(model_id: str, model_name: str) -> None:
@@ -646,7 +668,9 @@ def install_model(
     offline=offline,
     skip_rebuild=skip_rebuild,
   )
+  print("MODEL_STATUS activating", flush=True)
   previous_dir = activate_bundle(cache_root, bundle_dir)
+  print("MODEL_STATUS activated", flush=True)
 
   if update_params:
     set_current_model_param(str(model["id"]), str(model["name"]))
