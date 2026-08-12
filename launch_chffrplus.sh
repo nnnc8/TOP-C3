@@ -101,18 +101,24 @@ function launch {
 
   python ./force_car_recognition.py
 
-  cat /etc/resolv.conf
-  echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
-  echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
-  sudo systemctl restart network-manager
-  sudo apt update
-  sudo $(which pip3) install --upgrade pip
-  sudo $(which pip3) install flask
-
   # start manager
   cd system/manager
-  if [ ! -f $DIR/prebuilt ]; then
-    ./build.py
+  if [ ! -f "$DIR/prebuilt" ]; then
+    build_stamp="$DIR/.build_commit"
+    current_commit="$(git -C "$DIR" rev-parse HEAD 2>/dev/null || true)"
+    source_dirty="$(git -C "$DIR" status --porcelain --untracked-files=no 2>/dev/null || true)"
+    if [ -n "$source_dirty" ] || \
+       [ ! -x "$DIR/selfdrive/ui/ui" ] || \
+       [ ! -x "$DIR/system/camerad/camerad" ] || \
+       [ ! -x "$DIR/system/loggerd/loggerd" ] || \
+       [ ! -x "$DIR/top/selfdrive/locationd/locationd" ] || \
+       [ ! -s "$build_stamp" ] || \
+       [ "$(cat "$build_stamp" 2>/dev/null)" != "$current_commit" ]; then
+      ./build.py
+      if [ -n "$current_commit" ]; then
+        printf '%s\n' "$current_commit" > "$build_stamp"
+      fi
+    fi
   fi
   ./manager.py
 

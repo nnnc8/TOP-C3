@@ -1,6 +1,5 @@
 import os
 import operator
-import subprocess
 import importlib.util
 import platform
 
@@ -58,68 +57,23 @@ def only_offroad(started: bool, params: Params, CP: car.CarParams) -> bool:
   return not started
 
 def check_packages_and_install() -> bool:
-  # Quick check if Flask & kaitaistruct are installed
+  # Never install packages from the manager loop. The fleetmanager is optional
+  # and missing dependencies must not block boot or onroad services.
   flask_available = importlib.util.find_spec("flask") is not None
   kaitaistruct_available = importlib.util.find_spec("kaitaistruct") is not None
 
+  if not (flask_available and kaitaistruct_available):
+    return False
+
   params = Params()
 
-  if flask_available and kaitaistruct_available:
-    if params.get_bool("PackagesInstallRequested"):
-      params.put_bool("PackagesInstallRequested", False)
+  if params.get_bool("PackagesInstallRequested"):
+    params.put_bool("PackagesInstallRequested", False)
 
-    current_second_boot = params.get_bool("SecondBoot")
-    if not current_second_boot:
-      params.put_bool("SecondBoot", True)
-    return True
+  if not params.get_bool("SecondBoot"):
+    params.put_bool("SecondBoot", True)
 
-  # Start installation only once
-  install_requested = params.get_bool("PackagesInstallRequested")
-  if not install_requested:
-    params.put_bool("PackagesInstallRequested", True)
-
-    current_second_boot = params.get_bool("SecondBoot")
-    if current_second_boot:
-      params.put_bool("SecondBoot", False)
-
-    packages_to_install = []
-    if not flask_available:
-      packages_to_install.append("flask")
-    if not kaitaistruct_available:
-      packages_to_install.append("kaitaistruct")
-
-    try:
-      for package in packages_to_install:
-        print(f"Installing {package}...")
-        result = subprocess.call([
-          'python3', '-m', 'pip', 'install', package
-        ])
-
-        if result == 0:
-          print(f"Successfully installed {package}")
-        else:
-          print(f"Failed to install {package}")
-          params.put_bool("PackagesInstallRequested", False)
-          return False
-
-      print(f"All packages installed successfully: {', '.join(packages_to_install)}")
-
-      flask_check = importlib.util.find_spec("flask") is not None
-      kaitai_check = importlib.util.find_spec("kaitaistruct") is not None
-
-      if flask_check and kaitai_check:
-        params.put_bool("SecondBoot", True)
-        return True
-      else:
-        print("Packages installed but not detected, may need system restart")
-        return False
-
-    except Exception as e:
-      print(f"Failed to install packages: {e}")
-      params.put_bool("PackagesInstallRequested", False)
-      return False
-
-  return False
+  return True
 
 def reset_install_status(params: Params) -> None:
   params.put_bool("PackagesInstallRequested", False)
